@@ -13,4 +13,14 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
-\n# AI Agent Folders\n.agents/\n.claude/\n.codex/\n.cursor/\n.gemini/\n.junie/\n.kiro/\n.mcp.json
+
+# AI Agent Folders
+.agents/
+.claude/
+.codex/
+.cursor/
+.gemini/
+.junie/
+.kiro/
+.mcp.json
+
