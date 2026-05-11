@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Helpers\Stringizer\Transformers;
 
 /**
@@ -7,27 +10,19 @@ namespace App\Helpers\Stringizer\Transformers;
  * Random String example from http://stackoverflow.com/questions/4356289/php-random-string-generator
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2016 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE.md (MIT License)
  */
 class Random implements TransformerInterface
 {
-
     public static $RANDOM_ALPHA = 1;
 
     public static $RANDOM_ALPHA_NUMERIC = 2;
 
     public static $RANDOM_NUMERIC = 3;
 
-    private $genType;
-
-    private $length;
-
-    public function __construct($type, $length)
-    {
-        $this->genType = $type;
-        $this->length = $length;
-    }
+    public function __construct(private $genType, private $length) {}
 
     public function execute()
     {
@@ -46,9 +41,10 @@ class Random implements TransformerInterface
 
         $charactersLength = strlen($characters);
         $randomString = '';
-        for ($i = 0; $i < $this->length; $i ++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        for ($i = 0; $i < $this->length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
         }
+
         return $randomString;
     }
 }

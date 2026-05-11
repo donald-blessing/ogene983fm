@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers\Stringizer\Transformers;
 
 /**
@@ -9,20 +10,15 @@ namespace App\Helpers\Stringizer\Transformers;
  * ie: date_default_timezone_set('America/Vancouver');
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2016 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE.md (MIT License)
  */
 class Date extends Transformer implements TransformerInterface
 {
-
-    public function __construct($value)
-    {
-        parent::__construct($value);
-    }
-
     public function execute()
     {
-        if (strtotime($this->getValue()) !== FALSE) {
+        if (strtotime($this->getValue()) !== false) {
             return true;
         } else {
             return false;

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers\Stringizer\Transformers;
 
 /**
@@ -7,20 +8,13 @@ namespace App\Helpers\Stringizer\Transformers;
  * Solution from StackOverflow https://stackoverflow.com/questions/14095778/regex-differentiating-between-isbn-10-and-isbn-13
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2017 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE.md (MIT License)
  */
 class Isbn extends Transformer implements TransformerInterface
 {
-
-    private $isCheckIsbn13;
-
-    public function __construct($value)
-    {
-        parent::__construct($value);
-
-        $this->isCheckIsbn13 = false;
-    }
+    private $isCheckIsbn13 = false;
 
     public function checkIsbn13()
     {
@@ -30,15 +24,15 @@ class Isbn extends Transformer implements TransformerInterface
     public function execute()
     {
         if ($this->isCheckIsbn13) {
-            if ($this->findIsbn($this->getValue()) == 2)
+            if ($this->findIsbn($this->getValue()) == 2) {
                 return true;
-            else
+            } else {
                 return false;
+            }
+        } elseif ($this->findIsbn($this->getValue()) == 1) {
+            return true;
         } else {
-            if ($this->findIsbn($this->getValue()) == 1)
-                return true;
-            else
-                return false;
+            return false;
         }
     }
 
@@ -49,8 +43,9 @@ class Isbn extends Transformer implements TransformerInterface
         // 1 = ISBN-10
         // 2 = ISBN-13
         if (preg_match($regex, str_replace('-', '', $str), $matches)) {
-            return (10 === strlen($matches[1])) ? 1 : 2;
+            return (strlen($matches[1]) === 10) ? 1 : 2;
         }
+
         return 0; // No valid ISBN found
     }
 }

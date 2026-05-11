@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +15,7 @@ class CreatePresenterProgrammeTable extends Migration
      */
     public function up()
     {
-        Schema::create('presenter_programme', function (Blueprint $table) {
+        Schema::create('presenter_programme', function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->bigInteger('presenter_id')->unsigned()->index();
             $table->foreign('presenter_id')->references('id')->on('presenters')->onDelete('cascade');

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Charts;
 
-use Chartisan\PHP\Chartisan;
-use ConsoleTVs\Charts\BaseChart;
+// use Chartisan\PHP\Chartisan;
+use ConsoleTVs\Charts\Classes\Chartjs\Chart as BaseChart;
 use Illuminate\Http\Request;
 
 class UserChart extends BaseChart
@@ -13,6 +15,7 @@ class UserChart extends BaseChart
      * It must always return an instance of Chartisan
      * and never a string or an array.
      */
+    /*
     public function handler(Request $request): Chartisan
     {
         return Chartisan::build()
@@ -20,4 +23,5 @@ class UserChart extends BaseChart
             ->dataset('Sample', [1, 2, 3])
             ->dataset('Sample 2', [3, 2, 1]);
     }
+    */
 }

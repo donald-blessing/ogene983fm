@@ -4,7 +4,6 @@ namespace App\Traits;
 
 /**
  * Trait FlashMessages
- * @package App\Traits
  */
 trait FlashMessages
 {
@@ -28,39 +27,27 @@ trait FlashMessages
      */
     protected $warningMessages = [];
 
-    /**
-     * @param $message
-     * @param $type
-     */
     protected function setFlashMessage($message, $type)
     {
         $model = 'infoMessages';
 
         switch ($type) {
-            case 'info': {
-                    $model = 'infoMessages';
-                }
+            case 'info': $model = 'infoMessages';
                 break;
-            case 'error': {
-                    $model = 'errorMessages';
-                }
+            case 'error': $model = 'errorMessages';
                 break;
-            case 'success': {
-                    $model = 'successMessages';
-                }
+            case 'success': $model = 'successMessages';
                 break;
-            case 'warning': {
-                    $model = 'warningMessages';
-                }
+            case 'warning': $model = 'warningMessages';
                 break;
         }
 
         if (is_array($message)) {
-            foreach ($message as $key => $value) {
-                array_push($this->$model, $value);
+            foreach ($message as $value) {
+                $this->$model[] = $value;
             }
         } else {
-            array_push($this->$model, $message);
+            $this->$model[] = $message;
         }
     }
 
@@ -70,10 +57,10 @@ trait FlashMessages
     protected function getFlashMessages()
     {
         return [
-            'error'     =>  $this->errorMessages,
-            'info'      =>  $this->infoMessages,
-            'success'   =>  $this->successMessages,
-            'warning'   =>  $this->warningMessages,
+            'error' => $this->errorMessages,
+            'info' => $this->infoMessages,
+            'success' => $this->successMessages,
+            'warning' => $this->warningMessages,
         ];
     }
 

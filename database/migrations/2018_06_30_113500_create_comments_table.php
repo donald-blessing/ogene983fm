@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateCommentsTable extends Migration
 {
@@ -13,19 +15,19 @@ class CreateCommentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table): void {
             $table->bigIncrements('id');
 
             $table->string('commenter_id')->nullable();
             $table->string('commenter_type')->nullable();
-            $table->index(["commenter_id", "commenter_type"]);
+            $table->index(['commenter_id', 'commenter_type']);
 
             $table->string('guest_name')->nullable();
             $table->string('guest_email')->nullable();
 
-            $table->string("commentable_type");
-            $table->string("commentable_id");
-            $table->index(["commentable_type", "commentable_id"]);
+            $table->string('commentable_type');
+            $table->string('commentable_id');
+            $table->index(['commentable_type', 'commentable_id']);
 
             $table->text('comment');
 

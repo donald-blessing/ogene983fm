@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\OnAir;
+namespace App\Livewire\OnAir;
 
 use App\Models\Programme\Programme;
 use Livewire\Component;
@@ -24,6 +24,7 @@ class OnAirProgramme extends Component
         // $this->onAir = $programmeTime ? $programmeTime->programmes->first() : null;
 
         $this->onAir = Programme::onAir()->orderBy('id', 'desc')->first();
+
         return view('livewire.on-air.on-air-programme', ['onAir' => $this->onAir]);
     }
 }

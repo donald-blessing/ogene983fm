@@ -12,10 +12,11 @@ use App\Http\Controllers\PharmaLearn\PharmaLearnController;
 use App\Http\Controllers\PharmaSource\PharmaSourceProductController;
 use App\Http\Controllers\PlagiarismChecker\PlagiarismCheckerController;
 use App\Models\Specialisation\Specialisation;
+use App\Models\User;
 use App\Traits\ChartTrait;
 use App\Traits\ControllerTrait;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -28,12 +29,11 @@ class UserProfileController extends Controller
     /**
      * Get member profile.
      *
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function getProfile(User $user)
     {
-        if ((auth()->user()->id != $user->id) && !($user->isAdmin || $user->isSuperAdmin)) {
+        if ((auth()->user()->id != $user->id) && (! $user->isAdmin && ! $user->isSuperAdmin)) {
             abort('404');
         }
 
@@ -43,7 +43,7 @@ class UserProfileController extends Controller
             $items[] = [
                 'image' => (new PharmaSourceProductController)->breadcrumb(),
                 'title' => 'PharmaSource Orders',
-                'count' => $user->orders->count()
+                'count' => $user->orders->count(),
             ];
         }
 
@@ -51,7 +51,7 @@ class UserProfileController extends Controller
             $items[] = [
                 'image' => (new HealthAidController)->breadcrumb(),
                 'title' => 'HealthAid',
-                'count' => $user->healthaids->count()
+                'count' => $user->healthaids->count(),
             ];
         }
 
@@ -59,7 +59,7 @@ class UserProfileController extends Controller
             $items[] = [
                 'image' => (new PharmaFundController)->breadcrumb(),
                 'title' => 'PharmaFund',
-                'count' => $user->pharmafunds->count()
+                'count' => $user->pharmafunds->count(),
             ];
         }
 
@@ -67,7 +67,7 @@ class UserProfileController extends Controller
             $items[] = [
                 'image' => (new PharmaAdvertController)->breadcrumb(),
                 'title' => 'PharmaAdverts',
-                'count' => $user->advertSubscriptions->count()
+                'count' => $user->advertSubscriptions->count(),
             ];
         }
 
@@ -75,7 +75,7 @@ class UserProfileController extends Controller
             $items[] = [
                 'image' => (new ChallengerController)->breadcrumb(),
                 'title' => 'Challenger',
-                'count' => $user->challengers->count()
+                'count' => $user->challengers->count(),
             ];
         }
 
@@ -83,7 +83,7 @@ class UserProfileController extends Controller
             $items[] = [
                 'image' => (new ChallengerController)->breadcrumb(),
                 'title' => 'Challenger Submissions',
-                'count' => $user->challengersubmissions->count()
+                'count' => $user->challengersubmissions->count(),
             ];
         }
 
@@ -92,7 +92,7 @@ class UserProfileController extends Controller
                 [
                     'image' => (new PharmaLearnController)->breadcrumb(),
                     'title' => 'PharmaLearn',
-                    'count' => $user->pharmalearns->count()
+                    'count' => $user->pharmalearns->count(),
                 ];
         }
 
@@ -100,7 +100,7 @@ class UserProfileController extends Controller
             $items[] = [
                 'image' => (new PlagiarismCheckerController)->breadcrumb(),
                 'title' => 'PlagiarismChecker',
-                'count' => $user->plagiarismCheckers->count()
+                'count' => $user->plagiarismCheckers->count(),
             ];
         }
 
@@ -108,7 +108,7 @@ class UserProfileController extends Controller
             $items[] = [
                 'image' => (new JobController)->breadcrumb(),
                 'title' => 'Jobs',
-                'count' => $user->jobs->count()
+                'count' => $user->jobs->count(),
             ];
         }
 
@@ -128,8 +128,9 @@ class UserProfileController extends Controller
 
         $user = User::find(Auth::user()->id);
 
-        if (!Hash::check($data['old_password'], $user->password)) {
+        if (! Hash::check($data['old_password'], $user->password)) {
             session()->flash('error', 'You have entered wrong password');
+
             return back();
         } else {
             DB::beginTransaction();
@@ -141,6 +142,7 @@ class UserProfileController extends Controller
             }
             DB::commit();
             session()->flash('success', 'Your password was updated successfully!');
+
             return redirect()->route('dashboard');
         }
     }
@@ -150,16 +152,15 @@ class UserProfileController extends Controller
         return view('site.dashboard.user.change-password');
     }
 
-
     public function upgrade(User $user, $upgrade)
     {
-        //store upgrade type in session
+        // store upgrade type in session
         // Get URLs
         $urlPrevious = url()->previous();
         $urlBase = url()->to('/');
 
         // Set the previous url that we came from to redirect to after successful login but only if is internal
-        if (($urlPrevious != $urlBase . '/login') && (substr($urlPrevious, 0, strlen($urlBase)) === $urlBase)) {
+        if (($urlPrevious != $urlBase.'/login') && (str_starts_with($urlPrevious, $urlBase))) {
             session()->put('url.intended', $urlPrevious);
         }
 
@@ -235,15 +236,15 @@ class UserProfileController extends Controller
     /**
      * Get the modal form of user profile
      *
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function profileDialog(User $user)
     {
         $profile = null;
         // try {
         $user = User::whereSlug($user->slug)->first();
-        $profile = view('site.pages.user.profileModal', ['user' => $user])->render(); //code...
+        $profile = view('site.pages.user.profileModal', ['user' => $user])->render(); // code...
+
         // } catch (\Throwable $th) {
         //     return response()->json(['error' => $th->getMessage()], 200);
         // }
@@ -253,18 +254,15 @@ class UserProfileController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(User $user)
     {
         return view('site.pages.user.profile', ['user' => $user]);
     }
 
-
     public function getChart(User $user)
     {
-        $charts = $this->getCharts($user);
-        return $charts;
+        return $this->getCharts($user);
     }
 }

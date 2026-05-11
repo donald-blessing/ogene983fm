@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +16,7 @@ class CreateChatTables extends Migration
      */
     public function up()
     {
-        Schema::create(ConfigurationManager::CONVERSATIONS_TABLE, function (Blueprint $table) {
+        Schema::create(ConfigurationManager::CONVERSATIONS_TABLE, function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->boolean('private')->default(true);
             $table->boolean('direct_message')->default(false);
@@ -22,7 +24,7 @@ class CreateChatTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create(ConfigurationManager::PARTICIPATION_TABLE, function (Blueprint $table) {
+        Schema::create(ConfigurationManager::PARTICIPATION_TABLE, function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->bigInteger('conversation_id')->unsigned();
             $table->bigInteger('messageable_id')->unsigned();
@@ -38,7 +40,7 @@ class CreateChatTables extends Migration
                 ->onDelete('cascade');
         });
 
-        Schema::create(ConfigurationManager::MESSAGES_TABLE, function (Blueprint $table) {
+        Schema::create(ConfigurationManager::MESSAGES_TABLE, function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->text('body');
             $table->bigInteger('conversation_id')->unsigned();
@@ -57,7 +59,7 @@ class CreateChatTables extends Migration
                 ->onDelete('cascade');
         });
 
-        Schema::create(ConfigurationManager::MESSAGE_NOTIFICATIONS_TABLE, function (Blueprint $table) {
+        Schema::create(ConfigurationManager::MESSAGE_NOTIFICATIONS_TABLE, function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->bigInteger('message_id')->unsigned();
             $table->bigInteger('messageable_id')->unsigned();

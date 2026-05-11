@@ -6,26 +6,27 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Presenter\Presenter;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class PresenterController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function dashboard()
     {
         $presenters = Presenter::orderBy('created_at', 'desc')->get();
+
         return view('site.dashboard.presenters.index', ['presenters' => $presenters]);
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -34,13 +35,14 @@ class PresenterController extends Controller
         foreach ($presenters as $presenter) {
             $routes[] = route('presenter.show', ['presenter' => $presenter->slug]);
         }
+
         return view('site.pages.presenters.blog', ['presenters' => $presenters, 'routes' => $routes, 'title' => 'On Air Personalities']);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -50,16 +52,15 @@ class PresenterController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(Request $request)
     {
         $request->flash();
         $this->validate($request, [
-            'name'         => ['required', 'string', 'unique:presenters,name'],
-            'about'        => ['required', 'string'],
-            'cover_image'  => ['required', 'file', 'mimes:png,jpg,jpeg'],
+            'name' => ['required', 'string', 'unique:presenters,name'],
+            'about' => ['required', 'string'],
+            'cover_image' => ['required', 'file', 'mimes:png,jpg,jpeg'],
         ]);
         DB::beginTransaction();
         try {
@@ -67,39 +68,38 @@ class PresenterController extends Controller
             $presenter->name = $request->name;
             $presenter->save();
             $presenter->storeAbout($request->about);
-            $presenter->uploadImage($request->file('cover_image'), 'images/presenters/' . $presenter->slug);
+            $presenter->uploadImage($request->file('cover_image'), 'images/presenters/'.$presenter->slug);
         } catch (\Throwable $th) {
             DB::rollback();
             throw $th;
         }
         DB::commit();
         alert()->success('Presenter uploaded successfully!');
+
         return $this->dashboard();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Presenter\Presenter  $presenter
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(Presenter $presenter)
     {
         $helper = new Helper;
-        $title = "On Air Personality - " . $helper->uppercaseWords($presenter->name);
+        $title = 'On Air Personality - '.$helper->uppercaseWords($presenter->name);
 
-        $breadcrumb['category'] = "On Air Personality";
+        $breadcrumb['category'] = 'On Air Personality';
         $breadcrumb['title'] = $helper->uppercaseWords($presenter->name);
         $breadcrumb['route'] = route('presenter.index');
 
-        return view('site.pages.blog-details', ['blog' =>  $presenter, 'breadcrumb' =>  $breadcrumb, 'programmes' =>  $presenter->programmes, 'title' =>  $title]);
+        return view('site.pages.blog-details', ['blog' => $presenter, 'breadcrumb' => $breadcrumb, 'programmes' => $presenter->programmes, 'title' => $title]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Presenter\Presenter  $presenter
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(Presenter $presenter)
     {
@@ -109,17 +109,15 @@ class PresenterController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \App\Models\Presenter\Presenter $presenter
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, Presenter $presenter)
     {
         $request->flash();
         $this->validate($request, [
-            'name'  => ['required', 'string'],
+            'name' => ['required', 'string'],
             'about' => ['required', 'string'],
-            'cover_image' => ['file', 'mimes:png,jpg,jpeg']
+            'cover_image' => ['file', 'mimes:png,jpg,jpeg'],
         ]);
         DB::beginTransaction();
         try {
@@ -135,14 +133,14 @@ class PresenterController extends Controller
         }
         DB::commit();
         alert()->success('Presenter uploaded successfully!');
+
         return $this->dashboard();
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Presenter\Presenter  $presenter
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Presenter $presenter)
     {
@@ -157,6 +155,7 @@ class PresenterController extends Controller
         }
         DB::commit();
         alert()->success('Presenter deleted successfully!');
+
         return $this->dashboard();
     }
 }

@@ -2,92 +2,91 @@
 
 namespace App\Helpers\Stringizer;
 
-use App\Helpers\Stringizer\Transformers\Concat;
-use App\Helpers\Stringizer\Transformers\Lowercase;
-use App\Helpers\Stringizer\Transformers\Uppercase;
-use App\Helpers\Stringizer\Transformers\UppercaseFirst;
-use App\Helpers\Stringizer\Transformers\UppercaseWords;
-use App\Helpers\Stringizer\Transformers\LowercaseFirst;
-use App\Helpers\Stringizer\Transformers\Trim;
-use App\Helpers\Stringizer\Transformers\TrimLeft;
-use App\Helpers\Stringizer\Transformers\TrimRight;
-use App\Helpers\Stringizer\Transformers\Length;
-use App\Helpers\Stringizer\Transformers\Width;
-use App\Helpers\Stringizer\Transformers\SubString;
-use App\Helpers\Stringizer\Transformers\Reverse;
-use App\Helpers\Stringizer\Transformers\StartsWith;
-use App\Helpers\Stringizer\Transformers\EndsWith;
-use App\Helpers\Stringizer\Transformers\HashCode;
-use App\Helpers\Stringizer\Transformers\Truncate;
-use App\Helpers\Stringizer\Transformers\TruncateMatch;
-use App\Helpers\Stringizer\Transformers\IndexOf;
-use App\Helpers\Stringizer\Transformers\LastIndexOf;
-use App\Helpers\Stringizer\Transformers\Split;
-use App\Helpers\Stringizer\Transformers\Replace;
-use App\Helpers\Stringizer\Transformers\Pad;
-use App\Helpers\Stringizer\Transformers\RemoveNonAscii;
-use App\Helpers\Stringizer\Transformers\ReplaceAccents;
-use App\Helpers\Stringizer\Transformers\Camelize;
-use App\Helpers\Stringizer\Transformers\RemoveWhitespace;
-use App\Helpers\Stringizer\Transformers\Contains;
-use App\Helpers\Stringizer\Transformers\SubStringCount;
-use App\Helpers\Stringizer\Transformers\Dasherize;
-use App\Helpers\Stringizer\Transformers\StripTags;
-use App\Helpers\Stringizer\Transformers\EnsureLeft;
-use App\Helpers\Stringizer\Transformers\EnsureRight;
-use App\Helpers\Stringizer\Transformers\EmptyCheck;
-use App\Helpers\Stringizer\Transformers\StripPunctuation;
 use App\Helpers\Stringizer\Transformers\Alpha;
 use App\Helpers\Stringizer\Transformers\AlphaNumeric;
 use App\Helpers\Stringizer\Transformers\AlphaNumericSpace;
 use App\Helpers\Stringizer\Transformers\AlphaNumericSpaceDash;
-use App\Helpers\Stringizer\Transformers\Email;
-use App\Helpers\Stringizer\Transformers\Number;
-use App\Helpers\Stringizer\Transformers\Date;
-use App\Helpers\Stringizer\Transformers\Decimal;
-use App\Helpers\Stringizer\Transformers\Ipv4;
-use App\Helpers\Stringizer\Transformers\Ipv6;
-use App\Helpers\Stringizer\Transformers\HexDecimal;
-use App\Helpers\Stringizer\Transformers\LowercaseCheck;
-use App\Helpers\Stringizer\Transformers\UppercaseCheck;
-use App\Helpers\Stringizer\Transformers\Random;
-use App\Helpers\Stringizer\Transformers\WordCount;
-use App\Helpers\Stringizer\Transformers\SentenceCount;
-use App\Helpers\Stringizer\Transformers\Url;
-use App\Helpers\Stringizer\Transformers\Chars;
-use App\Helpers\Stringizer\Transformers\CollapseWhitespace;
-use App\Helpers\Stringizer\Transformers\Base64Check;
+use App\Helpers\Stringizer\Transformers\Ascii;
 use App\Helpers\Stringizer\Transformers\Base64;
+use App\Helpers\Stringizer\Transformers\Base64Check;
 use App\Helpers\Stringizer\Transformers\Between;
+use App\Helpers\Stringizer\Transformers\BooleanConverter;
+use App\Helpers\Stringizer\Transformers\Camelize;
 use App\Helpers\Stringizer\Transformers\CamelToSnake;
+use App\Helpers\Stringizer\Transformers\Chars;
 use App\Helpers\Stringizer\Transformers\ChopLeft;
 use App\Helpers\Stringizer\Transformers\ChopRight;
-use App\Helpers\Stringizer\Transformers\BooleanConverter;
-use App\Helpers\Stringizer\Transformers\Repeat;
-use App\Helpers\Stringizer\Transformers\SwapCase;
-use App\Helpers\Stringizer\Transformers\Join;
-use App\Helpers\Stringizer\Transformers\HexColor;
-use App\Helpers\Stringizer\Transformers\RgbColor;
-use App\Helpers\Stringizer\Transformers\MultiByte;
-use App\Helpers\Stringizer\Transformers\Semver;
-use App\Helpers\Stringizer\Transformers\Ascii;
-use App\Helpers\Stringizer\Transformers\Latitude;
-use App\Helpers\Stringizer\Transformers\Longitude;
-use App\Helpers\Stringizer\Transformers\Json;
-use App\Helpers\Stringizer\Transformers\Isbn;
+use App\Helpers\Stringizer\Transformers\CollapseWhitespace;
+use App\Helpers\Stringizer\Transformers\Concat;
+use App\Helpers\Stringizer\Transformers\Contains;
+use App\Helpers\Stringizer\Transformers\Dasherize;
+use App\Helpers\Stringizer\Transformers\Date;
+use App\Helpers\Stringizer\Transformers\Decimal;
+use App\Helpers\Stringizer\Transformers\Email;
+use App\Helpers\Stringizer\Transformers\EmptyCheck;
+use App\Helpers\Stringizer\Transformers\EndsWith;
+use App\Helpers\Stringizer\Transformers\EnsureLeft;
+use App\Helpers\Stringizer\Transformers\EnsureRight;
 use App\Helpers\Stringizer\Transformers\Hash;
-
+use App\Helpers\Stringizer\Transformers\HashCode;
+use App\Helpers\Stringizer\Transformers\HexColor;
+use App\Helpers\Stringizer\Transformers\HexDecimal;
+use App\Helpers\Stringizer\Transformers\IndexOf;
+use App\Helpers\Stringizer\Transformers\Ipv4;
+use App\Helpers\Stringizer\Transformers\Ipv6;
+use App\Helpers\Stringizer\Transformers\Isbn;
+use App\Helpers\Stringizer\Transformers\Join;
+use App\Helpers\Stringizer\Transformers\Json;
+use App\Helpers\Stringizer\Transformers\LastIndexOf;
+use App\Helpers\Stringizer\Transformers\Latitude;
+use App\Helpers\Stringizer\Transformers\Length;
+use App\Helpers\Stringizer\Transformers\Longitude;
+use App\Helpers\Stringizer\Transformers\Lowercase;
+use App\Helpers\Stringizer\Transformers\LowercaseCheck;
+use App\Helpers\Stringizer\Transformers\LowercaseFirst;
+use App\Helpers\Stringizer\Transformers\MultiByte;
+use App\Helpers\Stringizer\Transformers\Number;
+use App\Helpers\Stringizer\Transformers\Pad;
+use App\Helpers\Stringizer\Transformers\Random;
+use App\Helpers\Stringizer\Transformers\RemoveNonAscii;
+use App\Helpers\Stringizer\Transformers\RemoveWhitespace;
+use App\Helpers\Stringizer\Transformers\Repeat;
+use App\Helpers\Stringizer\Transformers\Replace;
+use App\Helpers\Stringizer\Transformers\ReplaceAccents;
+use App\Helpers\Stringizer\Transformers\Reverse;
+use App\Helpers\Stringizer\Transformers\RgbColor;
+use App\Helpers\Stringizer\Transformers\Semver;
+use App\Helpers\Stringizer\Transformers\SentenceCount;
+use App\Helpers\Stringizer\Transformers\Split;
+use App\Helpers\Stringizer\Transformers\StartsWith;
+use App\Helpers\Stringizer\Transformers\StripPunctuation;
+use App\Helpers\Stringizer\Transformers\StripTags;
+use App\Helpers\Stringizer\Transformers\SubString;
+use App\Helpers\Stringizer\Transformers\SubStringCount;
+use App\Helpers\Stringizer\Transformers\SwapCase;
+use App\Helpers\Stringizer\Transformers\Trim;
+use App\Helpers\Stringizer\Transformers\TrimLeft;
+use App\Helpers\Stringizer\Transformers\TrimRight;
+use App\Helpers\Stringizer\Transformers\Truncate;
+use App\Helpers\Stringizer\Transformers\TruncateMatch;
+use App\Helpers\Stringizer\Transformers\Uppercase;
+use App\Helpers\Stringizer\Transformers\UppercaseCheck;
+use App\Helpers\Stringizer\Transformers\UppercaseFirst;
+use App\Helpers\Stringizer\Transformers\UppercaseWords;
+use App\Helpers\Stringizer\Transformers\Url;
+use App\Helpers\Stringizer\Transformers\Width;
+use App\Helpers\Stringizer\Transformers\WordCount;
 
 /**
  * Stringizer
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2016 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE (MIT License)
  */
-class Stringizer
+class Stringizer implements \Stringable
 {
-
     /**
      * String that is manipulated / transformed
      *
@@ -112,8 +111,8 @@ class Stringizer
     /**
      * Constructor
      *
-     * @param string $stringValue
-     * @param string $stringEncoding
+     * @param  string  $stringValue
+     * @param  string  $stringEncoding
      *
      * @throws \InvalidArgumentException
      */
@@ -121,8 +120,9 @@ class Stringizer
     {
         $this->setString($stringValue);
 
-        if (empty($encoding))
+        if (empty($encoding)) {
             $encoding = \mb_internal_encoding();
+        }
 
         $this->setEncoding($encoding);
     }
@@ -130,30 +130,35 @@ class Stringizer
     public function base64Encode()
     {
         $this->value = (new Base64($this->value))->execute();
+
         return $this;
     }
 
     public function base64Decode()
     {
         $this->value = (new Base64($this->value, true))->execute();
+
         return $this;
     }
 
     public function camelize()
     {
         $this->value = (new Camelize($this->value))->execute();
+
         return $this;
     }
 
     public function camelToSnake()
     {
         $this->value = (new CamelToSnake($this->value))->execute();
+
         return $this;
     }
 
     public function charAt($index)
     {
         $this->value = (new SubString($this->value, $index, 1))->execute();
+
         return $this;
     }
 
@@ -168,6 +173,7 @@ class Stringizer
     public function chompLeft($prefix)
     {
         $this->value = (new ChopLeft($this->value, $prefix))->execute();
+
         return $this;
     }
 
@@ -177,35 +183,37 @@ class Stringizer
     public function chompRight($prefix)
     {
         $this->value = (new ChopRight($this->value, $prefix))->execute();
+
         return $this;
     }
 
     public function chopLeft($prefix)
     {
         $this->value = (new ChopLeft($this->value, $prefix))->execute();
+
         return $this;
     }
 
     public function chopRight($prefix)
     {
         $this->value = (new ChopRight($this->value, $prefix))->execute();
+
         return $this;
     }
 
     public function collapseWhitespace()
     {
         $this->value = (new CollapseWhitespace($this->value))->execute();
+
         return $this;
     }
 
     /**
      * Append 2 String values
      *
-     * @param string $value
-     *
-     * @param string $preAppend
-     *            flag when true to prepend value
-     *
+     * @param  string  $value
+     * @param  string  $preAppend
+     *                             flag when true to prepend value
      * @return \Stringizer\Stringizer
      */
     public function concat($value, $preAppend = false)
@@ -213,12 +221,14 @@ class Stringizer
         $transformer = new Concat($this->value, $value);
         $transformer->setPreAppend($preAppend);
         $this->value = $transformer->execute();
+
         return $this;
     }
 
     public function between($left, $right)
     {
         $this->value = (new Between($this->value, $left, $right))->execute();
+
         return $this;
     }
 
@@ -245,6 +255,7 @@ class Stringizer
     public function dasherize()
     {
         $this->value = (new Dasherize($this->value))->execute();
+
         return $this;
     }
 
@@ -256,24 +267,28 @@ class Stringizer
     public function ensureLeft($prefix)
     {
         $this->value = (new EnsureLeft($this->value, $prefix))->execute();
+
         return $this;
     }
 
     public function ensureRight($suffix)
     {
         $this->value = (new EnsureRight($this->value, $suffix))->execute();
+
         return $this;
     }
 
     public function first($numberOfCharacters)
     {
         $this->value = (new SubString($this->value, 0, $numberOfCharacters))->execute();
+
         return $this;
     }
 
     public function hashCode()
     {
         $this->value = (string) (new HashCode($this->value))->execute();
+
         return $this;
     }
 
@@ -379,6 +394,7 @@ class Stringizer
     {
         $isbn = new Isbn($this->value);
         $isbn->checkIsbn13();
+
         return $isbn->execute();
     }
 
@@ -432,15 +448,17 @@ class Stringizer
         return (new Url($this->value, $santize))->execute();
     }
 
-    public function join($values, $separator = ",")
+    public function join($values, $separator = ',')
     {
         $this->value = (new Join($values, $separator))->execute();
+
         return $this;
     }
 
     public function last($numberOfCharacters)
     {
         $this->value = (new SubString($this->value, ($this->length() - $numberOfCharacters)))->execute();
+
         return $this;
     }
 
@@ -477,93 +495,108 @@ class Stringizer
     public function lowercase()
     {
         $this->value = (new Lowercase($this->value))->execute();
+
         return $this;
     }
 
     public function lowercaseFirst($ignoreUppercaseFirst = false)
     {
-        if (!$ignoreUppercaseFirst) {
+        if (! $ignoreUppercaseFirst) {
             $this->value = (new Uppercase($this->value))->execute();
         }
         $this->value = (new LowercaseFirst($this->value))->execute();
+
         return $this;
     }
 
     public function padBoth($padValue, $padAmount)
     {
         $this->value = (new Pad($this->value, $padValue, $padAmount, STR_PAD_BOTH))->execute();
+
         return $this;
     }
 
     public function padLeft($padValue, $padAmount)
     {
         $this->value = (new Pad($this->value, $padValue, $padAmount, STR_PAD_LEFT))->execute();
+
         return $this;
     }
 
     public function padRight($padValue, $padAmount)
     {
         $this->value = (new Pad($this->value, $padValue, $padAmount, STR_PAD_RIGHT))->execute();
+
         return $this;
     }
 
     public function randomAlpha($length = 10)
     {
         $this->value = (new Random(Random::$RANDOM_ALPHA, $length))->execute();
+
         return $this;
     }
 
     public function randomNumeric($length = 10)
     {
         $this->value = (new Random(Random::$RANDOM_NUMERIC, $length))->execute();
+
         return $this;
     }
 
     public function randomAlphanumeric($length = 10)
     {
         $this->value = (new Random(Random::$RANDOM_ALPHA_NUMERIC, $length))->execute();
+
         return $this;
     }
 
     public function repeat($repeatNumber)
     {
         $this->value = (new Repeat($this->value, $repeatNumber))->execute();
+
         return $this;
     }
 
     public function replace($needles, $replacements)
     {
         $this->value = (new Replace($this->value, $needles, $replacements))->execute();
+
         return $this;
     }
 
     public function replaceIncaseSensitive($needles, $replacements)
     {
         $this->value = (new Replace($this->value, $needles, $replacements))->enableCaseInsensitive()->execute();
+
         return $this;
     }
 
     public function replaceAccents()
     {
         $this->value = (new ReplaceAccents($this->value))->execute();
+
         return $this;
     }
 
     public function removeNonAscii()
     {
         $this->value = (new RemoveNonAscii($this->value))->execute();
+
         return $this;
     }
 
     public function removeWhitespace()
     {
         $this->value = (new RemoveWhitespace($this->value))->execute();
+
         return $this;
     }
 
     public function reverse()
     {
         $this->value = (new Reverse($this->value))->execute();
+
         return $this;
     }
 
@@ -580,16 +613,18 @@ class Stringizer
     public function stripPunctuation()
     {
         $this->value = (new StripPunctuation($this->value))->execute();
+
         return $this;
     }
 
     public function stripTags($allowableTags = '')
     {
         $this->value = (new StripTags($this->value, $allowableTags))->execute();
+
         return $this;
     }
 
-    public function split($delimiter = ",")
+    public function split($delimiter = ',')
     {
         return (new Split($this->value, $delimiter))->execute();
     }
@@ -597,12 +632,14 @@ class Stringizer
     public function subString($start, $length = null)
     {
         $this->value = (new SubString($this->value, $start, $length))->execute();
+
         return $this;
     }
 
     public function swapCase()
     {
         $this->value = (new SwapCase($this->value))->execute();
+
         return $this;
     }
 
@@ -614,54 +651,59 @@ class Stringizer
     public function trim()
     {
         $this->value = (new Trim($this->value))->execute();
+
         return $this;
     }
 
     public function trimRight()
     {
         $this->value = (new TrimRight($this->value))->execute();
+
         return $this;
     }
 
     public function trimLeft()
     {
         $this->value = (new TrimLeft($this->value))->execute();
+
         return $this;
     }
 
     /**
      * Truncate remove the number of indicated values at the end of the string
      *
-     * @param int $numberToTruncate
+     * @param  int  $numberToTruncate
+     * @return \Stringizer\Stringizer
      *
      * @throws \InvalidArgumentException
-     *
-     * @return \Stringizer\Stringizer
      */
     public function truncate($numberToTruncate)
     {
         $this->value = (new Truncate($this->value, $numberToTruncate))->execute();
+
         return $this;
     }
 
     public function truncateMatch($stringToMatch, $truncateBefore = false)
     {
-        $result = (new TruncateMatch($this->value, $stringToMatch, !$truncateBefore))->execute();
-        if ($result === FALSE) {
+        $result = (new TruncateMatch($this->value, $stringToMatch, ! $truncateBefore))->execute();
+        if ($result === false) {
             return $result;
         } else {
             $this->value = $result;
+
             return $this;
         }
     }
 
     public function truncateMatchCaseInsensitive($stringToMatch, $truncateBefore = false)
     {
-        $result = (new TruncateMatch($this->value, $stringToMatch, !$truncateBefore))->enableCaseInsensitive()->execute();
-        if ($result === FALSE) {
+        $result = (new TruncateMatch($this->value, $stringToMatch, ! $truncateBefore))->enableCaseInsensitive()->execute();
+        if ($result === false) {
             return $result;
         } else {
             $this->value = $result;
+
             return $this;
         }
     }
@@ -669,21 +711,24 @@ class Stringizer
     public function uppercase()
     {
         $this->value = (new Uppercase($this->value))->execute();
+
         return $this;
     }
 
     public function uppercaseWords()
     {
         $this->value = (new UppercaseWords((new Lowercase($this->value))->execute()))->execute();
+
         return $this;
     }
 
     public function uppercaseFirst($ignoreLowercaseFirst = false)
     {
-        if (!$ignoreLowercaseFirst) {
+        if (! $ignoreLowercaseFirst) {
             $this->value = (new Lowercase($this->value))->execute();
         }
         $this->value = (new UppercaseFirst($this->value))->execute();
+
         return $this;
     }
 
@@ -699,8 +744,9 @@ class Stringizer
 
     public function setEncoding($encoding)
     {
-        if (!isset($encoding))
-            throw new \Exception("Given encoding value not valid");
+        if (! isset($encoding)) {
+            throw new \Exception('Given encoding value not valid');
+        }
 
         $this->encoding = $encoding;
 
@@ -720,12 +766,12 @@ class Stringizer
     public function setString($stringValue)
     {
 
-        if (!isset($stringValue)) {
-            throw new \InvalidArgumentException("Given value is null not a string");
+        if (! isset($stringValue)) {
+            throw new \InvalidArgumentException('Given value is null not a string');
         } elseif (is_array($stringValue)) {
-            throw new \InvalidArgumentException("Given value is an array not a string");
-        } elseif (is_object($stringValue) && !method_exists($stringValue, "__toString")) {
-            throw new \InvalidArgumentException("Given object does not have a __toString method");
+            throw new \InvalidArgumentException('Given value is an array not a string');
+        } elseif (is_object($stringValue) && ! method_exists($stringValue, '__toString')) {
+            throw new \InvalidArgumentException('Given object does not have a __toString method');
         }
 
         $this->value = (string) $stringValue;
@@ -738,7 +784,7 @@ class Stringizer
         return $this->__toString();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->value;
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers\Stringizer\Transformers;
 
 /**
@@ -7,19 +8,15 @@ namespace App\Helpers\Stringizer\Transformers;
  * Note this multibyte safe see http://www.php.net/explode
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2016 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE.md (MIT License)
  */
 class Split extends Transformer implements TransformerInterface
 {
-
-    private $delimiter;
-
-    public function __construct($value, $delimiter)
+    public function __construct($value, private $delimiter)
     {
         parent::__construct($value);
-
-        $this->delimiter = $delimiter;
     }
 
     /**

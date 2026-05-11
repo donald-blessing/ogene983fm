@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Traits;
 
 use App\Helpers\Helper;
@@ -11,7 +13,6 @@ trait downloadFile
     /**
      * download the file
      *
-     * @param string $file
      * @return void
      */
     public function downloadFile(string $file)
@@ -21,18 +22,19 @@ trait downloadFile
         $headers = [
             'Content-Type' => Storage::mimeType($file),
         ];
-        return response()->download($file, Str::random(20) . '.' . $helper->getFileExtension($file), $headers);
+
+        return response()->download($file, Str::random(20).'.'.$helper->getFileExtension($file), $headers);
     }
 
     /**
      * get file URL
      *
-     * @param string $file
      * @return void
      */
     public function getFileUrl(string $file)
     {
         $file = public_path($file);
-        return  Storage::url($file);
+
+        return Storage::url($file);
     }
 }

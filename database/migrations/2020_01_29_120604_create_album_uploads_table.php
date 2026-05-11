@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +15,7 @@ class CreateAlbumUploadsTable extends Migration
      */
     public function up()
     {
-        Schema::create('album_uploads', function (Blueprint $table) {
+        Schema::create('album_uploads', function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('album_id')->index();
             $table->string('title');

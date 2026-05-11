@@ -7,27 +7,24 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Trait AboutTrait
- * @package App\Traits
  */
 trait AboutTrait
 {
-
     /**
      * Undocumented function
      *
-     * @param string $description //description
-     *
+     * @param  string  $description  //description
      * @return mixed
      */
     public function storeAbout(string $description)
     {
-        DB::transaction(function () use ($description) {
+        DB::transaction(function () use ($description): void {
             $success = false;
             if ($this->about) {
                 $this->description()->update(['body' => $description]);
                 $success = true;
             }
-            if (!$success) {
+            if (! $success) {
                 $describe = new Description;
                 $describe->body = $description;
                 $this->description()->save($describe);
@@ -44,9 +41,10 @@ trait AboutTrait
      */
     public function deleteAbout()
     {
-        DB::transaction(function () {
+        DB::transaction(function (): void {
             $this->description()->delete();
         });
+
         return $this;
     }
 

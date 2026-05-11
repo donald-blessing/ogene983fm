@@ -5,8 +5,9 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegistrationFormRequest;
 use App\Models\Registration\Registration;
-use App\Traits\ControllerTrait;
 use App\Models\User;
+use App\Traits\ControllerTrait;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class UserRegistrationController extends Controller
@@ -16,21 +17,19 @@ class UserRegistrationController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create(User $user)
     {
         $view = view('site.dashboard.user.registration.create', ['user' => $user->slug])->render();
+
         return response()->json(['modal' => $view], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\RegistrationFormRequest $request
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(RegistrationFormRequest $request, User $user)
     {
@@ -46,32 +45,31 @@ class UserRegistrationController extends Controller
             ]);
         } catch (\Throwable $th) {
             DB::rollback();
+
             return response()->json(['message' => $th->getMessage()], 200);
         }
         DB::commit();
         $message = 'Registration was updated successfully';
+
         return response()->json(['message' => $message], 200);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\User $user
-     * @param \App\Models\Registration\Registration $registration
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(User $user, Registration $registration)
     {
         $view = view('site.dashboard.user.registration.edit', ['user' => $user, 'registration' => $registration])->render();
+
         return response()->json(['modal' => $view], 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\RegistrationFormRequest $request
-     * @param \App\Models\Registration\Registration $registration
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(RegistrationFormRequest $request, Registration $registration)
     {
@@ -90,14 +88,14 @@ class UserRegistrationController extends Controller
         }
         DB::commit();
         session()->flash('success', 'Registration was updated successfully');
+
         return back();
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Registration\Registration $registration
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Registration $registration)
     {
@@ -112,6 +110,7 @@ class UserRegistrationController extends Controller
         }
         DB::commit();
         session()->flash('success', 'Registration was deleted successfully!');
+
         return back();
     }
 }

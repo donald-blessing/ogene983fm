@@ -2,12 +2,17 @@
 
 namespace App\Models\Presenter;
 
+use App\Models\Description\Description;
+use App\Models\Image\Image;
 use App\Models\Programme\Programme;
+use App\Models\Tag\Tag;
 use App\Traits\AboutTrait;
 use App\Traits\Taggable;
 use App\Traits\UploadImage;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\HasSlug;
@@ -16,31 +21,35 @@ use Spatie\Sluggable\SlugOptions;
 /**
  * App\Models\Presenter\Presenter
  *
- * @property-read \App\Models\Description\Description|null $description
+ * @property-read Description|null $description
  * @property-read mixed $about
  * @property-read mixed $content
  * @property-read mixed $cover_image
  * @property-read mixed $excerpt
  * @property-read mixed $summary
- * @property-read \App\Models\Image\Image|null $image
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Programme\Programme[] $programmes
+ * @property-read Image|null $image
+ * @property-read Collection|Programme[] $programmes
  * @property-read int|null $programmes_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag\Tag[] $tags
+ * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Presenter\Presenter newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Presenter\Presenter newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Presenter\Presenter query()
- * @mixin \Eloquent
+ *
  * @property int $id
  * @property string $name
  * @property string $slug
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Presenter\Presenter whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Presenter\Presenter whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Presenter\Presenter whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Presenter\Presenter whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Presenter\Presenter whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class Presenter extends Model implements Searchable
 {
@@ -74,13 +83,12 @@ class Presenter extends Model implements Searchable
 
     /**
      * Get search result
-     *
-     * @return \Spatie\Searchable\SearchResult
      */
     public function getSearchResult(): SearchResult
     {
         $url = route('presenter.show', $this->slug);
-        return new \Spatie\Searchable\SearchResult(
+
+        return new SearchResult(
             $this,
             $this->id,
             $url
@@ -89,8 +97,6 @@ class Presenter extends Model implements Searchable
 
     /**
      * Get programmes
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function programmes(): BelongsToMany
     {
@@ -102,9 +108,6 @@ class Presenter extends Model implements Searchable
         return $this->about;
     }
 
-    /**
-     * @return string
-     */
     public function url(): string
     {
         return route('post.show', $this->slug);

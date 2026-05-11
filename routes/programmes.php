@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Programme\ProgrammeController;
 use App\Http\Controllers\Programme\ProgrammeTimeController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function () {
-    Route::group(['prefix' => 'programmes'], function () {
+Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function (): void {
+    Route::group(['prefix' => 'programmes'], function (): void {
         Route::get('/', [ProgrammeController::class, 'dashboard'])->name('programme.dashboard');
         Route::get('/create', [ProgrammeController::class, 'create'])->name('programme.create');
         Route::post('/store', [ProgrammeController::class, 'store'])->name('programme.store');
@@ -19,7 +21,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], funct
         Route::delete('/schedule/{programme}/{programmeTime}/delete', [ProgrammeTimeController::class, 'destroy'])->name('programme.time.delete');
     });
 });
-Route::group(['prefix' => 'programmes'], function () {
+Route::group(['prefix' => 'programmes'], function (): void {
     Route::get('/', [ProgrammeController::class, 'index'])->name('programme.index');
     Route::get('/{programme}', [ProgrammeController::class, 'show'])->name('programme.show');
 });

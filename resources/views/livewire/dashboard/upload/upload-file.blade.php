@@ -101,13 +101,13 @@
 
             <div class="container">
                 @include('errors.list')
-                <form wire:submit.prevent="uploadFile" method="POST" enctype="multipart/form-data">
+                <form wire:submit="uploadFile" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <div class="form-group row">
                         <div class="col-md-12">
                             <label for="exampleInputTitle">Title</label>
-                            <input name="title" class="form-control" id="exampleInputTitle" type="text" placeholder="Enter title" wire:model.lazy="title">
+                            <input name="title" class="form-control" id="exampleInputTitle" type="text" placeholder="Enter title" wire:model.blur="title">
                             @error('title')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -167,7 +167,7 @@
 
                         <div class="col-md-8">
                             <label class="control-label">Select file to upload</label>
-                            <input class="form-control" type="file" wire:model.lazy='upload' id="upload{{ $iteration }}">
+                            <input class="form-control" type="file" wire:model.blur='upload' id="upload{{ $iteration }}">
                             @error('upload')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -179,7 +179,7 @@
                     <div class="form-group row">
                         <div class="col-md-12">
                             <label for="description">Description</label>
-                            <textarea wire:model.lazy="description" class="form-control" id="description" rows="3" style="resize:none;"></textarea>
+                            <textarea wire:model.blur="description" class="form-control" id="description" rows="3" style="resize:none;"></textarea>
                             @error('description')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>

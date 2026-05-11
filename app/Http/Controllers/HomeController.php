@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category\Category;
 use App\Models\Gallery\Album;
 use App\Models\Post\Post;
 use App\Models\Programme\Programme;
 use App\Models\SongOfTheWeek\SongOfTheWeek;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\Support\Renderable;
 
 class HomeController extends Controller
 {
     /**
      * Create a new controller instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -25,7 +22,7 @@ class HomeController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return Renderable
      */
     public function dashboard()
     {
@@ -35,7 +32,7 @@ class HomeController extends Controller
     /**
      * Show the application index.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return Renderable
      */
     public function index()
     {
@@ -43,18 +40,19 @@ class HomeController extends Controller
         $songOfTheWeek = SongOfTheWeek::currentSong()->first();
         $albums = Album::orderBy('updated_at', 'desc')->take(6)->get();
         $programmes = Programme::with(['description', 'image', 'programmeTimes'])->get();
+
         return view('site.pages.index', [
-            'albums'        => $albums,
-            'posts'         => $posts,
-            'programmes'    => $programmes,
-            'songOfTheWeek' => $songOfTheWeek
+            'albums' => $albums,
+            'posts' => $posts,
+            'programmes' => $programmes,
+            'songOfTheWeek' => $songOfTheWeek,
         ]);
     }
 
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return Renderable
      */
     public function about()
     {
@@ -64,7 +62,7 @@ class HomeController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return Renderable
      */
     public function contact()
     {

@@ -2,11 +2,16 @@
 
 namespace App\Models\Gallery;
 
+use App\Models\Description\Description;
+use App\Models\Image\Image;
 use App\Traits\AboutTrait;
 use App\Traits\UploadImage;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Laravelista\Comments\Comment;
 use Laravelista\Comments\Commentable;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
@@ -16,39 +21,43 @@ use Spatie\Sluggable\SlugOptions;
 /**
  * App\Models\Gallery\AlbumUpload
  *
- * @property-read \App\Models\Gallery\Album $album
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravelista\Comments\Comment[] $approvedComments
+ * @property-read Album $album
+ * @property-read Collection|Comment[] $approvedComments
  * @property-read int|null $approved_comments_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravelista\Comments\Comment[] $comments
+ * @property-read Collection|Comment[] $comments
  * @property-read int|null $comments_count
- * @property-read \App\Models\Description\Description|null $description
+ * @property-read Description|null $description
  * @property-read mixed $about
  * @property-read mixed $cover_image
  * @property-read mixed $excerpt
  * @property-read mixed $item
  * @property-read mixed $summary
- * @property-read \App\Models\Image\Image|null $image
+ * @property-read Image|null $image
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload query()
- * @mixin \Eloquent
+ *
  * @property int $id
  * @property int $album_id
  * @property string $title
  * @property string $slug
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereAlbumId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereUpdatedAt($value)
+ *
+ * @mixin \Eloquent
  */
 class AlbumUpload extends Model implements Searchable
 {
-    use Commentable;
     use AboutTrait;
+    use Commentable;
     use HasSlug;
     use UploadImage;
 
@@ -61,9 +70,9 @@ class AlbumUpload extends Model implements Searchable
     protected static function boot()
     {
         parent::boot();
-        Album::deleting(function ($model) {
+        Album::deleting(function ($model): void {
             $albumUploads = $model->albumUploads;
-            foreach ($albumUploads as $key => $upload) {
+            foreach ($albumUploads as $upload) {
                 DB::beginTransaction();
                 try {
                     $upload->deleteAbout();
@@ -101,10 +110,9 @@ class AlbumUpload extends Model implements Searchable
 
     public function getSearchResult(): SearchResult
     {
-        return new \Spatie\Searchable\SearchResult(
+        return new SearchResult(
             $this,
-            $this->id,
-            null
+            $this->id
         );
     }
 
@@ -130,6 +138,6 @@ class AlbumUpload extends Model implements Searchable
 
     public function album()
     {
-        return $this->belongsTo('App\Models\Gallery\Album');
+        return $this->belongsTo(Album::class);
     }
 }

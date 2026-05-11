@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers\Stringizer\Transformers;
 
 /**
@@ -9,28 +10,20 @@ namespace App\Helpers\Stringizer\Transformers;
  * over written
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2016 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE.md (MIT License)
  */
 class Join extends Transformer implements TransformerInterface
 {
-    // use to hold array of values
-    private $arrayValues;
-
-    private $separator;
-
-    public function __construct($value, $separator = ",")
-    {
-        $this->arrayValues = $value;
-        $this->separator = $separator;
-    }
+    public function __construct(private $arrayValues, private $separator = ',') {}
 
     public function execute()
     {
         if (is_array($this->arrayValues)) {
             return implode($this->separator, $this->arrayValues);
         } else {
-            throw new \InvalidArgumentException("Value given is not an array");
+            throw new \InvalidArgumentException('Value given is not an array');
         }
     }
 }

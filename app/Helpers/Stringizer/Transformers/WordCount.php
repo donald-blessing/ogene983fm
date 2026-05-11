@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers\Stringizer\Transformers;
 
 use App\Helpers\Stringizer\Stringizer;
@@ -7,17 +8,12 @@ use App\Helpers\Stringizer\Stringizer;
  * WordCount - Counts the number of words inside the given value.
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2016 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE.md (MIT License)
  */
 class WordCount extends Transformer implements TransformerInterface
 {
-
-    public function __construct($value)
-    {
-        parent::__construct($value);
-    }
-
     public function execute()
     {
         if ((new Stringizer($this->getValue()))->trim()->length() == 0) {

@@ -13,18 +13,16 @@ trait SendEmail
 {
     private $mail;
 
-    //from address
+    // from address
     private $from;
+
     private $name;
 
     /**
      * Send email
      *
-     * @param mixed|\Illuminate\Support\Collection|Array|string $to
-     * @param string $subject
-     * @param string $body
-     * @param \Illuminate\Database\Eloquent\Collection|\Spatie\MediaLibrary\Models\Media[] $attachment
-     *
+     * @param  mixed|Collection|array|string  $to
+     * @param  \Illuminate\Database\Eloquent\Collection|\Spatie\MediaLibrary\Models\Media[]  $attachment
      * @return void
      */
     public function send($to, string $subject, string $body, $attachment = null)
@@ -33,7 +31,7 @@ trait SendEmail
         $totalSent = 0;
         try {
             if (is_string($to)) {
-                $to = strpos($to, ";") > -1 ? explode($to, ';') : array($to);
+                $to = strpos($to, ';') > -1 ? explode($to, ';') : [$to];
                 $tempTo = [];
                 foreach ($to as $row) {
                     $tempTo['email'] = $row;
@@ -47,71 +45,72 @@ trait SendEmail
 
             $mail = $this->getMail();
 
-            //Set who the message is to be sent from
+            // Set who the message is to be sent from
             $mail->setFrom($this->getFrom(), $this->getName());
 
-            //Set an alternative reply-to address
+            // Set an alternative reply-to address
             $mail->addReplyTo(
                 'info@pharmacytherapon.com',
                 'PharmacyTherapon'
             );
 
-            //Set the subject line
+            // Set the subject line
             $mail->Subject = $subject;
-            //Read an HTML message body from an external file, convert referenced images to embedded,
-            //and convert the HTML into a basic plain-text alternative body
+            // Read an HTML message body from an external file, convert referenced images to embedded,
+            // and convert the HTML into a basic plain-text alternative body
             $mail->msgHTML($body);
 
             foreach ($to as $row) {
                 try {
                     $mail->addAddress($row['email'], $row['name'] ?? null);
-                } catch (Exception $e) {
-                    $msg .= 'Invalid address skipped: ' . htmlspecialchars($row['email']) . '<br>';
+                } catch (Exception) {
+                    $msg .= 'Invalid address skipped: '.htmlspecialchars((string) $row['email']).'<br>';
+
                     continue;
                 }
-                //Attach file
-
+                // Attach file
 
                 if (request()->hasFile('attachment') && request()->file('attachment')->isValid()) {
-                    //Attach multiple files one by one
-                    foreach (request()->file('attachment') as $key => $file) {
+                    // Attach multiple files one by one
+                    foreach (request()->file('attachment') as $file) {
                         $uploadfile = $file->getRealPath();
                         $filename = $file->getClientOriginalName();
-                        if (!$mail->addAttachment($uploadfile, $filename)) {
-                            $msg .= 'Failed to attach file ' . $filename;
+                        if (! $mail->addAttachment($uploadfile, $filename)) {
+                            $msg .= 'Failed to attach file '.$filename;
                         }
                     }
                 } elseif ($attachment && $attachment instanceof Media) {
-                    foreach ($attachment as $key => $media) {
+                    foreach ($attachment as $media) {
                         $uploadfile = $media->getPath();
                         $filename = $media->file_name;
-                        if (!$mail->addAttachment($uploadfile, $filename)) {
-                            $msg .= 'Failed to attach file ' . $filename;
+                        if (! $mail->addAttachment($uploadfile, $filename)) {
+                            $msg .= 'Failed to attach file '.$filename;
                         }
                     }
                 }
 
                 try {
                     $mail->send();
-                    $msg .= 'Message sent to :' . htmlspecialchars($row['name']) . ' (' . htmlspecialchars($row['email']) . ')<br>';
+                    $msg .= 'Message sent to :'.htmlspecialchars((string) $row['name']).' ('.htmlspecialchars((string) $row['email']).')<br>';
                     $totalSent++;
-                } catch (Exception $e) {
-                    $msg .= 'Mailer Error (' . htmlspecialchars($row['email']) . ') ' . $mail->ErrorInfo . '<br>';
-                    //Reset the connection to abort sending this message
-                    //The loop will continue trying to send to the rest of the list
+                } catch (Exception) {
+                    $msg .= 'Mailer Error ('.htmlspecialchars((string) $row['email']).') '.$mail->ErrorInfo.'<br>';
+                    // Reset the connection to abort sending this message
+                    // The loop will continue trying to send to the rest of the list
                     $mail->getSMTPInstance()->reset();
                 }
-                //Clear all addresses and attachments for the next iteration
+                // Clear all addresses and attachments for the next iteration
                 $mail->clearAddresses();
                 $mail->clearAttachments();
             }
         } catch (Exception $th) {
-            return 'Caught a ' . get_class($th) . ': ' . $th->getMessage();
-        } catch (\Throwable $th) { //The leading slash means the Global PHP Exception class will be caught
-            return $th->getMessage(); //Boring error messages from anything else!
+            return 'Caught a '.$th::class.': '.$th->getMessage();
+        } catch (\Throwable $th) { // The leading slash means the Global PHP Exception class will be caught
+            return $th->getMessage(); // Boring error messages from anything else!
         }
         $numberOfEmailAddresses = count($to);
-        return "$totalSent of $numberOfEmailAddresses " . Str::plural('Email', $numberOfEmailAddresses) . ' sent!<br/>' . $msg;
+
+        return "$totalSent of $numberOfEmailAddresses ".Str::plural('Email', $numberOfEmailAddresses).' sent!<br/>'.$msg;
     }
 
     /**
@@ -125,7 +124,7 @@ trait SendEmail
     /**
      * Set the value of from address
      *
-     * @return  self
+     * @return self
      */
     public function setFrom($from, $name = null)
     {
@@ -133,6 +132,7 @@ trait SendEmail
         if ($name) {
             $this->setName($name);
         }
+
         return $this;
     }
 
@@ -147,21 +147,22 @@ trait SendEmail
     /**
      * Set the value of mail object
      *
-     * @return  self
+     * @return self
      */
     public function setMail($mail)
     {
         $this->mail = $mail;
-        //Server settings
+        // Server settings
         $this->mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
         $this->mail->isSMTP();                                            // Send using SMTP
-        $this->mail->Host       = 'smtp1.pharmacytherapon.com';                    // Set the SMTP server to send through
-        $this->mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-        $this->mail->Username   = 'user@example.com';                     // SMTP username
-        $this->mail->Password   = 'secret';                               // SMTP password
+        $this->mail->Host = 'smtp1.pharmacytherapon.com';                    // Set the SMTP server to send through
+        $this->mail->SMTPAuth = true;                                   // Enable SMTP authentication
+        $this->mail->Username = 'user@example.com';                     // SMTP username
+        $this->mail->Password = 'secret';                               // SMTP password
         $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-        $this->mail->Port       = 587;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+        $this->mail->Port = 587;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
         $this->mail->SMTPKeepAlive = true; // SMTP connection will not close after each email sent, reduces SMTP overhead
+
         return $this;
     }
 
@@ -176,7 +177,7 @@ trait SendEmail
     /**
      * Set the value of name
      *
-     * @return  self
+     * @return self
      */
     public function setName($name)
     {

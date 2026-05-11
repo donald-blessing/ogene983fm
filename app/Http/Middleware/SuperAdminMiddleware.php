@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\User;
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SuperAdminMiddleware
@@ -11,19 +12,16 @@ class SuperAdminMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  Request  $request
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
         $user = User::get();
-        if ($user) {
-            if (Auth::user()->isSuperAdmin === false) //If user does //not have this permission
-            {
-                abort('401');
-            }
+        if ($user && Auth::user()->isSuperAdmin === false) {
+            abort('401');
         }
+
         return $next($request);
     }
 }

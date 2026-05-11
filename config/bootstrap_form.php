@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -59,7 +61,7 @@ return [
     |
     */
 
-    // You can add an empty left column to checkboxes, radios and fields without 
+    // You can add an empty left column to checkboxes, radios and fields without
     // label to preserve fields alignment.
     // Set to false to disable this feature, or set the HTML class to add.
     'pull_right' => 'hidden-md-down col-lg-2 col-xl-3',
@@ -85,11 +87,11 @@ return [
     'lspace' => 'mr-2',
 
     // The horizontal blank space between form group.
-    // Set to false to disable this feature, or set the HTML class to add on form groups. 
+    // Set to false to disable this feature, or set the HTML class to add on form groups.
     'hspace' => 'mr-3',
 
     // The vertical blank space between form group.
-    // Set to false to disable this feature, or set the HTML class to add on form groups. 
+    // Set to false to disable this feature, or set the HTML class to add on form groups.
     'vspace' => 'my-1',
 
     /*

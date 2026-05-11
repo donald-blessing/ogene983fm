@@ -6,38 +6,42 @@ use App\Http\Controllers\Controller;
 use App\Models\SongOfTheWeek\SongOfTheWeek;
 use App\Traits\UploadAble;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SongOfTheWeekController extends Controller
 {
     use UploadAble;
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function dashboard()
     {
         $songsOfTheWeek = SongOfTheWeek::All();
+
         return view('site.dashboard.songOfTheWeek.index', ['songsOfTheWeek' => $songsOfTheWeek]);
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
         $songsOfTheWeek = SongOfTheWeek::All();
+
         return view('site.pages.songOfTheWeek.index', ['songsOfTheWeek' => $songsOfTheWeek]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -47,8 +51,7 @@ class SongOfTheWeekController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -69,7 +72,7 @@ class SongOfTheWeekController extends Controller
             $songOfTheWeek->artist = $request->artist;
             $songOfTheWeek->album = $request->album;
             $songOfTheWeek->album_art = $this->uploadFile($request->file('albumArt'), "uploads/song-of-the-week/$slug");
-            $songOfTheWeek->song = $this->uploadFile($request->file('song'), "uploads/song-of-the-week/$slug", $slug . "." . $request->file('song')->getClientOriginalExtension());
+            $songOfTheWeek->song = $this->uploadFile($request->file('song'), "uploads/song-of-the-week/$slug", $slug.'.'.$request->file('song')->getClientOriginalExtension());
             $songOfTheWeek->save();
             $songOfTheWeek->storeAbout($request->about);
         } catch (\Throwable $th) {
@@ -78,14 +81,14 @@ class SongOfTheWeekController extends Controller
         }
         DB::commit();
         alert()->success('The song was successfully uploaded!');
+
         return redirect()->route('songoftheweek.dashboard');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\SongOfTheWeek\SongOfTheWeek  $songOfTheWeek
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(SongOfTheWeek $songOfTheWeek)
     {
@@ -95,8 +98,7 @@ class SongOfTheWeekController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\SongOfTheWeek\SongOfTheWeek  $songOfTheWeek
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(SongOfTheWeek $songOfTheWeek)
     {
@@ -106,9 +108,7 @@ class SongOfTheWeekController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\SongOfTheWeek\SongOfTheWeek  $songOfTheWeek
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, SongOfTheWeek $songOfTheWeek)
     {
@@ -132,7 +132,7 @@ class SongOfTheWeekController extends Controller
                 $songOfTheWeek->album_art = $this->uploadFile($request->file('albumArt'), "uploads/song-of-the-week/$slug");
             }
             if ($request->hasFile('song')) {
-                $songOfTheWeek->song = $this->uploadFile($request->file('song'), "uploads/song-of-the-week/$slug", $slug . "." . $request->file('song')->getClientOriginalExtension());
+                $songOfTheWeek->song = $this->uploadFile($request->file('song'), "uploads/song-of-the-week/$slug", $slug.'.'.$request->file('song')->getClientOriginalExtension());
             }
             $songOfTheWeek->storeAbout($request->about);
             $songOfTheWeek->save();
@@ -142,14 +142,14 @@ class SongOfTheWeekController extends Controller
         }
         DB::commit();
         alert()->success('The song was successfully updated!');
+
         return redirect()->route('songoftheweek.dashboard');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\SongOfTheWeek\SongOfTheWeek  $songOfTheWeek
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(SongOfTheWeek $songOfTheWeek)
     {
@@ -157,7 +157,7 @@ class SongOfTheWeekController extends Controller
         try {
             $albumArt = $songOfTheWeek->album_art;
             $song = $songOfTheWeek->song;
-            //delete files
+            // delete files
             $this->deleteFile($albumArt);
             $this->deleteFile($song);
             $songOfTheWeek->deleteAbout();
@@ -168,6 +168,7 @@ class SongOfTheWeekController extends Controller
         }
         DB::commit();
         alert()->success('The song was successfully deleted!');
+
         return redirect()->route('songoftheweek.dashboard');
     }
 }

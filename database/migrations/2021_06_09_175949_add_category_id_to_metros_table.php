@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +15,7 @@ class AddCategoryIdToMetrosTable extends Migration
      */
     public function up()
     {
-        Schema::table('metros', function (Blueprint $table) {
+        Schema::table('metros', function (Blueprint $table): void {
             $table->unsignedBigInteger('category_id')->after('user_id')->nullable();
             $table->foreign('category_id')->references('id')->on('categories');
         });
@@ -26,7 +28,7 @@ class AddCategoryIdToMetrosTable extends Migration
      */
     public function down()
     {
-        Schema::table('metros', function (Blueprint $table) {
+        Schema::table('metros', function (Blueprint $table): void {
             $table->dropColumn('category_id');
         });
     }

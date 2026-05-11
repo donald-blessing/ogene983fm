@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -45,13 +47,13 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => $_SERVER["DOCUMENT_ROOT"] . "/media",
+            'root' => $_SERVER['DOCUMENT_ROOT'].'/media',
         ],
 
         'public' => [
             'driver' => 'local',
-            'root' => $_SERVER["DOCUMENT_ROOT"] . "/media",
-            'url' => env('APP_URL') . '/media',
+            'root' => $_SERVER['DOCUMENT_ROOT'].'/media',
+            'url' => env('APP_URL').'/media',
             'visibility' => 'public',
         ],
 

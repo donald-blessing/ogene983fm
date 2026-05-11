@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,8 @@ class AddAlbumArtToSongOfTheWeeksTable extends Migration
      */
     public function up()
     {
-        Schema::table('song_of_the_weeks', function (Blueprint $table) {
-            $table->string('album_art', 255);;
+        Schema::table('song_of_the_weeks', function (Blueprint $table): void {
+            $table->string('album_art', 255);
             $table->string('song', 255);
         });
     }
@@ -26,8 +28,8 @@ class AddAlbumArtToSongOfTheWeeksTable extends Migration
      */
     public function down()
     {
-        Schema::table('song_of_the_weeks', function (Blueprint $table) {
-            $table->dropColumn('album_art');;
+        Schema::table('song_of_the_weeks', function (Blueprint $table): void {
+            $table->dropColumn('album_art');
             $table->dropColumn('song');
         });
     }

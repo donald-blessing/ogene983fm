@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Traits\ControllerTrait;
 use App\Models\User;
+use App\Traits\ControllerTrait;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -16,8 +17,7 @@ class UserAvatarController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(User $user)
     {
@@ -27,9 +27,7 @@ class UserAvatarController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\User $user
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, User $user)
     {
@@ -45,7 +43,7 @@ class UserAvatarController extends Controller
             $user = User::findOrFail($user->id);
             $media = $user->getMedia('profile_image');
             if ($media) {
-                foreach ($media as $key => $item) {
+                foreach ($media as $item) {
                     $mediaItem = Media::findOrFail($item->id);
                     $mediaItem->delete();
                 }
@@ -57,6 +55,7 @@ class UserAvatarController extends Controller
         }
         DB::commit();
         session()->flash('success', 'Profile image was updated successfully');
+
         return redirect()->route('user.myProfile', ['user' => $user->slug]);
     }
 }

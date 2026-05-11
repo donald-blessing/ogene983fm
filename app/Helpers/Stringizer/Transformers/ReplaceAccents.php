@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers\Stringizer\Transformers;
 
 use Cocur\Slugify\Slugify;
@@ -9,13 +10,12 @@ use Cocur\Slugify\Slugify;
  * Wrapper for cocur/slugify, see https://github.com/cocur/slugify
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2016 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE.md (MIT License)
- *
  */
 class ReplaceAccents extends Transformer implements TransformerInterface
 {
-
     private $slugify;
 
     public function __construct($value)
@@ -23,7 +23,7 @@ class ReplaceAccents extends Transformer implements TransformerInterface
         parent::__construct($value);
 
         $this->slugify = new Slugify([
-            'lowercase' => false
+            'lowercase' => false,
         ]);
     }
 
@@ -32,6 +32,6 @@ class ReplaceAccents extends Transformer implements TransformerInterface
      */
     public function execute()
     {
-        return $this->slugify->slugify($this->getValue(), " ");
+        return $this->slugify->slugify($this->getValue(), ' ');
     }
 }

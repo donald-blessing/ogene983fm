@@ -33,8 +33,6 @@ class RegisterController extends Controller
 
     /**
      * Create a new controller instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -44,15 +42,14 @@ class RegisterController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name'     => ['required', 'string', 'max:190'],
+            'name' => ['required', 'string', 'max:190'],
             'username' => ['required', 'string', 'max:190'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
@@ -60,19 +57,19 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
-     * @return \App\Models\User
+     * @return User
      */
     protected function create(array $data)
     {
-        $user =  User::create([
-            'name'     => $data['name'],
+        $user = User::create([
+            'name' => $data['name'],
             'username' => $data['username'],
-            'email'    => $data['email'],
+            'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
         $role_r = Role::where('name', '=', 'fan')->firstOrFail();
-        $user->assignRole($role_r); //Assigning role to user
+        $user->assignRole($role_r); // Assigning role to user
+
         return $user;
     }
 }

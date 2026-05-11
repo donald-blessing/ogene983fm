@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers\Stringizer\Transformers;
 
 /**
@@ -7,17 +8,12 @@ namespace App\Helpers\Stringizer\Transformers;
  * Credit goes to this post http://stackoverflow.com/questions/8804875/php-internal-hashcode-function
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2016 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE.md (MIT License)
  */
 class HashCode extends Transformer implements TransformerInterface
 {
-
-    public function __construct($value)
-    {
-        parent::__construct($value);
-    }
-
     /**
      * Get Hashcode
      */
@@ -29,9 +25,9 @@ class HashCode extends Transformer implements TransformerInterface
     private function hashCode($s)
     {
         $h = 0;
-        $len = strlen($s);
+        $len = strlen((string) $s);
 
-        for ($i = 0; $i < $len; $i ++) {
+        for ($i = 0; $i < $len; $i++) {
             $h = $this->overflow32(31 * $h + ord($s[$i]));
         }
 
@@ -40,13 +36,14 @@ class HashCode extends Transformer implements TransformerInterface
 
     private function overflow32($v)
     {
-        $v = $v % 4294967296;
+        $v %= 4294967296;
 
-        if ($v > 2147483647)
+        if ($v > 2147483647) {
             return $v - 4294967296;
-        elseif ($v < - 2147483648)
+        } elseif ($v < -2147483648) {
             return $v + 4294967296;
-        else
+        } else {
             return $v;
+        }
     }
 }

@@ -9,8 +9,8 @@ use App\Models\Category\Category;
 use App\Models\Platform\Platform;
 use App\Traits\ControllerTrait;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class CategoryController extends Controller
@@ -20,22 +20,24 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function dashboard()
     {
         $categories = Category::with('description')->orderBy('created_at', 'desc')->get();
+
         return view('site.dashboard.category.index', ['categories' => $categories]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
         $categories = Category::pluck('name', 'id');
+
         return view('site.dashboard.category.create', ['categories' => $categories]);
     }
 
@@ -43,18 +45,18 @@ class CategoryController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request;  $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(Request $request)
     {
         $request->flash();
         $this->validate($request, [
-            'name'        => ['required', 'string'],
+            'name' => ['required', 'string'],
             'description' => ['required', 'string'],
             'cover_image' => ['required', 'file', 'mimes:png,jpg,jpeg'],
         ]);
         DB::beginTransaction();
-        try { //attach the category to the platform
+        try { // attach the category to the platform
             $category = Category::firstOrCreate(
                 ['name' => $request->name]
             );
@@ -63,25 +65,27 @@ class CategoryController extends Controller
                 $category->save();
             }
             $category->storeAbout($request->description);
-            $category->uploadMediaFromRequest('cover_image',  'category');
+            $category->uploadMediaFromRequest('cover_image', 'category');
             $helper = new Helper;
-            $tags = $helper->getKeywords(join(" ", [$request->name, $request->description]));
+            $tags = $helper->getKeywords(implode(' ', [$request->name, $request->description]));
             $category->attachTags($tags);
         } catch (\Throwable $th) {
             DB::rollback();
-            session()->flash('error', 'Error occurred while adding category.' . $th->getMessage());
+            session()->flash('error', 'Error occurred while adding category.'.$th->getMessage());
+
             return back();
         }
         DB::commit();
         session()->flash('success', 'Category was added successfully.');
+
         return redirect()->route('category.dashboard');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Category\Category $category
-     * @return \Illuminate\Http\Response
+     * @param  \App\Category\Category  $category
+     * @return Response
      */
     public function show(Category $category)
     {
@@ -91,21 +95,20 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  string $category
-     * @return \Illuminate\Http\Response
+     * @param  string  $category
+     * @return Response
      */
     public function edit($category)
     {
         $categories = Category::pluck('name', 'id');
+
         return view('site.dashboard.category.edit', ['categories' => $categories, 'category' => Category::whereSlug($category)->first()]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\CategoryRequest  $request
-     * @param  \App\Models\Category\Category $category
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(CategoryRequest $request, Category $category)
     {
@@ -124,7 +127,7 @@ class CategoryController extends Controller
                 $category = Category::findOrFail($category->id);
                 $media = $category->getMedia('category');
                 if ($media) {
-                    foreach ($media as $key => $item) {
+                    foreach ($media as $item) {
                         $mediaItem = Media::findOrFail($item->id);
                         $mediaItem->delete();
                     }
@@ -132,23 +135,25 @@ class CategoryController extends Controller
                 $category->uploadMedia($request->file('cover_image'), 'category');
             }
             $helper = new Helper;
-            $tags = $helper->getKeywords(join(" ", [$validated['name'], $validated['description']]));
+            $tags = $helper->getKeywords(implode(' ', [$validated['name'], $validated['description']]));
             $category->syncTags($tags);
         } catch (\Throwable $th) {
             DB::rollback();
-            session()->flash('error', 'Error occurred while updating category.' . $th->getMessage());
+            session()->flash('error', 'Error occurred while updating category.'.$th->getMessage());
+
             return back();
         }
         DB::commit();
         session()->flash('success', 'Category was updated successfully.');
+
         return redirect()->route('category.dashboard');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Category\Category $category
-     * @return \Illuminate\Http\Response
+     * @param  \App\Category\Category  $category
+     * @return Response
      */
     public function destroy($category)
     {
@@ -159,11 +164,13 @@ class CategoryController extends Controller
             $category->delete();
         } catch (\Throwable $th) {
             DB::rollback();
-            session()->flash('error', 'Error occurred while deleting category.' . $th->getMessage());
+            session()->flash('error', 'Error occurred while deleting category.'.$th->getMessage());
+
             return back();
         }
         DB::commit();
         session()->flash('success', 'Category was deleted successfully.');
+
         return redirect()->route('category.dashboard');
     }
 
@@ -172,10 +179,12 @@ class CategoryController extends Controller
         $helper = new Helper;
         if ($helper->isNumber($category)) {
             $category = Category::findOrFail($category);
+
             return response()->json($category->childrenCategories, 200);
         }
 
         $category = Category::whereSlug($category)->first();
+
         return response()->json($category->childrenCategories, 200);
     }
 }

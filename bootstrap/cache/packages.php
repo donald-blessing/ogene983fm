@@ -1,236 +1,240 @@
-<?php return array (
+<?php
+
+declare(strict_types=1);
+
+return  [
   'artesaos/seotools' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Artesaos\\SEOTools\\Providers\\SEOToolsServiceProvider',
-    ),
+   [
     'aliases' => 
-    array (
-      'SEOMeta' => 'Artesaos\\SEOTools\\Facades\\SEOMeta',
-      'OpenGraph' => 'Artesaos\\SEOTools\\Facades\\OpenGraph',
-      'Twitter' => 'Artesaos\\SEOTools\\Facades\\TwitterCard',
-      'JsonLd' => 'Artesaos\\SEOTools\\Facades\\JsonLd',
-      'SEO' => 'Artesaos\\SEOTools\\Facades\\SEOTools',
-    ),
-  ),
+     [
+      'SEO' => \Artesaos\SEOTools\Facades\SEOTools::class,
+      'JsonLd' => \Artesaos\SEOTools\Facades\JsonLd::class,
+      'SEOMeta' => \Artesaos\SEOTools\Facades\SEOMeta::class,
+      'Twitter' => \Artesaos\SEOTools\Facades\TwitterCard::class,
+      'OpenGraph' => \Artesaos\SEOTools\Facades\OpenGraph::class,
+    ],
+    'providers' => 
+     [
+      0 => \Artesaos\SEOTools\Providers\SEOToolsServiceProvider::class,
+    ],
+  ],
   'barryvdh/laravel-ide-helper' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Barryvdh\\LaravelIdeHelper\\IdeHelperServiceProvider',
-    ),
-  ),
+     [
+      0 => \Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+    ],
+  ],
   'bgaze/bootstrap-form' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Bgaze\\BootstrapForm\\BootstrapFormServiceProvider',
-    ),
+   [
     'aliases' => 
-    array (
-      'BF' => 'Bgaze\\BootstrapForm\\Support\\Facades\\BF',
-    ),
-  ),
+     [
+      'BF' => \Bgaze\BootstrapForm\Support\Facades\BF::class,
+    ],
+    'providers' => 
+     [
+      0 => \Bgaze\BootstrapForm\BootstrapFormServiceProvider::class,
+    ],
+  ],
+  'bgaze/laravel-collective-html' => 
+   [
+    'aliases' => 
+     [
+      'Form' => \Collective\Html\FormFacade::class,
+      'Html' => \Collective\Html\HtmlFacade::class,
+    ],
+    'providers' => 
+     [
+      0 => \Collective\Html\HtmlServiceProvider::class,
+    ],
+  ],
   'consoletvs/charts' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'ConsoleTVs\\Charts\\ChartsServiceProvider',
-    ),
-  ),
+     [
+      0 => \ConsoleTVs\Charts\ChartsServiceProvider::class,
+    ],
+  ],
   'cyrildewit/eloquent-viewable' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'CyrildeWit\\EloquentViewable\\EloquentViewableServiceProvider',
-    ),
-  ),
-  'facade/ignition' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Facade\\Ignition\\IgnitionServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'Flare' => 'Facade\\Ignition\\Facades\\Flare',
-    ),
-  ),
-  'fideloper/proxy' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Fideloper\\Proxy\\TrustedProxyServiceProvider',
-    ),
-  ),
-  'fruitcake/laravel-cors' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Fruitcake\\Cors\\CorsServiceProvider',
-    ),
-  ),
+     [
+      0 => \CyrildeWit\EloquentViewable\EloquentViewableServiceProvider::class,
+    ],
+  ],
   'imanghafoori/laravel-microscope' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Imanghafoori\\LaravelMicroscope\\LaravelMicroscopeServiceProvider',
-    ),
-  ),
+     [
+      0 => \Imanghafoori\LaravelMicroscope\LaravelMicroscopeServiceProvider::class,
+    ],
+  ],
+  'imanghafoori/smart-realtime-facades' => 
+   [
+    'providers' => 
+     [
+      0 => \Imanghafoori\RealtimeFacades\SmartRealTimeFacadesProvider::class,
+    ],
+  ],
   'intervention/image' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Intervention\\Image\\ImageServiceProvider',
-    ),
+   [
     'aliases' => 
-    array (
-      'Image' => 'Intervention\\Image\\Facades\\Image',
-    ),
-  ),
+     [
+      'Image' => \Intervention\Image\Facades\Image::class,
+    ],
+    'providers' => 
+     [
+      0 => \Intervention\Image\ImageServiceProvider::class,
+    ],
+  ],
   'laravel/legacy-factories' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Illuminate\\Database\\Eloquent\\LegacyFactoryServiceProvider',
-    ),
-  ),
+     [
+      0 => \Illuminate\Database\Eloquent\LegacyFactoryServiceProvider::class,
+    ],
+  ],
   'laravel/sail' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Laravel\\Sail\\SailServiceProvider',
-    ),
-  ),
+     [
+      0 => \Laravel\Sail\SailServiceProvider::class,
+    ],
+  ],
   'laravel/socialite' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Laravel\\Socialite\\SocialiteServiceProvider',
-    ),
+   [
     'aliases' => 
-    array (
-      'Socialite' => 'Laravel\\Socialite\\Facades\\Socialite',
-    ),
-  ),
+     [
+      'Socialite' => \Laravel\Socialite\Facades\Socialite::class,
+    ],
+    'providers' => 
+     [
+      0 => \Laravel\Socialite\SocialiteServiceProvider::class,
+    ],
+  ],
   'laravel/tinker' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Laravel\\Tinker\\TinkerServiceProvider',
-    ),
-  ),
+     [
+      0 => \Laravel\Tinker\TinkerServiceProvider::class,
+    ],
+  ],
   'laravel/ui' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Laravel\\Ui\\UiServiceProvider',
-    ),
-  ),
-  'laravelcollective/html' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Collective\\Html\\HtmlServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'Form' => 'Collective\\Html\\FormFacade',
-      'Html' => 'Collective\\Html\\HtmlFacade',
-    ),
-  ),
-  'laravelista/comments' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Laravelista\\Comments\\ServiceProvider',
-    ),
-  ),
+     [
+      0 => \Laravel\Ui\UiServiceProvider::class,
+    ],
+  ],
   'livewire/livewire' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Livewire\\LivewireServiceProvider',
-    ),
+   [
     'aliases' => 
-    array (
-      'Livewire' => 'Livewire\\Livewire',
-    ),
-  ),
+     [
+      'Livewire' => \Livewire\Livewire::class,
+    ],
+    'providers' => 
+     [
+      0 => \Livewire\LivewireServiceProvider::class,
+    ],
+  ],
   'musonza/chat' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Musonza\\Chat\\ChatServiceProvider',
-    ),
+   [
     'aliases' => 
-    array (
-      'Chat' => 'Musonza\\Chat\\Facades\\ChatFacade',
-    ),
-  ),
+     [
+      'Chat' => \Musonza\Chat\Facades\ChatFacade::class,
+    ],
+    'providers' => 
+     [
+      0 => \Musonza\Chat\ChatServiceProvider::class,
+    ],
+  ],
   'nesbot/carbon' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Carbon\\Laravel\\ServiceProvider',
-    ),
-  ),
+     [
+      0 => \Carbon\Laravel\ServiceProvider::class,
+    ],
+  ],
   'nunomaduro/collision' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
-    ),
-  ),
+     [
+      0 => \NunoMaduro\Collision\Adapters\Laravel\CollisionServiceProvider::class,
+    ],
+  ],
+  'nunomaduro/termwind' => 
+   [
+    'providers' => 
+     [
+      0 => \Termwind\Laravel\TermwindServiceProvider::class,
+    ],
+  ],
   'realrashid/sweet-alert' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'RealRashid\\SweetAlert\\SweetAlertServiceProvider',
-    ),
+   [
     'aliases' => 
-    array (
-      'Alert' => 'RealRashid\\SweetAlert\\Facades\\Alert',
-    ),
-  ),
+     [
+      'Alert' => \RealRashid\SweetAlert\Facades\Alert::class,
+    ],
+    'providers' => 
+     [
+      0 => \RealRashid\SweetAlert\SweetAlertServiceProvider::class,
+    ],
+  ],
+  'seongbae/comments' => 
+   [
+    'providers' => 
+     [
+      0 => \Laravelista\Comments\ServiceProvider::class,
+    ],
+  ],
   'spatie/laravel-fractal' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Spatie\\Fractal\\FractalServiceProvider',
-    ),
+   [
     'aliases' => 
-    array (
-      'Fractal' => 'Spatie\\Fractal\\FractalFacade',
-    ),
-  ),
+     [
+      'Fractal' => \Spatie\Fractal\Facades\Fractal::class,
+    ],
+    'providers' => 
+     [
+      0 => \Spatie\Fractal\FractalServiceProvider::class,
+    ],
+  ],
   'spatie/laravel-honeypot' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Spatie\\Honeypot\\HoneypotServiceProvider',
-    ),
-  ),
+     [
+      0 => \Spatie\Honeypot\HoneypotServiceProvider::class,
+    ],
+  ],
+  'spatie/laravel-ignition' => 
+   [
+    'aliases' => 
+     [
+      'Flare' => \Spatie\LaravelIgnition\Facades\Flare::class,
+    ],
+    'providers' => 
+     [
+      0 => \Spatie\LaravelIgnition\IgnitionServiceProvider::class,
+    ],
+  ],
   'spatie/laravel-medialibrary' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Spatie\\MediaLibrary\\MediaLibraryServiceProvider',
-    ),
-  ),
+     [
+      0 => \Spatie\MediaLibrary\MediaLibraryServiceProvider::class,
+    ],
+  ],
   'spatie/laravel-permission' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Spatie\\Permission\\PermissionServiceProvider',
-    ),
-  ),
+     [
+      0 => \Spatie\Permission\PermissionServiceProvider::class,
+    ],
+  ],
   'spatie/laravel-sitemap' => 
-  array (
+   [
     'providers' => 
-    array (
-      0 => 'Spatie\\Sitemap\\SitemapServiceProvider',
-    ),
-  ),
-);
+     [
+      0 => \Spatie\Sitemap\SitemapServiceProvider::class,
+    ],
+  ],
+];

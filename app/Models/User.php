@@ -2,19 +2,27 @@
 
 namespace App\Models;
 
+use App\Models\Description\Description;
+use App\Models\Image\Image;
 use App\Models\Metro\Metro;
 use App\Models\Post\Post;
 use App\Models\Programme\Programme;
 use App\Traits\AboutTrait;
 use App\Traits\UploadImage;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Laravelista\Comments\Comment;
 use Laravelista\Comments\Commenter;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
@@ -29,13 +37,13 @@ use Spatie\Searchable\SearchResult;
  * @property string $email
  * @property string $password
  * @property string|null $remember_token
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravelista\Comments\Comment[] $approvedComments
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection|Comment[] $approvedComments
  * @property-read int|null $approved_comments_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravelista\Comments\Comment[] $comments
+ * @property-read Collection|Comment[] $comments
  * @property-read int|null $comments_count
- * @property-read \App\Models\Description\Description|null $description
+ * @property-read Description|null $description
  * @property-read mixed $about
  * @property-read mixed $cover_image
  * @property-read mixed $excerpt
@@ -45,17 +53,18 @@ use Spatie\Searchable\SearchResult;
  * @property-read mixed $is_presenter
  * @property-read mixed $is_super_admin
  * @property-read mixed $summary
- * @property-read \App\Models\Image\Image|null $image
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read Image|null $image
+ * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Permission\Models\Permission[] $permissions
+ * @property-read Collection|Permission[] $permissions
  * @property-read int|null $permissions_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Post\Post[] $posts
+ * @property-read Collection|Post[] $posts
  * @property-read int|null $posts_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Programme\Programme[] $programmes
+ * @property-read Collection|Programme[] $programmes
  * @property-read int|null $programmes_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Permission\Models\Role[] $roles
+ * @property-read Collection|Role[] $roles
  * @property-read int|null $roles_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User admins()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User fans()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User newModelQuery()
@@ -74,16 +83,23 @@ use Spatie\Searchable\SearchResult;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUsername($value)
- * @mixin \Eloquent
- * @property \Illuminate\Support\Carbon|null $email_verified_at
+ *
+ * @property Carbon|null $email_verified_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|Metro[] $metroArticles
+ *
+ * @property-read Collection|Metro[] $metroArticles
  * @property-read int|null $metro_articles_count
+ *
+ * @method static Builder<static>|User withoutPermission($permissions)
+ * @method static Builder<static>|User withoutRole($roles, $guard = null)
+ *
+ * @mixin \Eloquent
  */
 class User extends Authenticatable implements Searchable
 {
-    use Commenter;
     use AboutTrait;
+    use Commenter;
     use HasRoles;
     use Notifiable;
     use UploadImage;
@@ -107,15 +123,6 @@ class User extends Authenticatable implements Searchable
     ];
 
     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    /**
      * Boot function
      *
      * @return void
@@ -130,15 +137,13 @@ class User extends Authenticatable implements Searchable
                 $user->save();
             }
         }
-        self::saving(function ($model) {
+        self::saving(function ($model): void {
             $model->slug = Str::random(40);
         });
     }
 
     /**
      * Get the route key for the model.
-     *
-     * @return string
      */
     public function getRouteKeyName(): string
     {
@@ -147,13 +152,12 @@ class User extends Authenticatable implements Searchable
 
     /**
      * Get search result
-     *
-     * @return \Spatie\Searchable\SearchResult
      */
     public function getSearchResult(): SearchResult
     {
         $url = route('presenter.show', $this->slug);
-        return new \Spatie\Searchable\SearchResult(
+
+        return new SearchResult(
             $this,
             $this->name,
             $url
@@ -162,8 +166,6 @@ class User extends Authenticatable implements Searchable
 
     /**
      * Get programmes
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function programmes(): BelongsToMany
     {
@@ -172,8 +174,6 @@ class User extends Authenticatable implements Searchable
 
     /**
      * get posts
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function posts(): HasMany
     {
@@ -182,8 +182,6 @@ class User extends Authenticatable implements Searchable
 
     /**
      * Get metro articles
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function metroArticles(): HasMany
     {
@@ -192,48 +190,38 @@ class User extends Authenticatable implements Searchable
 
     /**
      * Check if administrator
-     *
-     * @return boolean
      */
     public function getIsAdminAttribute(): bool
     {
-        return (bool) $this->hasRole('admin');
+        return $this->hasRole('admin');
     }
 
     /**
      * Check if super administrator
-     *
-     * @return boolean
      */
     public function getIsSuperAdminAttribute(): bool
     {
-        return (bool) $this->hasRole('super admin');
+        return $this->hasRole('super admin');
     }
 
     /**
      * Check if presenter
-     *
-     * @return boolean
      */
     public function getIsPresenterAttribute(): bool
     {
-        return (bool) $this->hasRole('presenter');
+        return $this->hasRole('presenter');
     }
 
     /**
      * Check if a fan
-     *
-     * @return boolean
      */
     public function getIsFanAttribute(): bool
     {
-        return (bool) $this->hasRole('fan');
+        return $this->hasRole('fan');
     }
 
     /**
      * Check if owner
-     *
-     * @return boolean
      */
     public function getIsOwnerAttribute(): bool
     {
@@ -243,12 +231,11 @@ class User extends Authenticatable implements Searchable
     /**
      * Scope a query to only include admins
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query
      */
     public function scopeAdmins($query): Builder
     {
-        return $query->whereHas('roles', function ($query) {
+        return $query->whereHas('roles', function ($query): void {
             $query->where('roles.name', 'admin');
         });
     }
@@ -256,12 +243,11 @@ class User extends Authenticatable implements Searchable
     /**
      * Scope a query to only include super admins
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query
      */
     public function scopeSuperAdmins($query): Builder
     {
-        return $query->whereHas('roles', function ($query) {
+        return $query->whereHas('roles', function ($query): void {
             $query->where('roles.name', 'super admin');
         });
     }
@@ -269,12 +255,11 @@ class User extends Authenticatable implements Searchable
     /**
      * Scope a query to only include fans
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query
      */
     public function scopeFans($query): Builder
     {
-        return $query->whereHas('roles', function ($query) {
+        return $query->whereHas('roles', function ($query): void {
             $query->where('roles.name', 'fan');
         });
     }
@@ -282,13 +267,22 @@ class User extends Authenticatable implements Searchable
     /**
      * Scope a query to only include presenters
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query
      */
     public function scopePresenters($query): Builder
     {
-        return $query->whereHas('roles', function ($query) {
+        return $query->whereHas('roles', function ($query): void {
             $query->where('roles.name', 'presenter');
         });
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+        ];
     }
 }

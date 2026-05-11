@@ -1,37 +1,27 @@
 <?php
+
 namespace App\Helpers\Stringizer\Transformers;
 
 /**
  * SwapCase - Swap the case of each character.
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2016 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE.md (MIT License)
  */
 class SwapCase extends Transformer implements TransformerInterface
 {
-
-    public function __construct($value)
-    {
-        parent::__construct($value);
-    }
-
     public function execute()
     {
-        return $this->swap($this->getValue());
+        return $this->swap();
     }
 
-    /**
-     *
-     * @param string $str
-     */
-    private function swap($str)
+    private function swap()
     {
-        $arr = preg_split('//u', $this->getValue(), - 1, PREG_SPLIT_NO_EMPTY);
-
+        $arr = preg_split('//u', $this->getValue(), -1, PREG_SPLIT_NO_EMPTY);
         $len = count($arr);
-
-        for ($i = 0; $i < $len; $i ++) {
+        for ($i = 0; $i < $len; $i++) {
 
             if (ctype_alpha($arr[$i])) {
 
@@ -44,8 +34,6 @@ class SwapCase extends Transformer implements TransformerInterface
             }
         }
 
-        $str = implode("", $arr);
-
-        return $str;
+        return implode('', $arr);
     }
 }

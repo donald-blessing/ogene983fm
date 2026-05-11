@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+use Laravelista\Comments\Comment;
+use Laravelista\Comments\WebCommentController;
+
 return [
 
     /**
@@ -7,7 +11,7 @@ return [
      * CustomComment model extending the Comment model shipped with the
      * package and change this configuration option to their extended model.
      */
-    'model' => \Laravelista\Comments\Comment::class,
+    'model' => Comment::class,
 
     /**
      * You can customize the behaviour of these permissions by
@@ -25,7 +29,7 @@ return [
      * Change this to your own implementation of the CommentController.
      * You can use the \Laravelista\Comments\CommentControllerInterface.
      */
-    'controller' => '\Laravelista\Comments\CommentController',
+    'controller' => WebCommentController::class,
 
     /**
      * Disable/enable the package routes.
@@ -47,7 +51,6 @@ return [
      *         'model' => $book,
      *         'approved' => true
      *     ])
-     *
      */
     'approval_required' => false,
 
@@ -57,6 +60,6 @@ return [
      * Visitors will be asked to provide their name and email
      * address in order to post a comment.
      */
-    'guest_commenting' => false
+    'guest_commenting' => false,
 
 ];

@@ -1,15 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateViewsTable extends Migration
 {
     /**
      * The database schema.
      *
-     * @var \Illuminate\Support\Facades\Schema
+     * @var Schema
      */
     protected $schema;
 
@@ -22,8 +22,6 @@ class CreateViewsTable extends Migration
 
     /**
      * Create a new migration instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -41,7 +39,7 @@ class CreateViewsTable extends Migration
      */
     public function up()
     {
-        $this->schema->create($this->table, function (Blueprint $table) {
+        $this->schema->create($this->table, function (Blueprint $table): void {
             $table->increments('id');
             $table->morphs('viewable');
             $table->text('visitor')->nullable();

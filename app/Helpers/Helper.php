@@ -2,34 +2,33 @@
 
 namespace App\Helpers;
 
+use App\Helpers\compareDirectories\compareDirectories;
 use App\Helpers\Linkify\Linkify;
 use App\Helpers\Sentence\Sentence;
 use App\Helpers\Stringizer\Stringizer;
 use Carbon\Carbon;
 use DonatelloZa\RakePlus\RakePlus;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+// # or
 use Illuminate\Support\Facades\Storage;
-## or
 use OpenGraph;
 use SEO;
 use SEOMeta;
 use Session;
 
-
 define('DECIMALS', 2);
-define('DEC_POINT', ".");
-define('THOUSANDS_SEP', ",");
+define('DEC_POINT', '.');
+define('THOUSANDS_SEP', ',');
 
 class Helper
 {
-
     /**
      * Unlike standard empty function isEmpty also assigns true if value contains whitespaces, newlines, tabs
-     * @param mixed $value
-     * @return boolean
+     *
+     * @param  mixed  $value
+     * @return bool
      */
     public function isEmpty($value)
     {
@@ -38,20 +37,22 @@ class Helper
         }
 
         if (is_array($value)) {
-            if (count(array_filter($value)) == 0) {
+            if (count(array_filter($value)) === 0) {
                 return true;
             }
-        } elseif (!isset($value) || empty($value) || $value == '' || is_null($value)) {
+        } elseif (! isset($value) || empty($value) || $value == '' || is_null($value)) {
             return true;
         }
+
         return false;
     }
 
     /**
      * Search for the contents of an array in a given string
-     * @param type $haystack The string to search
+     *
+     * @param  type  $haystack  The string to search
      * @param mixed(Array/String) $arr The array to whose contents will be searched for
-     * @return boolean True on success, false on failure
+     * @return bool True on success, false on failure
      */
     public function stringSearch($haystack, $arr)
     {
@@ -66,18 +67,19 @@ class Helper
         } else {
             $found = $this->searchWholeWord($haystack, $arr);
         }
+
         return $found;
     }
 
     /**
      * Check if string contains array item
-     * @param type $str
-     * @param array $words
-     * @return boolean
+     *
+     * @param  type  $str
+     * @return bool
      */
     public function containsArrayItem($str, array $words)
     {
-        if (!is_string($str)) {
+        if (! is_string($str)) {
             return false;
         }
         foreach ($words as $word) {
@@ -85,41 +87,38 @@ class Helper
                 return true;
             }
         }
+
         return false;
     }
 
     public function searchWholeWord($haystack, $needle)
     {
-        if (preg_match("/\b$needle\b/i", $haystack) === 1) {
-            return true;
-        }
-        return false;
+        return preg_match("/\b$needle\b/i", (string) $haystack) === 1;
     }
 
     public function getFileExtension($target_file)
     {
-        return pathinfo($target_file, PATHINFO_EXTENSION);
+        return pathinfo((string) $target_file, PATHINFO_EXTENSION);
     }
 
     public function getFilenameWithExtension($target_file)
     {
-        return pathinfo($target_file, PATHINFO_BASENAME);
+        return pathinfo((string) $target_file, PATHINFO_BASENAME);
     }
 
     public function getFilename($target_file)
     {
-        return pathinfo($target_file, PATHINFO_FILENAME);
+        return pathinfo((string) $target_file, PATHINFO_FILENAME);
     }
 
     public function getFileDirectoryName($target_file)
     {
-        return pathinfo($target_file, PATHINFO_DIRNAME);
+        return pathinfo((string) $target_file, PATHINFO_DIRNAME);
     }
 
     public function getFileIcon($file)
     {
-        $icono = asset("frontend/images/icons/{$this->getFileExtension($file)}.png");
-        return $icono;
+        return asset("frontend/images/icons/{$this->getFileExtension($file)}.png");
     }
 
     public function countFiles($directory)
@@ -131,46 +130,44 @@ class Helper
 
             $filecount = count($files);
         }
+
         return $filecount;
     }
 
-
     private function read_doc($filename)
     {
-        $fileHandle = fopen($filename, "r");
+        $fileHandle = fopen($filename, 'r');
         $line = @fread($fileHandle, filesize($filename));
         $lines = explode(chr(0x0D), $line);
-        $outtext = "";
+        $outtext = '';
         foreach ($lines as $thisline) {
             $pos = strpos($thisline, chr(0x00));
-            if (($pos !== false) || (strlen($thisline) == 0)) {
-            } else {
-                $outtext .= $thisline . " ";
+            if ($pos === false && strlen($thisline) !== 0) {
+                $outtext .= $thisline.' ';
             }
         }
-        $outtext = preg_replace("/[^a-zA-Z0-9\s\,\.\-\n\r\t@\/\_\(\)]/", "", $outtext);
-        return $outtext;
+
+        return preg_replace("/[^a-zA-Z0-9\s\,\.\-\n\r\t@\/\_\(\)]/", '', $outtext);
     }
 
     private function read_docx($filename)
     {
 
-        $striped_content = '';
         $content = '';
 
         $zip = zip_open($filename);
 
-        if (!$zip || is_numeric($zip)) {
+        if (! $zip || is_numeric($zip)) {
             return false;
         }
 
         while ($zip_entry = zip_read($zip)) {
 
-            if (zip_entry_open($zip, $zip_entry) == false) {
+            if (zip_entry_open($zip, $zip_entry) === false) {
                 continue;
             }
 
-            if (zip_entry_name($zip_entry) != "word/document.xml") {
+            if (zip_entry_name($zip_entry) != 'word/document.xml') {
                 continue;
             }
 
@@ -181,36 +178,33 @@ class Helper
 
         zip_close($zip);
 
-        $content = str_replace('</w:r></w:p></w:tc><w:tc>', " ", $content);
+        $content = str_replace('</w:r></w:p></w:tc><w:tc>', ' ', $content);
         $content = str_replace('</w:r></w:p>', "\r\n", $content);
-        $striped_content = strip_tags($content);
 
-        return $striped_content;
+        return strip_tags($content);
     }
-
-
 
     public function convertToText($filename)
     {
 
-        if (isset($filename) && !file_exists($filename)) {
-            return "File Not exists";
+        if (isset($filename) && ! file_exists($filename)) {
+            return 'File Not exists';
         }
 
-        $fileArray = pathinfo($filename);
+        $fileArray = pathinfo((string) $filename);
         $file_ext = $fileArray['extension'];
-        if ($file_ext == "doc" || $file_ext == "docx" || $file_ext == "xlsx" || $file_ext == "pptx") {
-            if ($file_ext == "doc") {
+        if (in_array($file_ext, ['doc', 'docx', 'xlsx', 'pptx'])) {
+            if ($file_ext === 'doc') {
                 return $this->read_doc($filename);
-            } elseif ($file_ext == "docx") {
+            } elseif ($file_ext === 'docx') {
                 return $this->read_docx($filename);
-            } elseif ($file_ext == "xlsx") {
+            } elseif ($file_ext === 'xlsx') {
                 return $this->xlsx_to_text($filename);
-            } elseif ($file_ext == "pptx") {
+            } elseif ($file_ext === 'pptx') {
                 return $this->pptx_to_text($filename);
             }
         } else {
-            return "Invalid File Type";
+            return 'Invalid File Type';
         }
     }
 
@@ -227,80 +221,83 @@ class Helper
     public function String2Hex($string)
     {
         $hex = '';
-        for ($i = 0; $i < strlen($string); $i++) {
+        for ($i = 0; $i < strlen((string) $string); $i++) {
             $hex .= dechex(ord($string[$i]));
         }
+
         return $hex;
     }
 
     public function Hex2String($hex)
     {
         $string = '';
-        for ($i = 0; $i < strlen($hex) - 1; $i += 2) {
-            $string .= chr(hexdec($hex[$i] . $hex[$i + 1]));
+        for ($i = 0; $i < strlen((string) $hex) - 1; $i += 2) {
+            $string .= chr(hexdec($hex[$i].$hex[$i + 1]));
         }
+
         return $string;
     }
 
     /**
      * Change date format between MySQL and System date
-     * @param type $date
-     * @param type $revert Set to true if you want to change to DD/MM/YYYY
-     * @param type $revert Set to false if you want MySQL date format YYYY-MM-DD H:i:s
+     *
+     * @param  type  $date
+     * @param  type  $revert  Set to true if you want to change to DD/MM/YYYY
+     * @param  type  $revert  Set to false if you want MySQL date format YYYY-MM-DD H:i:s
      * @return type
      */
     public function changeDateFormat($date)
     {
-        return date("Y-m-d H:i:s", strtotime($date));
+        return date('Y-m-d H:i:s', strtotime($date));
     }
 
     /**
      * Change time format
-     * @param type $time
+     *
+     * @param  type  $time
      * @return type time object
      */
     public function changeTimeFormat($time)
     {
-        $time = date('H:i:s', strtotime($time));
-
-        return $time;
+        return date('H:i:s', strtotime($time));
     }
 
     /**
      * Determines if $number is between $min and $max
      *
-     * @param  integer  $number     The number to test
-     * @param  integer  $min        The minimum value in the range
-     * @param  integer  $max        The maximum value in the range
-     * @param  boolean  $inclusive  Whether the range should be inclusive or not
-     * @return boolean              Whether the number was in the range
+     * @param  int  $number  The number to test
+     * @param  int  $min  The minimum value in the range
+     * @param  int  $max  The maximum value in the range
+     * @param  bool  $inclusive  Whether the range should be inclusive or not
+     * @return bool Whether the number was in the range
      */
     public function numberInRange($number, $min, $max, $inclusive = true)
     {
         return ($inclusive) ? ($number >= $min && $number <= $max) : ($number > $min && $number < $max);
     }
 
-    public $naira = "&#8358;";
+    public $naira = '&#8358;';
 
     /**
      * Display number in Naira format
-     * @param type $amount
+     *
+     * @param  type  $amount
      * @return string
      */
     public function showMoney($amount)
     {
-        return $this->naira . $this->formatDecimal($amount);
+        return $this->naira.$this->formatDecimal($amount);
     }
 
     /**
      * Format a number into decimal places
-     * @param type $amount
+     *
+     * @param  type  $amount
      * @return mixed
      */
     public function formatDecimal($amount)
     {
-        $formatted = number_format($amount, DECIMALS, DEC_POINT, THOUSANDS_SEP);
-        return $formatted;
+        return number_format($amount, DECIMALS, DEC_POINT, THOUSANDS_SEP);
     }
 
     /**
@@ -309,7 +306,8 @@ class Helper
      * - converts all alpha chars to lowercase
      * - converts any char that is not digit, letter or - into - symbols into "-"
      * - not allow two "-" chars continued, convert them into only one single "-"
-     * @param type $vp_string
+     *
+     * @param  type  $vp_string
      * @return string
      */
     public function URLify($vp_string)
@@ -319,25 +317,27 @@ class Helper
         $vp_string = strip_tags($vp_string);
         $vp_string = strtolower($vp_string);
         $vp_string = preg_replace('~[^ a-z0-9_.]~', ' ', $vp_string);
-        $vp_string = preg_replace('~ ~', '-', $vp_string);
-        $vp_string = preg_replace('~-+~', '-', $vp_string);
-        return $vp_string;
+        $vp_string = preg_replace('~ ~', '-', (string) $vp_string);
+
+        return preg_replace('~-+~', '-', (string) $vp_string);
     }
 
     /**
      * Converts URLs and email addresses into clickable links
-     * @param string $text
+     *
+     * @param  string  $text
      * @return string
      */
     public function LINKify($text)
     {
         $linkify = new Linkify;
-        return $linkify->process($text, array('attr' => array('style' => 'font-weight: bold; color: #0d59af;')));
+
+        return $linkify->process($text, ['attr' => ['style' => 'font-weight: bold; color: #0d59af;']]);
     }
 
     public function getMimeType($file)
     {
-        $mimetype = "";
+        $mimetype = '';
         if (function_exists('finfo_open')) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mimetype = finfo_file($finfo, $file);
@@ -348,6 +348,7 @@ class Helper
         if ($this->isEmpty($mimetype)) {
             $mimetype = 'application/octet-stream';
         }
+
         return $mimetype;
     }
 
@@ -357,6 +358,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->base64Encode()->getString();
     }
 
@@ -366,6 +368,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->base64Decode()->getString();
     }
 
@@ -375,6 +378,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->between($left, $right)->getString();
     }
 
@@ -384,6 +388,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->camelize()->getString();
     }
 
@@ -393,6 +398,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->camelToSnake()->getString();
     }
 
@@ -402,6 +408,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->charAt($index)->getString();
     }
 
@@ -411,6 +418,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->chars()->getString();
     }
 
@@ -420,6 +428,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->chopLeft($prefix)->getString();
     }
 
@@ -429,6 +438,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->chopRight(
             $prefix
         )->getString();
@@ -440,17 +450,16 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->collapseWhitespace()->getString();
     }
 
     /**
      * Append 2 String values
      *
-     * @param string $value
-     *
-     * @param string $preAppend
-     *            flag when true to prepend value
-     *
+     * @param  string  $value
+     * @param  string  $preAppend
+     *                             flag when true to prepend value
      * @return \Stringizer\Stringizer
      */
     public function concat($value, $value2, $prepend = false)
@@ -459,6 +468,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->concat($value2, $prepend)->getString();
     }
 
@@ -468,6 +478,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->contains($needle);
     }
 
@@ -477,6 +488,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->containsIncaseSensitive($needle);
     }
 
@@ -486,6 +498,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->containsCount($needle);
     }
 
@@ -495,6 +508,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->containsCountIncaseSensitive($needle);
     }
 
@@ -504,6 +518,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->dasherize()->getString();
     }
 
@@ -513,6 +528,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->endsWith($needle);
     }
 
@@ -522,6 +538,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->ensureLeft($prefix)->getString();
     }
 
@@ -531,6 +548,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->ensureRight(
             $suffix
         )->getString();
@@ -542,6 +560,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->first($numberOfCharacters)->getString();
     }
 
@@ -551,6 +570,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->hashCode()->getString();
     }
 
@@ -560,6 +580,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->hasLowercase()->getString();
     }
 
@@ -569,6 +590,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->hasUppercase()->getString();
     }
 
@@ -578,6 +600,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->indexOf($needle, $offset)->getString();
     }
 
@@ -587,12 +610,13 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->indexOfCaseInsensitive($needle, $offset)->getString();
     }
 
     public function insertBetween($value, $left, $right)
     {
-        return $left . $value . $right;
+        return $left.$value.$right;
     }
 
     public function isAlpha($value)
@@ -601,7 +625,6 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
-
 
         return $s->isAlpha();
     }
@@ -622,6 +645,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->isAlphaNumericSpace();
     }
 
@@ -631,6 +655,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->isAlphaNumericSpaceDash();
     }
 
@@ -640,6 +665,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->isAscii($isPrintableOnly);
     }
 
@@ -663,7 +689,6 @@ class Helper
         }
         $s = new Stringizer($value);
 
-
         return $s->isBlank();
     }
 
@@ -673,6 +698,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->isDate();
     }
 
@@ -682,6 +708,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->isDecimal();
     }
 
@@ -691,6 +718,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->isEmail();
     }
 
@@ -721,7 +749,6 @@ class Helper
         }
         $s = new Stringizer($value);
 
-
         return $s->isIsbn10();
     }
 
@@ -731,7 +758,6 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
-
 
         return $s->isIsbn13();
     }
@@ -743,7 +769,6 @@ class Helper
         }
         $s = new Stringizer($value);
 
-
         return $s->isIpv4();
     }
 
@@ -754,7 +779,6 @@ class Helper
         }
         $s = new Stringizer($value);
 
-
         return $s->isIpv6();
     }
 
@@ -764,7 +788,6 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
-
 
         return $s->isJson();
     }
@@ -795,6 +818,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->isMultiByte();
     }
 
@@ -804,6 +828,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->isNumber();
     }
 
@@ -824,7 +849,6 @@ class Helper
         }
         $s = new Stringizer($value);
 
-
         return $s->isSemver();
     }
 
@@ -834,15 +858,17 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->isUrl($santize);
     }
 
-    public function join($value, $separator = ",")
+    public function join($value, $separator = ',')
     {
         if ($this->isEmpty($value)) {
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->join($value, $separator)->getString();
     }
 
@@ -852,6 +878,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->last($numberOfCharacters)->getString();
     }
 
@@ -861,6 +888,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->lastIndexOf(
             $needle,
             $offset
@@ -873,6 +901,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->lastIndexOfCaseInsensitive(
             $needle,
             $offset
@@ -915,6 +944,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->lowercase()->getString();
     }
 
@@ -924,6 +954,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->lowercaseFirst(
             $ignoreUppercaseFirst
         )->getString();
@@ -935,6 +966,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->padBoth($padValue, $padAmount)->getString();
     }
 
@@ -944,6 +976,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->padLeft($padValue, $padAmount)->getString();
     }
 
@@ -953,6 +986,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->padRight($padValue, $padAmount)->getString();
     }
 
@@ -962,6 +996,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->randomAlpha($length)->getString();
     }
 
@@ -971,6 +1006,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->randomAlphanumeric($length)->getString();
     }
 
@@ -980,6 +1016,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->randomNumeric($length)->getString();
     }
 
@@ -989,6 +1026,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->repeat($repeatNumber)->getString();
     }
 
@@ -998,6 +1036,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->replace($search, $replace)->getString();
     }
 
@@ -1007,6 +1046,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->replaceAccents()->getString();
     }
 
@@ -1016,6 +1056,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->replaceIncaseSensitive($search, $replace)->getString();
     }
 
@@ -1025,6 +1066,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->removeNonAscii()->getString();
     }
 
@@ -1034,6 +1076,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->removeWhitespace()->getString();
     }
 
@@ -1043,6 +1086,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->reverse()->getString();
     }
 
@@ -1062,6 +1106,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->startsWith($needle);
     }
 
@@ -1071,6 +1116,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->stripPunctuation()->getString();
     }
 
@@ -1080,15 +1126,17 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->stripTags($allowableTags)->getString();
     }
 
-    public function split($value, $delimiter = ",")
+    public function split($value, $delimiter = ',')
     {
         if ($this->isEmpty($value)) {
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->split($delimiter);
     }
 
@@ -1098,6 +1146,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->subString($start, $length)->getString();
     }
 
@@ -1107,6 +1156,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->swapCase()->getString();
     }
 
@@ -1126,6 +1176,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->trim()->getString();
     }
 
@@ -1135,6 +1186,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->trimLeft()->getString();
     }
 
@@ -1144,17 +1196,17 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->trimRight()->getString();
     }
 
     /**
      * Truncate remove the number of indicated values at the end of the string
      *
-     * @param int $numberToTruncate
+     * @param  int  $numberToTruncate
+     * @return \Stringizer\Stringizer
      *
      * @throws \InvalidArgumentException
-     *
-     * @return \Stringizer\Stringizer
      */
     public function truncate($value, $numberToTruncate)
     {
@@ -1162,6 +1214,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->truncate($numberToTruncate)->getString();
     }
 
@@ -1171,6 +1224,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->truncateMatch($stringToMatch, $truncateBefore)->getString();
     }
 
@@ -1180,6 +1234,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->truncateMatchCaseInsensitive($stringToMatch, $truncateBefore)->getString();
     }
 
@@ -1189,6 +1244,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->uppercase()->getString();
     }
 
@@ -1198,6 +1254,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->uppercaseFirst($ignoreLowercaseFirst)->getString();
     }
 
@@ -1212,14 +1269,14 @@ class Helper
         $value = str_replace('  ', ' ', $value);
         $s = new Stringizer($value);
         $value = $s->uppercaseWords()->getString();
-        $delimiters = array('-', '\'', '/', '(', "'", ".", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0");
+        $delimiters = ['-', '\'', '/', '(', "'", '.', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
         foreach ($delimiters as $delimiter) {
-            if (strpos($value, $delimiter) !== FALSE) {
-                $value = implode($delimiter, array_map('ucfirst', explode($delimiter, $value)));
+            if (str_contains((string) $value, $delimiter)) {
+                $value = implode($delimiter, array_map(ucfirst(...), explode($delimiter, (string) $value)));
             }
         }
-        $value = str_replace(".", ". ", $value);
-        return $value;
+
+        return str_replace('.', '. ', $value);
     }
 
     public function width($value)
@@ -1228,6 +1285,7 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->width();
     }
 
@@ -1237,18 +1295,21 @@ class Helper
             return $value;
         }
         $s = new Stringizer($value);
+
         return $s->wordCount();
     }
 
     public function setEncoding($encoding)
     {
-        $s = new Stringizer("dummy-value");
-        return $s->setEncoding("UTF-8");
+        $s = new Stringizer('dummy-value');
+
+        return $s->setEncoding('UTF-8');
     }
 
     public function getEncoding()
     {
-        $s = new Stringizer("dummy-value");
+        $s = new Stringizer('dummy-value');
+
         return $s->getEncoding();
     }
 
@@ -1257,58 +1318,63 @@ class Helper
     public function vardump($var, $task = null)
     {
         if ($this->isEmpty($var)) {
-            return NULL;
+            return null;
         }
-        if (!empty($task)) {
+        if (! empty($task)) {
             if ($task == 'pre') {
                 echo '<div><pre>';
                 var_dump($var, true);
                 echo '</pre></div>';
             } elseif ($task == 'json') {
                 $json = json_encode((array) $var);
-                echo ($json);
+                echo $json;
             }
         } else {
             var_dump($var);
         }
+
+        return null;
     }
 
     /**
      * Generate random password
-     * @param int $len
+     *
+     * @param  int  $len
      * @return string
      */
     public function generateRandomPassword($len = 10)
     {
-        $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789[{(*%+-_^$#&!=)}]";
-        $pass = array();
+        $alphabet = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789[{(*%+-_^$#&!=)}]';
+        $pass = [];
         $alphaLength = strlen($alphabet) - 1;
         for ($i = 0; $i < $len; $i++) {
-            $n = rand(0, $alphaLength);
+            $n = random_int(0, $alphaLength);
             $pass[] = $alphabet[$n];
         }
-        return implode($pass);
+
+        return implode('', $pass);
     }
 
     /**
      * Generate a string of random characters
-     * @param int $numberOfCharacters
+     *
+     * @param  int  $numberOfCharacters
      * @return string of random characters
      */
     public function generateRandomString($numberOfCharacters = 32)
     {
-        $string = NULL;
+        $string = null;
         try {
             $string = random_bytes($numberOfCharacters);
-        } catch (\TypeError $e) {
+        } catch (\TypeError) {
             // Well, it's an integer, so this IS unexpected.
-            die("An unexpected error has occurred");
-        } catch (\Error $e) {
+            exit('An unexpected error has occurred');
+        } catch (\Error) {
             // This is also unexpected because 32 is a reasonable integer.
-            die("An unexpected error has occurred");
-        } catch (\Exception $e) {
+            exit('An unexpected error has occurred');
+        } catch (\Exception) {
             // If you get this message, the CSPRNG failed hard.
-            die("Could not generate a random string. Is our OS secure?");
+            exit('Could not generate a random string. Is our OS secure?');
         }
 
         return $string;
@@ -1316,14 +1382,15 @@ class Helper
 
     /**
      * Generate a random integer between two given integers (inclusive)
-     * @param int $start
-     * @param int $end
+     *
+     * @param  int  $start
+     * @param  int  $end
      * @return int of random numbers
      */
     public function generateRandomNumber($min = 0, $max = 255)
     {
         $int = 0;
-        if (!$this->isEmpty($min) && !$this->isEmpty($max)) {
+        if (! $this->isEmpty($min) && ! $this->isEmpty($max)) {
             $min = intval($min);
             $max = intval($max);
             if ($min > $max) {
@@ -1335,13 +1402,15 @@ class Helper
         } else {
             $int = mt_rand();
         }
+
         return $int;
     }
 
     /**
      * Generate a random float between two given integers (inclusive)
-     * @param float $start
-     * @param float $end
+     *
+     * @param  float  $start
+     * @param  float  $end
      * @return float of random numbers
      */
     public function generateRandomFloat($min = 0, $max = 1)
@@ -1353,80 +1422,88 @@ class Helper
             $max = $min;
             $min = $tmp;
         }
+
         return $min + mt_rand() / mt_getrandmax() * ($max - $min);
     }
 
     /**
      * Convert time stamp to date
-     * @param type $timestamp
-     * @param type $dateTimeFormat
+     *
+     * @param  type  $timestamp
+     * @param  type  $dateTimeFormat
      * @return type
      */
-    public function timestampToDate($timestamp, $dateTimeFormat = "Y-m-d H:i:s")
+    public function timestampToDate($timestamp, $dateTimeFormat = 'Y-m-d H:i:s')
     {
-        $date = new \DateTime();
+        $date = new \DateTime;
         $date->setTimestamp($timestamp);
+
         return $date->format($dateTimeFormat);
     }
 
     /**
      * Copy file to array
-     * @param string $file F
+     *
+     * @param  string  $file  F
      * @return array
      */
     public function fileToArray($file)
     {
-        $codes = array();
+        $codes = [];
         foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-            @list($key, $val) = explode(" ", $line, 2);
+            @[$key, $val] = explode(' ', $line, 2);
             $codes[$key] = $val;
         }
+
         return $codes;
     }
 
     /**
      * Return local images as base64 encrypted code
-     * @param string $filename
-     * @param string $filetype
+     *
+     * @param  string  $filename
+     * @param  string  $filetype
      * @return string
      */
     public function encodeImageTobase64($filename)
     {
-        $retVal = NULL;
-        if (!$this->isEmpty($filename)) {
+        $retVal = null;
+        if (! $this->isEmpty($filename)) {
             $check = getimagesize($filename);
             if ($check !== false) {
                 $data = base64_encode(file_get_contents($filename));
-                $retVal = 'data:' . $check["mime"] . ";base64," . $data;
+                $retVal = 'data:'.$check['mime'].';base64,'.$data;
             } else {
-                $retVal = "File is not an image.";
+                $retVal = 'File is not an image.';
             }
         }
+
         return $retVal;
     }
 
     /**
      * Return local file as base64 encrypted
-     * @param type $filename
+     *
+     * @param  type  $filename
      * @return type
      */
-    function encodeFileTobase64($filename)
+    public function encodeFileTobase64($filename)
     {
         if ($filename) {
-            $vidbinary = fread(fopen($filename, "r"), filesize($filename));
+            $vidbinary = fread(fopen($filename, 'r'), filesize($filename));
             $filetype = $this->getMimeType($filename);
-            return 'data:' . $filetype . ';base64,' . base64_encode($vidbinary);
-        }
-        return NULL;
-    }
 
+            return 'data:'.$filetype.';base64,'.base64_encode($vidbinary);
+        }
+
+        return null;
+    }
 
     /**
      * Computes the difference of arrays with additional index check.
      *
-     * @param array $array1 the array to compare from
-     * @param array $arrays an array(s) to compare against
-     *
+     * @param  array  $array1  the array to compare from
+     * @param  array  $arrays  an array(s) to compare against
      * @return array an array containing all the values from
      *               array1 that are not present in any of the other arrays
      */
@@ -1436,15 +1513,15 @@ class Helper
         foreach ($arrays as $array2) {
             foreach ($array1 as $key => $value) {
                 if (is_array($value)) {
-                    if (!isset($array2[$key]) || !is_array($array2[$key])) {
+                    if (! isset($array2[$key]) || ! is_array($array2[$key])) {
                         $difference[$key] = $value;
                     } else {
                         $new_diff = static::diff($value, $array2[$key]);
-                        if (!empty($new_diff)) {
+                        if (! empty($new_diff)) {
                             $difference[$key] = $new_diff;
                         }
                     }
-                } elseif (!array_key_exists($key, $array2) || $array2[$key] !== $value) {
+                } elseif (! array_key_exists($key, $array2) || $array2[$key] !== $value) {
                     $difference[$key] = $value;
                 }
             }
@@ -1455,14 +1532,15 @@ class Helper
 
     public function csvToArray($filename = '', $delimiter = ',')
     {
-        if (!file_exists($filename) || !is_readable($filename))
+        if (! file_exists($filename) || ! is_readable($filename)) {
             return false;
+        }
 
-        $header = array();
-        $data = array();
+        $header = [];
+        $data = [];
         if (($handle = fopen($filename, 'r')) !== false) {
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== false) {
-                if (!$header) {
+                if ($header === []) {
                     $header = $row;
                 } else {
                     $data[] = array_combine($header, $row);
@@ -1474,19 +1552,15 @@ class Helper
         return $data;
     }
 
-
-
     /**
      * Get a random value from an array.
      *
-     * @param array $array
-     * @param int   $numReq The amount of values to return
-     *
+     * @param  int  $numReq  The amount of values to return
      * @return mixed
      */
     public function arrayRandValue(array $array, $numReq = 1)
     {
-        if (!count($array)) {
+        if (! count($array)) {
             return;
         }
 
@@ -1503,7 +1577,6 @@ class Helper
      * Get a random value from an array, with the ability to skew the results.
      * Example: array_rand_weighted(['foo' => 1, 'bar' => 2]) has a 66% chance of returning bar.
      *
-     * @param array $array
      *
      * @return mixed
      */
@@ -1512,7 +1585,7 @@ class Helper
         $options = [];
 
         foreach ($array as $option => $weight) {
-            for ($i = 0; $i < $weight; ++$i) {
+            for ($i = 0; $i < $weight; $i++) {
                 $options[] = $option;
             }
         }
@@ -1523,14 +1596,12 @@ class Helper
     /**
      * Determine if all given needles are present in the haystack.
      *
-     * @param array|string $needles
-     * @param array        $haystack
-     *
+     * @param  array|string  $needles
      * @return bool
      */
     public function valuesInArray($needles, array $haystack)
     {
-        if (!is_array($needles)) {
+        if (! is_array($needles)) {
             $needles = [$needles];
         }
 
@@ -1540,14 +1611,12 @@ class Helper
     /**
      * Determine if all given needles are present in the haystack as array keys.
      *
-     * @param array|string $needles
-     * @param array        $haystack
-     *
+     * @param  array|string  $needles
      * @return bool
      */
     public function arrayKeysExist($needles, array $haystack)
     {
-        if (!is_array($needles)) {
+        if (! is_array($needles)) {
             return array_key_exists($needles, $haystack);
         }
 
@@ -1563,8 +1632,6 @@ class Helper
      *
      * Array keys are preserved.
      *
-     * @param array    $array
-     * @param callable $callback
      *
      * @return array
      */
@@ -1572,9 +1639,7 @@ class Helper
     {
         $passesFilter = array_filter($array, $callback);
 
-        $negatedCallback = function ($item) use ($callback) {
-            return !$callback($item);
-        };
+        $negatedCallback = (fn ($item) => ! $callback($item));
 
         $doesNotPassFilter = array_filter($array, $negatedCallback);
 
@@ -1584,10 +1649,8 @@ class Helper
     /**
      * Split an array in the given amount of pieces.
      *
-     * @param array $array
-     * @param int   $numberOfPieces
-     * @param bool  $preserveKeys
-     *
+     * @param  int  $numberOfPieces
+     * @param  bool  $preserveKeys
      * @return array
      */
     public function arraySplit(array $array, $numberOfPieces = 2, $preserveKeys = false)
@@ -1604,15 +1667,12 @@ class Helper
     /**
      * Returns an array with the unique values from all the given arrays.
      *
-     * @param \array[] $arrays
-     *
+     * @param  array[]  $arrays
      * @return array
      */
     public function arrayMergeValues(array ...$arrays)
     {
-        $allValues = array_reduce($arrays, function ($carry, $array) {
-            return array_merge($carry, $array);
-        }, []);
+        $allValues = array_reduce($arrays, array_merge(...), []);
 
         return array_values(array_unique($allValues));
     }
@@ -1621,9 +1681,7 @@ class Helper
      * Flatten an array of arrays. The `$levels` parameter specifies how deep you want to
      * recurse in the array. If `$levels` is -1, the function will recurse infinitely.
      *
-     * @param array $array
-     * @param int   $levels
-     *
+     * @param  int  $levels
      * @return array
      */
     public function arrayFlatten(array $array, $levels = -1)
@@ -1635,7 +1693,7 @@ class Helper
         $flattened = [];
 
         if ($levels !== -1) {
-            --$levels;
+            $levels--;
         }
 
         foreach ($array as $element) {
@@ -1651,22 +1709,23 @@ class Helper
     private function count_words($string)
     {
         // Return the number of words in a string.
-        $string = str_replace("&#039;", "'", $string);
-        $t = array(' ', "\t", '=', '+', '-', '*', '/', '\\', ',', '.', ';', ':', '[', ']', '{', '}', '(', ')', '<', '>', '&', '%', '$', '@', '#', '^', '!', '?', '~'); // separators
-        $string = str_replace($t, " ", $string);
-        $string = trim(preg_replace("/\s+/", " ", $string));
+        $string = str_replace('&#039;', "'", $string);
+        $t = [' ', "\t", '=', '+', '-', '*', '/', '\\', ',', '.', ';', ':', '[', ']', '{', '}', '(', ')', '<', '>', '&', '%', '$', '@', '#', '^', '!', '?', '~']; // separators
+        $string = str_replace($t, ' ', $string);
+        $string = trim(preg_replace("/\s+/", ' ', $string));
         $num = 0;
         if ($this->my_strlen($string) > 0) {
-            $word_array = explode(" ", $string);
+            $word_array = explode(' ', $string);
             $num = count($word_array);
         }
+
         return $num;
     }
 
     private function my_strlen($s)
     {
         // Return mb_strlen with encoding UTF-8.
-        return mb_strlen($s, "UTF-8");
+        return mb_strlen((string) $s, 'UTF-8');
     }
 
     public function countWordsInfile($filename)
@@ -1674,9 +1733,10 @@ class Helper
 
         $retVal = $this->readFile($filename);
 
-        if (FALSE !== strpos($retVal, "Invalid")) {
+        if (str_contains($retVal, 'Invalid')) {
             return $retVal;
         }
+
         return $this->count_words($retVal);
     }
 
@@ -1692,6 +1752,7 @@ class Helper
                 return $value;
             }
         }
+
         return -1;
     }
 
@@ -1702,14 +1763,13 @@ class Helper
                 return $key;
             }
         }
+
         return -1;
     }
 
     /**
      * Get the next value in an array after the provided key of the previous value
      *
-     * @param string $key
-     * @param array $array
      * @return mixed
      */
     public function getArrayNextValueAfterKey(string $key, array $array)
@@ -1719,14 +1779,13 @@ class Helper
             next($array);
             $currentKey = key($array);
         }
+
         return next($array);
     }
 
     /**
      * Get the previous value in an array before the provided key of the current value
      *
-     * @param string $key
-     * @param array $array
      * @return mixed
      */
     public function getArrayPreviousValueAfterKey(string $key, array $array)
@@ -1736,22 +1795,24 @@ class Helper
             prev($array);
             $currentKey = key($array);
         }
+
         return next($array);
     }
 
     public function searchNestedArray($search, array $array, $mode = 'value')
     {
         foreach (new \RecursiveIteratorIterator(new \RecursiveArrayIterator($array)) as $key => $value) {
-            if ($search === ${${"mode"}}) {
+            if ($search === ${${'mode'}}) {
                 return true;
             }
         }
+
         return false;
     }
 
     public function inArray($search, array $array, $mode = 'value')
     {
-        return $this->searchNestedArray($search,  $array, $mode);
+        return $this->searchNestedArray($search, $array, $mode);
     }
 
     public function countItemsInArray($array, $value)
@@ -1762,17 +1823,19 @@ class Helper
                 $count++;
             }
         }
+
         return $count;
     }
 
     public function isMultiDimensionalArray(array $array)
     {
-        $flag = FALSE;
-        while (list($k, $value) = each($array)) {
+        $flag = false;
+        foreach ($array as $value) {
             if (is_array($value)) {
-                $flag = TRUE;
+                $flag = true;
             }
         }
+
         return $flag;
     }
 
@@ -1783,9 +1846,10 @@ class Helper
         } else {
             foreach ($this->getStopWords() as $stopWord) {
                 $newStopWords = "/\b$stopWord\b/";
-                $word = preg_replace($newStopWords, '', $word);
+                $word = preg_replace($newStopWords, '', (string) $word);
             }
         }
+
         return $word;
     }
 
@@ -1794,38 +1858,37 @@ class Helper
         $word = $this->lowercase($word);
         foreach ($this->getStopWords() as $value) {
             if ($word === $value) {
-                return TRUE;
+                return true;
             }
         }
-        return FALSE;
+
+        return false;
     }
 
     /**
      * Remove duplicate values in array
-     * @param array $arr
-     * @param string $glue
+     *
+     * @param  string  $glue
      * @return mixed array/string
      */
-    public function removeDuplicatesInArray(array $arr, $glue = NULL)
+    public function removeDuplicatesInArray(array $arr, $glue = null)
     {
         $result = array_unique($this->removeEmptyArrayElements($arr));
-        if (!$this->isEmpty($glue)) {
+        if (! $this->isEmpty($glue)) {
             $result = $this->implodeArray($glue, $result);
         }
+
         return $result;
     }
 
     /**
      * Combine the values of an array using a glue
-     * @param string $glue
-     * @param array $array
+     *
      * @return array
      */
     public function implodeArray(string $glue, array $array)
     {
-        return array_reduce($array, function ($carry, $item) use ($glue) {
-            return !$carry ? $item : ($carry . $glue . $item);
-        });
+        return array_reduce($array, fn ($carry, $item) => $carry ? $carry.$glue.$item : ($item));
     }
 
     public function removeEmptyArrayElements($array)
@@ -1835,8 +1898,7 @@ class Helper
 
     /**
      * Remove elements from array
-     * @param array $array
-     * @param array $to_remove
+     *
      * @return array
      */
     public function removeElementFromArray(array $array, array $to_remove)
@@ -1846,52 +1908,41 @@ class Helper
 
     /**
      * Find the largest value in array
-     * @param array $array
+     *
      * @return mixed
      */
     public function getLargestArrayValue(array $array)
     {
-        $result = array_reduce($array, function ($carry, $item) {
-            return $item > $carry ? $item : $carry;
-        });
-        return $result;
+        return array_reduce($array, fn ($carry, $item) => $item > $carry ? $item : $carry);
     }
 
     /**
      * Find the smallest value in array
-     * @param array $array
+     *
      * @return mixed
      */
     public function getSmallestArrayValue(array $array)
     {
-        $result = array_reduce($array, function ($carry, $item) {
-            return $item < $carry ? $item : $carry;
-        });
-        return $result;
+        return array_reduce($array, fn ($carry, $item) => $item < $carry ? $item : $carry);
     }
 
     /**
      * Calculate the sum of values in array
-     * @param array $array
+     *
      * @return mixed
      */
     public function getSumOfArrayValues(array $array)
     {
-        $result = array_reduce($array, function ($carry, $item) {
-            return $carry + $item;
-        });
-        return $result;
+        return array_reduce($array, fn ($carry, $item) => $carry + $item);
     }
 
     /**
-     *
-     * @param string $value
+     * @param  string  $value
      * @return float
      */
     public function toFloat($value)
     {
-        $num = floatval($this->replaceComma($value));
-        return $num;
+        return floatval($this->replaceComma($value));
     }
 
     public function nairaToKobo($value)
@@ -1907,69 +1958,61 @@ class Helper
     /**
      * underscoreToCamelCase
      * Covert lower_underscored mysql notation into Camel/Pascal case notation
-     * @param $string string to convert into Camel/Pascal case notation
-     * @param bool $pascalCase If true the result is PascalCase
+     *
+     * @param  $string  string to convert into Camel/Pascal case notation
+     * @param  bool  $pascalCase  If true the result is PascalCase
      * @return string
      */
     public static function underscoreToCamelCase($string, $pascalCase = false)
     {
-        $string = strtolower($string);
+        $string = strtolower((string) $string);
 
         if ($pascalCase == true) {
             $string[0] = strtoupper($string[0]);
         }
-        $func = function ($c) {
-            return strtoupper($c[1]);
-        };
+        $func = (fn ($c) => strtoupper((string) $c[1]));
+
         return preg_replace_callback('/_([a-z])/', $func, $string);
     }
 
     /**
      * Replaces backslash present into MySQL strings which containing apostrophes.
      *
-     * @param  string $field The field to replace
+     * @param  string  $field  The field to replace
      * @return string the field without backslash for the apostrophes
      */
     public function replaceAposBackSlash($field)
     {
         $r1 = str_replace("\'", "'", $field);
-        $r2 = str_replace("\\\\", "\\", $r1);
-        return $r2;
+
+        return str_replace('\\\\', '\\', $r1);
     }
 
     /**
      * replace dashes with underscore
-     * @param string $string
+     *
+     * @param  string  $string
      * @return string
      */
     public function replaceDash($string)
     {
-        $r = str_replace("-", "_", $string);
-
-        return $r;
+        return str_replace('-', '_', $string);
     }
 
     public function replaceComma($string)
     {
-        $r = str_replace(",", "", $string);
-        return $r;
+        return str_replace(',', '', $string);
     }
 
     public function detectBrowserLanguage()
     {
-        if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
-            $lang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
-        } else {
-            $lang = "en";
-        }
-
-        return $lang;
+        return isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr((string) $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : 'en';
     }
 
     public function getPhrases($text)
     {
         // Note: en_US is the default language.
-        $rake = RakePlus::create(strip_tags($text), 'en_US');
+        $rake = RakePlus::create(strip_tags((string) $text), 'en_US');
 
         // 'asc' is optional and is the default sort order
         $phrases = $rake->sort('asc')->get();
@@ -1977,43 +2020,41 @@ class Helper
         return $phrases;
     }
 
-    public  function getKeywords($text)
+    public function getKeywords($text)
     {
-        $keywords = RakePlus::create(strip_tags($text))->keywords();
-        $keywords = $this->removeDuplicatesInArray($keywords);
-        return $keywords;
-    }
+        $keywords = RakePlus::create(strip_tags((string) $text))->keywords();
 
+        return $this->removeDuplicatesInArray($keywords);
+    }
 
     public function randomColor()
     {
-        $result = array('rgb' => '', 'hex' => '');
-        foreach (array('r', 'b', 'g') as $col) {
+        $result = ['rgb' => '', 'hex' => ''];
+        foreach (['r', 'b', 'g'] as $col) {
             $rand = mt_rand(0, 255);
             $result['rgb'][$col] = $rand;
             $dechex = dechex($rand);
             if (strlen($dechex) < 2) {
-                $dechex = '0' . $dechex;
+                $dechex = '0'.$dechex;
             }
             $result['hex'] .= "#$dechex";
         }
+
         return $result;
     }
 
     public function deleteFile($folder = null, $filename = null)
     {
         $disk = 'public';
-        Storage::disk($disk)->delete($folder . $filename);
+        Storage::disk($disk)->delete($folder.$filename);
     }
 
     public function uploadFile(UploadedFile $uploadedFile, $folder = null, $filename = null)
     {
         $disk = 'public';
-        $name = !$this->isEmpty($filename) ? $filename : str_random(25);
+        $name = $this->isEmpty($filename) ? str_random(25) : $filename;
 
-        $file = $uploadedFile->storeAs($folder, $name . '.' . $uploadedFile->getClientOriginalExtension(), $disk);
-
-        return $file;
+        return $uploadedFile->storeAs($folder, $name.'.'.$uploadedFile->getClientOriginalExtension(), $disk);
     }
 
     public function checkFile($path)
@@ -2025,7 +2066,7 @@ class Helper
         $i = 1;
         while (file_exists($new_path)) {
             // add and combine the filename, iterator, extension
-            $new_path = implode("/", [$dir, $filename . '_' . $i . '.' . $extension]);
+            $new_path = implode('/', [$dir, $filename.'_'.$i.'.'.$extension]);
             $i++;
         }
 
@@ -2034,55 +2075,62 @@ class Helper
 
     /**
      * Check if it is a file
-     * @param type $file
+     *
+     * @param  type  $file
      * @return type
      */
     public function isFile($file)
     {
         $ext = pathinfo($file, PATHINFO_EXTENSION);
-        return (strlen($ext) > 0) ? true : false;
+
+        return (string) $ext !== '';
     }
 
     /**
      * Check if upload is a video file
-     * @param object $fileObject HTML File input element name
-     * @return boolean
+     *
+     * @param  object  $fileObject  HTML File input element name
+     * @return bool
      */
     public function isVideo($filename)
     {
         if ($this->isEmpty($filename)) {
-            return FALSE;
+            return false;
         }
-        $EXT_LIST = ['mp4', 'mov', 'mpg', 'mpeg', 'wmv', 'mkv', 'ogg', 'webm',];
+        $EXT_LIST = ['mp4', 'mov', 'mpg', 'mpeg', 'wmv', 'mkv', 'ogg', 'webm'];
+
         return $this->contains($filename, 'video') || in_array($this->getFileExtension($filename), $EXT_LIST);
     }
 
     public function isImage($filename)
     {
         if ($this->isEmpty($filename)) {
-            return FALSE;
+            return false;
         }
-        $EXT_LIST = ['jpg', 'png', 'bmp', 'jpeg', 'gif',];
+        $EXT_LIST = ['jpg', 'png', 'bmp', 'jpeg', 'gif'];
+
         return $this->contains($filename, 'image') || in_array($this->getFileExtension($filename), $EXT_LIST);
     }
 
     public function isAudio($filename)
     {
         if ($this->isEmpty($filename)) {
-            return FALSE;
+            return false;
         }
         $EXT_LIST = ['ogg', 'mp3', 'wav', 'wmv'];
+
         return $this->contains($filename, 'audio') || in_array($this->getFileExtension($filename), $EXT_LIST);
     }
 
     public function isDocument($filename)
     {
         if ($this->isEmpty($filename)) {
-            return FALSE;
+            return false;
         }
-        $EXT_LIST = array(
-            'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'zip', 'rar', 'txt', 'pdf'
-        );
+        $EXT_LIST = [
+            'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'zip', 'rar', 'txt', 'pdf',
+        ];
+
         return in_array($this->getFileExtension($filename), $EXT_LIST);
     }
 
@@ -2092,79 +2140,76 @@ class Helper
             return $text;
         }
         $text = $this->stripTags($text);
-        $words = str_word_count($text, 1);
+        $words = str_word_count((string) $text, 1);
+
         return $words[0];
     }
 
     /**
      * Extract all the urls in the text
-     * @param type $text
+     *
+     * @param  type  $text
      * @return type
      */
     public function extractUrls($text)
     {
         $url = [];
-        preg_match_all('/(https?|ssh|ftp):\/\/[^\s"]+/', $text, $url);
-        $all_url = (isset($url[0])) ? $url[0] : NULL; // Returns Array Of all Found URLs
-        return $all_url;
+        preg_match_all('/(https?|ssh|ftp):\/\/[^\s"]+/', $text, $url); // Returns Array Of all Found URLs
+
+        return $url[0] ?? null;
     }
 
     /**
      * Get the first url in the text
-     * @param type $text
+     *
+     * @param  type  $text
      * @return type
      */
     public function getFirstUrl($text)
     {
-        $url = (isset($this->extractUrls($text)[0])) ? $this->extractUrls($text)[0] : NULL; // Gives the First URL in Array of URL's
-        return $url;
+        // Gives the First URL in Array of URL's
+        return $this->extractUrls($text)[0] ?? null;
     }
 
     public function isLowerCase($string)
     {
-        return $string === strtolower($string);
+        return $string === strtolower((string) $string);
     }
 
     public function isUpperCase($string)
     {
-        return $string === strtoupper($string);
+        return $string === strtoupper((string) $string);
     }
 
     public function isAnagram($string1, $string2)
     {
-        return count_chars($string1, 1) === count_chars($string2, 1);
+        return count_chars((string) $string1, 1) === count_chars((string) $string2, 1);
     }
 
     public function palindrome($string)
     {
-        return strrev($string) === $string;
+        return strrev((string) $string) === $string;
     }
 
     public function firstStringBetween($haystack, $start, $end)
     {
-        $char = strpos($haystack, $start);
-        if (!$char) {
+        $char = strpos((string) $haystack, (string) $start);
+        if (! $char) {
             return '';
         }
 
-        $char += strlen($start);
-        $len = strpos($haystack, $end, $char) - $char;
+        $char += strlen((string) $start);
+        $len = strpos((string) $haystack, (string) $end, $char) - $char;
 
-        return substr($haystack, $char, $len);
+        return substr((string) $haystack, $char, $len);
     }
 
     public function compose($functions)
     {
         return array_reduce(
             $functions,
-            function ($carry, $function) {
-                return function ($x) use ($carry, $function) {
-                    return $function($carry($x));
-                };
-            },
-            function ($x) {
-                return $x;
-            }
+            fn ($carry, $function) => fn ($x) => $function($carry($x)),
+            fn ($x) => $x
         );
     }
 
@@ -2173,22 +2218,24 @@ class Helper
      *  <br /> added for single line return
      *  <p> added for double line return
      *
-     * @param string $text Text
+     * @param  string  $text  Text
      * @return string The text with proper <p> and <br /> tags
+     *
      * @link https://book.cakephp.org/3.0/en/views/helpers/text.html#converting-text-into-paragraphs
      */
     public function autoParagraph($text)
     {
         if (trim($text) !== '') {
-            $text = preg_replace('|<br[^>]*>\s*<br[^>]*>|i', "\n\n", $text . "\n");
+            $text = preg_replace('|<br[^>]*>\s*<br[^>]*>|i', "\n\n", $text."\n");
             $text = preg_replace("/\n\n+/", "\n\n", str_replace(["\r\n", "\r"], "\n", $text));
-            $texts = preg_split('/\n\s*\n/', $text, -1, PREG_SPLIT_NO_EMPTY);
+            $texts = preg_split('/\n\s*\n/', (string) $text, -1, PREG_SPLIT_NO_EMPTY);
             $text = '';
             foreach ($texts as $txt) {
-                $text .= '<p>' . nl2br(trim($txt, "\n")) . "</p>\n";
+                $text .= '<p>'.nl2br(trim($txt, "\n"))."</p>\n";
             }
             $text = preg_replace('|<p>\s*</p>|', '', $text);
         }
+
         return $text;
     }
 
@@ -2199,22 +2246,22 @@ class Helper
         $text = $this->stripTags($text);
         // Split into array of sentences
         $sentences = $Sentence->split($text);
-        $val = isset($sentences[0]) ? $sentences[0] : NULL;
-        return $val;
+
+        return $sentences[0] ?? null;
     }
 
     public function isSimilarImages($img1, $img2)
     {
         $images = new compareImages;
-        $retVal = ($images->compare($img1, $img2) === 0) && ($this->isSimilarFiles($img1, $img2));
-        return $retVal;
+
+        return ($images->compare($img1, $img2) === 0) && ($this->isSimilarFiles($img1, $img2));
     }
 
     public function compareDirectories($srcDir, $destDir)
     {
-        $cmp = new \App\Helpers\compareDirectories\compareDirectories; // Initialize the class set up the source and update(pristine) directories:
-        $cmp->set_source($srcDir . '\Source'); // Directory where Source files are
-        $cmp->set_update($destDir . '\Update'); // Directory where pristeen files are do the compare:
+        $cmp = new compareDirectories; // Initialize the class set up the source and update(pristine) directories:
+        $cmp->set_source($srcDir.'\Source'); // Directory where Source files are
+        $cmp->set_update($destDir.'\Update'); // Directory where pristeen files are do the compare:
         $cmp->do_compare();     // Do the compare and get the results:
         $dir['removed'] = $cmp->get_removed();  // Get the results
         $dir['added'] = $cmp->get_added();   // ...
@@ -2231,7 +2278,8 @@ class Helper
     public function isSimilarText($text1, $text2)
     {
         $percent = floatval(0);
-        similar_text($text1, $text2, $percent);
+        similar_text((string) $text1, (string) $text2, $percent);
+
         return $percent === 100;
     }
 
@@ -2254,7 +2302,7 @@ class Helper
     {
         $result = [];
         foreach ($items as $item) {
-            if (!is_array($item)) {
+            if (! is_array($item)) {
                 $result[] = $item;
             } else {
                 $result = array_merge($result, array_values($item));
@@ -2268,7 +2316,7 @@ class Helper
     {
         $result = [];
         foreach ($items as $item) {
-            if (!is_array($item)) {
+            if (! is_array($item)) {
                 $result[] = $item;
             } else {
                 $result = array_merge($result, $this->deepFlatten($item));
@@ -2315,14 +2363,13 @@ class Helper
     public function pull(&$items, ...$params)
     {
         $items = array_values(array_diff($items, $params));
+
         return $items;
     }
 
     public function pluck($items, $key)
     {
-        return array_map(function ($item) use ($key) {
-            return is_object($item) ? $item->$key : $item[$key];
-        }, $items);
+        return array_map(fn ($item) => is_object($item) ? $item->$key : $item[$key], $items);
     }
 
     public function reject($items, $func)
@@ -2356,7 +2403,7 @@ class Helper
     {
         $group = [];
         foreach ($items as $item) {
-            if ((!is_string($func) && is_callable($func)) || function_exists($func)) {
+            if ((! is_string($func) && is_callable($func)) || function_exists($func)) {
                 $key = call_user_func($func, $item);
                 $group[$key][] = $item;
             } elseif (is_object($item)) {
@@ -2371,7 +2418,7 @@ class Helper
 
     /**
      * Get the average of values in array
-     * @param array $items
+     *
      * @return int
      */
     public function averageOfArrayValues(array $items)
@@ -2393,7 +2440,7 @@ class Helper
         $sequence = [0, 1];
 
         for ($i = 0; $i < $n - 2; $i++) {
-            array_push($sequence, array_sum(array_slice($sequence, -2, 2, true)));
+            $sequence[] = array_sum(array_slice($sequence, -2, 2, true));
         }
 
         return $sequence;
@@ -2402,18 +2449,20 @@ class Helper
     public function gcd(array $numbers)
     {
         if (count($numbers) > 2) {
-            return array_reduce($numbers, 'gcd');
+            return array_reduce($numbers, gcd(...));
         }
 
         $r = $numbers[0] % $numbers[1];
-        return $r === 0 ? abs($numbers[1]) : $this->gcd($numbers[1], $r);
+
+        return $r === 0 ? abs($numbers[1]) : $this->gcd($numbers[1]);
     }
 
     public function lcm(array $numbers)
     {
         $ans = $numbers[0];
-        for ($i = 1; $i < count($numbers); $i++) {
-            $ans = ((($numbers[$i] * $ans)) / ($this->gcd($numbers[$i], $ans)));
+        $counter = count($numbers);
+        for ($i = 1; $i < $counter; $i++) {
+            $ans = ((($numbers[$i] * $ans)) / ($this->gcd($numbers[$i])));
         }
 
         return $ans;
@@ -2449,63 +2498,61 @@ class Helper
     {
         $now = new Carbon;
         $dt = new Carbon($date);
+
         return $dt->diffForHumans($now);
     }
+
     /**
      * Encode a string making sure that there are no symbols in retval
-     * @param string $value
+     *
+     * @param  string  $value
      * @return string
      */
     public function encodeString($value)
     {
-        $value = $this->urlsafe_b64encode($value);
-        return $value;
+        return $this->urlsafe_b64encode($value);
     }
 
     /**
      * Decode a string making sure that there are no symbols in retval
-     * @param string $value
+     *
+     * @param  string  $value
      * @return string
      */
     public function decodeString($value)
     {
-        $value = $this->urlsafe_b64decode($value);
-        return $value;
+        return $this->urlsafe_b64decode($value);
     }
 
     public function urlsafe_b64encode($string)
     {
         $data = $this->base64Encode($string);
-        $data = str_replace(array('+', '/', '='), array('-', '_', ''), $data);
-        return $data;
+
+        return str_replace(['+', '/', '='], ['-', '_', ''], $data);
     }
 
     public function urlsafe_b64decode($string)
     {
-        $data = str_replace(array('-', '_', ''), array('+', '/', '='), $string);
+        $data = str_replace(['-', '_', ''], ['+', '/', '='], $string);
         $mod4 = strlen($data) % 4;
-        if ($mod4) {
+        if ($mod4 !== 0) {
             $data .= substr('====', $mod4);
         }
+
         return $this->base64Decode($data);
     }
 
     public function headingDivider($heading)
     {
-        $head = <<< HEAD
+        return <<< HEAD
         <div class="heading-divider"><span></span><span>$heading</span><span></span></div>
 HEAD;
-        return $head;
     }
 
     /**
      * Add active class to navigation links
-     *
-     * @param  string $routeName
-     * @param  string $className
-     * @return string
      */
-    function active(string $routeName, string $className = 'active'): string
+    public function active(string $routeName, string $className = 'active'): string
     {
         return (Route::current()->getName() === $routeName) ? $className : '';
     }
@@ -2513,7 +2560,7 @@ HEAD;
     /**
      * Return a formatted Carbon date.
      */
-    function humanize_date(Carbon $date, string $format = 'd F Y, H:i'): string
+    public function humanize_date(Carbon $date, string $format = 'd F Y, H:i'): string
     {
         return $date->format($format);
     }
@@ -2525,12 +2572,11 @@ HEAD;
                 // show companies menu or something
                 return true;
             }
-        } else {
-            if (\Route::current()->getName() == 'comp') {
-                // We are on a correct route!
-                return true;
-            }
+        } elseif (\Route::current()->getName() == 'comp') {
+            // We are on a correct route!
+            return true;
         }
+
         return false;
     }
 
@@ -2539,7 +2585,8 @@ HEAD;
         $headers = [
             'Content-Type' => 'application/pdf',
         ];
-        return response()->download($file, str_random(15) . '.' . $this->getFileExtension($file), $headers);
+
+        return response()->download($file, str_random(15).'.'.$this->getFileExtension($file), $headers);
     }
 
     public function getSessionId()
@@ -2553,25 +2600,24 @@ HEAD;
     /** @var int */
     protected $alphabetLength;
 
-
     /**
-     * @param string $alphabet
+     * @param  string  $alphabet
      */
     public function __construct($alphabet = '')
     {
-        if ('' != $alphabet) {
+        if ($alphabet != '') {
             $this->setAlphabet($alphabet);
         } else {
             $this->setAlphabet(
-                implode(range('a', 'z'))
-                    . implode(range('A', 'Z'))
-                    . implode(range(0, 9))
+                implode('', range('a', 'z'))
+                    .implode('', range('A', 'Z'))
+                    .implode('', range(0, 9))
             );
         }
     }
 
     /**
-     * @param string $alphabet
+     * @param  string  $alphabet
      */
     public function setAlphabet($alphabet)
     {
@@ -2580,7 +2626,7 @@ HEAD;
     }
 
     /**
-     * @param int $length
+     * @param  int  $length
      * @return string
      */
     public function generate($length = 50)
@@ -2596,8 +2642,8 @@ HEAD;
     }
 
     /**
-     * @param int $min
-     * @param int $max
+     * @param  int  $min
+     * @param  int  $max
      * @return int
      */
     protected function getRandomInteger($min, $max)
@@ -2618,33 +2664,35 @@ HEAD;
         $bits = (int) $log + 1;
 
         // Set all lower bits to 1.
-        $filter = (int) (1 << $bits) - 1;
+        $filter = 1 << $bits - 1;
 
         do {
             $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes)));
 
             // Discard irrelevant bits.
-            $rnd = $rnd & $filter;
+            $rnd &= $filter;
         } while ($rnd >= $range);
 
-        return ($min + $rnd);
+        return $min + $rnd;
     }
 
     public function getReferenceCode()
     {
         // Call method to generate random string.
         $token = $this->generate();
-        return  $token;
+
+        return $token;
     }
 
     /**
      * Convert $_FILES to array
-     * @param array $file_post
+     *
+     * @param  array  $file_post
      * @return array
      */
     public function reArrayFiles(&$file_post)
     {
-        $file_ary = array();
+        $file_ary = [];
         $multiple = is_array($file_post['name']);
         $file_count = $multiple ? count($file_post['name']) : 1;
         $file_keys = array_keys($file_post);
@@ -2653,6 +2701,7 @@ HEAD;
                 $file_ary[$i][$key] = $multiple ? $file_post[$key][$i] : $file_post[$key];
             }
         }
+
         return $file_ary;
     }
 
@@ -2690,22 +2739,21 @@ HEAD;
 
         OpenGraph::addImage(url($property->cover_image));
 
-
-        if ('video' == strtolower($type)) {
+        if (strtolower((string) $type) === 'video') {
             // og:video
             OpenGraph::addVideo(url($property->path), [
                 'secure_url' => secure_url($property->path),
                 'type' => $property->mimeType,
                 'width' => 400,
-                'height' => 300
+                'height' => 300,
             ]);
-        } elseif ('audio' == strtolower($type)) {
+        } elseif (strtolower((string) $type) === 'audio') {
             // og:audio
             OpenGraph::addAudio(url($property->path), [
                 'secure_url' => secure_url($property->path),
                 'type' => $property->mimeType,
             ]);
-        } elseif ('article' == strtolower($type)) {
+        } elseif (strtolower((string) $type) === 'article') {
             // article
             OpenGraph::setTitle($title)
                 ->setDescription($description)
@@ -2715,9 +2763,9 @@ HEAD;
                     'modified_time' => $property->updated_at,
                     'author' => $property->author,
                     'section' => $property->category,
-                    'tag' => $property->tag
+                    'tag' => $property->tag,
                 ]);
-        } elseif ('download' == strtolower($type)) {
+        } elseif (strtolower((string) $type) === 'download') {
             // book
             OpenGraph::setTitle($title)
                 ->setDescription($description)
@@ -2726,9 +2774,9 @@ HEAD;
                     'author' => $property->author,
                     'isbn' => $property->isbn,
                     'release_date' => $property->release_date,
-                    'tag' => $property->tag
+                    'tag' => $property->tag,
                 ]);
-        } elseif ('profile' == strtolower($type)) {
+        } elseif (strtolower((string) $type) === 'profile') {
             // book
             OpenGraph::setTitle($title)
                 ->setDescription($description)
@@ -2739,6 +2787,7 @@ HEAD;
                 ]);
         }
     }
+
     public function SEOView()
     {
         echo SEO::generate(true);
@@ -2747,14 +2796,14 @@ HEAD;
     /**
      * Pluralizes a word if quantity is not one.
      *
-     * @param int $quantity Number of items
-     * @param string $singular Singular form of word
-     * @param string $plural Plural form of word; function will attempt to deduce plural form from singular if not provided
+     * @param  int  $quantity  Number of items
+     * @param  string  $singular  Singular form of word
+     * @param  string  $plural  Plural form of word; function will attempt to deduce plural form from singular if not provided
      * @return string Pluralized word if quantity is not one, otherwise singular
      */
     public function pluralize($quantity, $singular, $plural = null)
     {
-        if ($quantity == 1 || !strlen($singular)) {
+        if ($quantity == 1 || ! strlen($singular)) {
             return $singular;
         }
         if ($plural !== null) {
@@ -2765,25 +2814,26 @@ HEAD;
         switch ($last_letter) {
             case 'y':
                 $second_to_last_letter = strtolower($singular[strlen($singular) - 2]);
-                if ($second_to_last_letter === "a") {
-                    return $singular . 's';
+                if ($second_to_last_letter === 'a') {
+                    return $singular.'s';
                 } else {
-                    return substr($singular, 0, -1) . 'ies';
+                    return substr($singular, 0, -1).'ies';
                 }
             case 's':
-                return $singular . 'es';
+                return $singular.'es';
             default:
-                return $singular . 's';
+                return $singular.'s';
         }
     }
 
-    public function callClassMethod($class, $method, $arg = NULL)
+    public function callClassMethod($class, $method, $arg = null)
     {
-        $obj = new $class();
+        $obj = new $class;
+
         return $obj->$method($arg);
     }
 
-    public function callMethod($obj, $method, $arg = NULL)
+    public function callMethod($obj, $method, $arg = null)
     {
         return $obj->$method($arg);
     }
@@ -2796,16 +2846,13 @@ HEAD;
     /**
      * Builds a file path with the appropriate directory separator.
      *
-     * @param string $segments,... unlimited number of path segments
+     * @param  string  $segments,...  unlimited number of path segments
      * @return string Path
      */
-    function file_build_path(...$segments)
+    public function file_build_path(...$segments)
     {
-        return join(DIRECTORY_SEPARATOR, $segments);
+        return implode(DIRECTORY_SEPARATOR, $segments);
     }
-
-
-
 
     /**
      * @return string
@@ -2818,115 +2865,91 @@ HEAD;
         }
 
         $data = [
-            'home_url'      => route('home'),
-            'asset_url'     => asset('assets'),
-            'csrf_token'    => csrf_token(),
-            'jobModalOpen'  => $jobModalOpen,
+            'home_url' => route('home'),
+            'asset_url' => asset('assets'),
+            'csrf_token' => csrf_token(),
+            'jobModalOpen' => $jobModalOpen,
             'flag_job_validation_fails' => session('flag_job_validation_fails'),
             'share_job_validation_fails' => session('share_job_validation_fails'),
-            //'my_dashboard' => route('my_dashboard'),
+            // 'my_dashboard' => route('my_dashboard'),
         ];
 
-        $routeLists = \Illuminate\Support\Facades\Route::getRoutes();
+        $routeLists = Route::getRoutes();
 
         $routes = [];
         foreach ($routeLists as $route) {
-            $routes[$route->getName()] = $data['home_url'] . '/' . $route->uri;
+            $routes[$route->getName()] = $data['home_url'].'/'.$route->uri;
         }
         $data['routes'] = $routes;
 
         return json_encode($data);
     }
 
-
-
-
-
     /**
-     * @param string $option_key
+     * @param  string  $option_key
      * @return string
      */
     public function get_option($option_key = '', $default = false)
     {
         $options = config('options');
-        if (isset($options[$option_key])) {
-            return $options[$option_key];
-        }
-        return $default;
+
+        return $options[$option_key] ?? $default;
     }
 
-
     /**
-     * @param string $title
-     * @param $model
+     * @param  string  $title
      * @return string
      */
-
     public function unique_slug($title = '', $model = 'Job', $col = 'slug')
     {
         $slug = str_slug($title);
         if ($slug === '') {
-            $string = mb_strtolower($title, "UTF-8");;
-            $string = preg_replace("/[\/\.]/", " ", $string);
-            $string = preg_replace("/[\s-]+/", " ", $string);
-            $slug = preg_replace("/[\s_]/", '-', $string);
+            $string = mb_strtolower($title, 'UTF-8');
+            $string = preg_replace("/[\/\.]/", ' ', $string);
+            $string = preg_replace("/[\s-]+/", ' ', (string) $string);
+            $slug = preg_replace("/[\s_]/", '-', (string) $string);
         }
 
-        //get unique slug...
+        // get unique slug...
         $nSlug = $slug;
         $i = 0;
 
-        $model = str_replace(' ', '', "\App\ " . $model);
+        $model = str_replace(' ', '', "\App\ ".$model);
         while (($model::where($col, '=', $nSlug)->count()) > 0) {
             $i++;
-            $nSlug = $slug . '-' . $i;
+            $nSlug = $slug.'-'.$i;
         }
-        if ($i > 0) {
-            $newSlug = substr($nSlug, 0, strlen($slug)) . '-' . $i;
-        } else {
-            $newSlug = $slug;
-        }
-        return $newSlug;
+
+        return $i > 0 ? substr($nSlug, 0, strlen($slug)).'-'.$i : $slug;
     }
 
-    public function e_form_error($field = '', $errors)
+    public function e_form_error($field = '', $errors = null)
     {
-        $output = $errors->has($field) ? '<span class="invalid-feedback" role="alert"><strong>' . $errors->first($field) . '</strong></span>' : '';
-        return $output;
+        return $errors->has($field) ? '<span class="invalid-feedback" role="alert"><strong>'.$errors->first($field).'</strong></span>' : '';
     }
 
-    public function e_form_invalid_class($field = '', $errors)
+    public function e_form_invalid_class($field = '', $errors = null)
     {
         return $errors->has($field) ? ' is-invalid' : '';
     }
 
-
-
-
     /**
-     * @param int $amount
+     * @param  int  $amount
      * @return string
      */
     public function get_amount($amount = 0, $currency = null)
     {
         $currency_position = $this->get_option('currency_position');
 
-        if (!$currency) {
+        if (! $currency) {
             $currency = $this->get_option('currency_sign');
         }
 
         $currency_sign = $this->get_currency_symbol($currency);
         $get_price = $this->get_amount_raw($amount);
 
-        if ($currency_position == 'right') {
-            $show_price = $get_price . $currency_sign;
-        } else {
-            $show_price = $currency_sign . $get_price;
-        }
-
-        return $show_price;
+        return $currency_position == 'right' ? $get_price.$currency_sign : $currency_sign.$get_price;
     }
-
 
     public function get_amount_raw($amount = 0)
     {
@@ -2935,19 +2958,16 @@ HEAD;
 
         if (in_array($this->get_option('currency_sign'), $none_decimal_currencies)) {
             $get_price = (int) $amount;
-        } else {
-            if ($amount > 0) {
-                $get_price = number_format($amount, 2);
-            }
+        } elseif ($amount > 0) {
+            $get_price = number_format($amount, 2);
         }
 
         return $get_price;
     }
 
-
     public function get_zero_decimal_currency()
     {
-        $zero_decimal_currency = [
+        return [
             'BIF',
             'MGA',
             'CLP',
@@ -2965,13 +2985,11 @@ HEAD;
             'XOF',
             'XPF',
         ];
-
-        return $zero_decimal_currency;
     }
 
     public function get_stripe_amount($amount = 0, $type = 'to_cents')
     {
-        if (!$amount) {
+        if (! $amount) {
             return $amount;
         }
 
@@ -2982,8 +3000,9 @@ HEAD;
         }
 
         if ($type === 'to_cents') {
-            return ($amount * 100);
+            return $amount * 100;
         }
+
         return $amount / 100;
     }
 
@@ -2992,10 +3011,9 @@ HEAD;
      *
      * Get currencies
      */
-
     public function get_currencies()
     {
-        return array(
+        return [
             'USD' => 'United States dollar',
             'EUR' => 'Euro',
             'AED' => 'United Arab Emirates dirham',
@@ -3156,22 +3174,22 @@ HEAD;
             'YER' => 'Yemeni rial',
             'ZAR' => 'South African rand',
             'ZMW' => 'Zambian kwacha',
-        );
+        ];
     }
 
     /**
      * Get Currency symbol.
      *
-     * @param string $currency (default: '')
+     * @param  string  $currency  (default: '')
      * @return string
      */
     public function get_currency_symbol($currency = '')
     {
-        if (!$currency) {
+        if (! $currency) {
             $currency = 'USD';
         }
 
-        $symbols = array(
+        $symbols = [
             'AED' => '&#x62f;.&#x625;',
             'AFN' => '&#x60b;',
             'ALL' => 'L',
@@ -3333,119 +3351,94 @@ HEAD;
             'YER' => '&#xfdfc;',
             'ZAR' => '&#82;',
             'ZMW' => 'ZK',
-        );
+        ];
 
-        $currency_symbol = isset($symbols[$currency]) ? $symbols[$currency] : '';
-
-        return $currency_symbol;
+        return $symbols[$currency] ?? '';
     }
-
-
-
-
-
-
 
     /**
      * Form Helper
      */
 
     /**
-     * @param $checked
-     * @param bool $current
-     * @param bool $echo
+     * @param  bool  $current
+     * @param  bool  $echo
      * @return string
      */
-
-    public  function checked($checked, $current = true, $echo = true)
+    public function checked($checked, $current = true, $echo = true)
     {
         return $this->__checked_selected_helper($checked, $current, $echo, 'checked');
     }
 
     /**
-     * @param $selected
-     * @param bool $current
-     * @param bool $echo
+     * @param  bool  $current
+     * @param  bool  $echo
      * @return string
      */
-
     public function selected($selected, $current = true, $echo = true)
     {
         return $this->__checked_selected_helper($selected, $current, $echo, 'selected');
     }
 
-
     /**
-     * @param $helper
-     * @param $current
-     * @param $echo
-     * @param $type
      * @return string
      */
-
     public function __checked_selected_helper($helper, $current, $echo, $type)
     {
-        if ((string) $helper === (string) $current)
-            $result = " $type='$type'";
-        else
-            $result = '';
+        $result = (string) $helper === (string) $current ? " $type='$type'" : '';
 
-        if ($echo)
+        if ($echo) {
             echo $result;
+        }
 
         return $result;
     }
 
-
     /**
      * End Form Helper
      */
-
-
     /**
-     * @param null $code
      * @return array|mixed
      *
      * Get Company Size
      */
-
     public function company_size($code = null)
     {
         $size = [
             'A' => __('app.1-10'),
             'B' => __('app.11-50'),
-            'C'  => __('app.51-200'),
-            'D'  => __('app.201-500'),
-            'E'  => __('app.501-1000'),
-            'F'  => __('app.1001-5000'),
-            'G'  => __('app.5001-10,000'),
-            'H'  => __('app.10,001+'),
+            'C' => __('app.51-200'),
+            'D' => __('app.201-500'),
+            'E' => __('app.501-1000'),
+            'F' => __('app.1001-5000'),
+            'G' => __('app.5001-10,000'),
+            'H' => __('app.10,001+'),
         ];
 
         if ($code && isset($size[$code])) {
             return $size[$code];
         }
+
         return $size;
     }
 
     public function limit_words($text = null, $limit = 30)
     {
-        $text = strip_tags($text);
+        $text = strip_tags((string) $text);
         if (str_word_count($text, 0) > $limit) {
             $words = str_word_count($text, 2);
             $pos = array_keys($words);
-            $text = substr($text, 0, $pos[$limit]) . '...';
+            $text = substr($text, 0, $pos[$limit]).'...';
         }
+
         return $text;
     }
-
 
     public function get_text_tpl($text = '')
     {
         $tpl = ['[year]', '[copyright_sign]', '[site_name]'];
         $variable = [date('Y'), '&copy;', get_option('site_name')];
 
-        $tpl_option = str_replace($tpl, $variable, $text);
-        return $tpl_option;
+        return str_replace($tpl, $variable, $text);
     }
 }

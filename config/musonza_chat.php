@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+use App\Models\User;
+use Musonza\Chat\Eventing\MessageWasSent;
+
 return [
-    'user_model' => 'App\Models\User',
+    'user_model' => User::class,
 
     /*
      * If not set, the package will use getKeyName() on the user_model specified above
@@ -20,7 +24,7 @@ return [
      * The event to fire when a message is sent
      * See Musonza\Chat\Eventing\MessageWasSent if you want to customize.
      */
-    'sent_message_event' => 'Musonza\Chat\Eventing\MessageWasSent',
+    'sent_message_event' => MessageWasSent::class,
 
     /*
      * Automatically convert conversations with more than two users to public

@@ -31,27 +31,27 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
 
-        view()->composer(['layouts.pages.includes.navbar', 'site.pages.index'], function ($view) {
+        view()->composer(['layouts.pages.includes.navbar', 'site.pages.index'], function ($view): void {
             $programmes = Programme::with(['description', 'image', 'programmeTimes'])->get();
             $view->with('programmes', $programmes);
         });
 
-        view()->composer('layouts.pages.includes.navbar', function ($view) {
+        view()->composer('layouts.pages.includes.navbar', function ($view): void {
             $presenters = Presenter::with(['description', 'image'])->get();
             $view->with('presenters', $presenters);
         });
 
-        view()->composer(['layouts.pages.includes.navbar', 'site.pages.index', 'site.pages.blog', 'site.pages.programmes.blog', 'site.pages.presenters.blog', 'site.pages.gallery.blog'], function ($view) {
+        view()->composer(['layouts.pages.includes.navbar', 'site.pages.index', 'site.pages.blog', 'site.pages.programmes.blog', 'site.pages.presenters.blog', 'site.pages.gallery.blog'], function ($view): void {
             $categories = Category::with(['description', 'image'])->get();
             $view->with('categories', $categories);
         });
 
-        view()->composer(['layouts.pages.includes.navbar', 'site.pages.index', 'site.pages.blog', 'site.pages.programmes.blog', 'site.pages.presenters.blog', 'site.pages.gallery.blog'], function ($view) {
+        view()->composer(['layouts.pages.includes.navbar', 'site.pages.index', 'site.pages.blog', 'site.pages.programmes.blog', 'site.pages.presenters.blog', 'site.pages.gallery.blog'], function ($view): void {
             $tags = Tag::all();
             $view->with('tags', $tags);
         });
 
-        view()->composer(['site.pages.blog', 'site.pages.programmes.blog', 'site.pages.presenters.blog', 'site.pages.gallery.blog'], function ($view) {
+        view()->composer(['site.pages.blog', 'site.pages.programmes.blog', 'site.pages.presenters.blog', 'site.pages.gallery.blog'], function ($view): void {
             $recents = Post::with(['category', 'category.description', 'category.image', 'description', 'image'])->orderBy('created_at', 'desc')->limit(5)->get();
             $view->with('recents', $recents);
         });

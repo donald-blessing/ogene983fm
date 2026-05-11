@@ -37,7 +37,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
-        $this->routes(function () {
+        $this->routes(function (): void {
             Route::prefix('api')
                 ->middleware('api')
                 ->namespace($this->namespace)
@@ -47,52 +47,52 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
 
-            //include routes for categories
+            // include routes for categories
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/categoriesRoute.php'));
 
-            //include routes for usersRoutes
+            // include routes for usersRoutes
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/usersRoutes.php'));
 
-            //include routes for newsletterRoutes
+            // include routes for newsletterRoutes
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/newsletterRoutes.php'));
 
-            //include routes for contacts
+            // include routes for contacts
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/contacts.php'));
 
-            //include routes for blog
+            // include routes for blog
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/blog.php'));
 
-            //include routes for gallery
+            // include routes for gallery
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/gallery.php'));
 
-            //include routes for programmes
+            // include routes for programmes
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/programmes.php'));
 
-            //include routes for on-air-personalities
+            // include routes for on-air-personalities
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/on-air-personalities.php'));
 
-            //include routes for discussion
+            // include routes for discussion
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/discussion.php'));
 
-            //include routes for metro
+            // include routes for metro
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/metro.php'));
@@ -106,8 +106,6 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting()
     {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
-        });
+        RateLimiter::for('api', fn (Request $request) => Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip()));
     }
 }

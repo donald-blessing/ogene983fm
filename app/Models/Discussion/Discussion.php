@@ -2,12 +2,21 @@
 
 namespace App\Models\Discussion;
 
+use App\Models\Description\Description;
+use App\Models\Image\Image;
+use App\Models\Presenter\Presenter;
+use App\Models\Programme\Programme;
+use App\Models\Tag\Tag;
+use App\Models\Upload\Upload;
 use App\Traits\AboutTrait;
 use App\Traits\Taggable;
 use App\Traits\UploadFiles;
 use App\Traits\UploadImage;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Laravelista\Comments\Comment;
 use Laravelista\Comments\Commentable;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
@@ -17,52 +26,58 @@ use Spatie\Sluggable\SlugOptions;
 /**
  * App\Models\Discussion\Discussion
  *
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravelista\Comments\Comment[] $approvedComments
+ * @property-read Collection|Comment[] $approvedComments
  * @property-read int|null $approved_comments_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravelista\Comments\Comment[] $comments
+ * @property-read Collection|Comment[] $comments
  * @property-read int|null $comments_count
- * @property-read \App\Models\Description\Description|null $description
+ * @property-read Description|null $description
  * @property-read mixed $about
  * @property-read mixed $content
  * @property-read mixed $excerpt
  * @property-read mixed $presenters
  * @property-read mixed $programme_name
  * @property-read mixed $summary
- * @property-read \App\Models\Presenter\Presenter $presenter
- * @property-read \App\Models\Programme\Programme $programme
+ * @property-read Presenter $presenter
+ * @property-read Programme $programme
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion myThreads()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion query()
- * @mixin \Eloquent
+ *
  * @property int $id
  * @property string $title
  * @property string $slug
  * @property int $programme_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereProgrammeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereUpdatedAt($value)
+ *
  * @property-read mixed $cover_image
- * @property-read \App\Models\Image\Image|null $image
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag\Tag[] $tags
+ * @property-read Image|null $image
+ * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Upload\Upload[] $uploads
+ * @property-read Collection|Upload[] $uploads
  * @property-read int|null $uploads_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Discussion whereContent($value)
+ *
+ * @mixin \Eloquent
  */
 class Discussion extends Model implements Searchable
 {
-    use Commentable;
     use AboutTrait;
+    use Commentable;
     use HasSlug;
     use Taggable;
-    use UploadImage;
     use UploadFiles;
+    use UploadImage;
 
     protected $fillable = [
         'content',
@@ -97,7 +112,8 @@ class Discussion extends Model implements Searchable
     public function getSearchResult(): SearchResult
     {
         $url = route('discussion.show', $this->slug);
-        return new \Spatie\Searchable\SearchResult(
+
+        return new SearchResult(
             $this,
             $this->id,
             $url
@@ -106,12 +122,12 @@ class Discussion extends Model implements Searchable
 
     public function presenter()
     {
-        return $this->belongsTo('App\Models\Presenter\Presenter');
+        return $this->belongsTo(Presenter::class);
     }
 
     public function programme()
     {
-        return $this->belongsTo('App\Models\Programme\Programme');
+        return $this->belongsTo(Programme::class);
     }
 
     public function getProgrammeNameAttribute()
@@ -126,7 +142,7 @@ class Discussion extends Model implements Searchable
 
     public function scopeMyThreads($query)
     {
-        return $query->whereHas('users', function ($query) {
+        return $query->whereHas('users', function ($query): void {
             $query->where('users.id', Auth::user()->id);
         });
     }
@@ -136,9 +152,6 @@ class Discussion extends Model implements Searchable
         return $this->about;
     }
 
-    /**
-     * @return string
-     */
     public function url(): string
     {
         return route('discussion.show', $this->slug);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +15,7 @@ class CreateProgrammeUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('programme_user', function (Blueprint $table) {
+        Schema::create('programme_user', function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('programme_id');
             $table->foreign('programme_id')->references('id')->on('programmes');

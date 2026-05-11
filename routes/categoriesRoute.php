@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Category\CategoryController;
 use Illuminate\Support\Facades\Route;
 
-//categories
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function () {
-    Route::group(['prefix' => 'categories'], function () {
+// categories
+Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function (): void {
+    Route::group(['prefix' => 'categories'], function (): void {
         Route::get('/', [CategoryController::class, 'dashboard'])->name('category.dashboard');
         Route::get('/create', [CategoryController::class, 'create'])->name('category.create');
         Route::post('/store', [CategoryController::class, 'store'])->name('category.store');

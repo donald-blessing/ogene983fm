@@ -2,31 +2,24 @@
 
 namespace App\Traits;
 
-
-use App\Traits\FlashMessages;
-
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 
 trait ControllerTrait
 {
     use FlashMessages;
 
-    /**
-     * @var null
-     */
-    protected $data = null;
+    protected $data;
 
-    /**
-     * @param $title
-     * @param $subTitle
-     */
     public function setPageTitle($title, $subTitle = null)
     {
         view()->share(['pageTitle' => $title, 'subTitle' => $subTitle]);
     }
 
     /**
-     * @param $title
-     * @param $subTitle
+     * @param  $title
+     * @param  $subTitle
      */
     public function setPageValue(array $value)
     {
@@ -34,40 +27,37 @@ trait ControllerTrait
     }
 
     /**
-     * @param int $errorCode
-     * @param null $message
-     * @return \Illuminate\Http\Response
+     * @param  int  $errorCode
+     * @return Response
      */
     public function showErrorPage($errorCode = 404, $message = null)
     {
         $data['message'] = $message;
-        return response()->view('errors.' . $errorCode, $data, $errorCode);
+
+        return response()->view('errors.'.$errorCode, $data, $errorCode);
     }
 
     /**
-     * @param bool $error
-     * @param int $responseCode
-     * @param array $message
-     * @param null $data
-     * @return \Illuminate\Http\JsonResponse
+     * @param  bool  $error
+     * @param  int  $responseCode
+     * @param  array  $message
+     * @return JsonResponse
      */
     public function responseJson($error = true, $responseCode = 200, $message = [], $data = null)
     {
         return response()->json([
-            'error'         =>  $error,
+            'error' => $error,
             'response_code' => $responseCode,
-            'message'       => $message,
-            'data'          =>  $data
+            'message' => $message,
+            'data' => $data,
         ]);
     }
 
     /**
-     * @param $route
-     * @param $message
-     * @param string $type
-     * @param bool $error
-     * @param bool $withOldInputWhenError
-     * @return \Illuminate\Http\RedirectResponse
+     * @param  string  $type
+     * @param  bool  $error
+     * @param  bool  $withOldInputWhenError
+     * @return RedirectResponse
      */
     public function responseRedirect($route, $message, $type = 'info', $error = false, $withOldInputWhenError = false)
     {
@@ -82,15 +72,15 @@ trait ControllerTrait
     }
 
     /**
-     * @param $message
-     * @param string $type
-     * @param bool $error
-     * @param bool $withOldInputWhenError
-     * @return \Illuminate\Http\RedirectResponse
+     * @param  string  $type
+     * @param  bool  $error
+     * @param  bool  $withOldInputWhenError
+     * @return RedirectResponse
      */
     public function responseRedirectBack($message, $type = 'info', $error = false, $withOldInputWhenError = false)
     {
         $this->setFlashMessage($message, $type);
+
         // $this->showFlashMessages();
         return redirect()->back();
     }

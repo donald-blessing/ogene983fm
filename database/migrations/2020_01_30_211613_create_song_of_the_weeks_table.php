@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +15,7 @@ class CreateSongOfTheWeeksTable extends Migration
      */
     public function up()
     {
-        Schema::create('song_of_the_weeks', function (Blueprint $table) {
+        Schema::create('song_of_the_weeks', function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->string('title', 255);
             $table->string('slug');

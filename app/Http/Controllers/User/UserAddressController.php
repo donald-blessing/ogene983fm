@@ -5,9 +5,10 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddressStoreRequest;
 use App\Models\Address\Address;
-use App\Traits\ControllerTrait;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Traits\ControllerTrait;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class UserAddressController extends Controller
@@ -18,21 +19,21 @@ class UserAddressController extends Controller
      * display form for creating address for user resource
      *
      *
-     * @param User $user
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     *
      * @throws \Throwable
      */
     public function create(User $user)
     {
         $addressView = view('site.dashboard.user.address.create', ['user' => $user])->render();
+
         return response()->json(['modal' => $addressView], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\AddressStoreRequest $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(AddressStoreRequest $request, User $user)
     {
@@ -46,24 +47,25 @@ class UserAddressController extends Controller
             $user->saveAddress($request);
         } catch (\Throwable $th) {
             DB::rollback();
+
             return response()->json(['message' => $th->getMessage()], 200);
         }
         DB::commit();
+
         return response()->json(['message' => 'Address was added successfully!'], 200);
     }
-
 
     public function edit(Address $address)
     {
         $addressView = view('site.dashboard.user.address.edit', ['address' => $address])->render();
+
         return response()->json(['modal' => $addressView], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\AddressStoreRequest $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(AddressStoreRequest $request, User $user, Address $address)
     {
@@ -82,15 +84,16 @@ class UserAddressController extends Controller
         }
         DB::commit();
         session()->flash('success', 'Address was updated successfully!');
+
         return back();
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Models\User\User $user
-     * @param \App\Models\Address\User $address
-     * @return \Illuminate\Http\Response
+     * @param  User\User  $user
+     * @param  \App\Models\Address\User  $address
+     * @return Response
      */
     public function destroy(User $user, Address $address)
     {
@@ -103,6 +106,7 @@ class UserAddressController extends Controller
         }
         DB::commit();
         session()->flash('success', 'Address was deleted successfully!');
+
         return back();
     }
 }

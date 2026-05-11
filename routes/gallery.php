@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Gallery\AlbumController;
 use App\Http\Controllers\Gallery\AlbumUploadController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function () {
-    Route::group(['prefix' => 'gallery'], function () {
+Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function (): void {
+    Route::group(['prefix' => 'gallery'], function (): void {
         Route::get('/', [AlbumController::class, 'dashboard'])->name('gallery.album.dashboard');
         Route::get('/album/create', [AlbumController::class, 'create'])->name('gallery.album.create');
         Route::post('/album/store', [AlbumController::class, 'store'])->name('gallery.album.store');
@@ -22,7 +24,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], funct
         Route::delete('/album/uploads/{albumUpload}/delete', [AlbumUploadController::class, 'destroy'])->name('gallery.album.upload.delete');
     });
 });
-Route::group(['prefix' => 'gallery'], function () {
+Route::group(['prefix' => 'gallery'], function (): void {
     Route::get('/', [AlbumController::class, 'index'])->name('gallery.album.index');
     Route::get('/album/{album}', [AlbumController::class, 'show'])->name('gallery.album.show');
     Route::get('/album/{album}/{albumUpload}', [AlbumUploadController::class, 'show'])->name('gallery.album.upload.show');

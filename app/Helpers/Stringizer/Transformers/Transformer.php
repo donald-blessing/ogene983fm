@@ -1,16 +1,17 @@
 <?php
+
 namespace App\Helpers\Stringizer\Transformers;
 
 /**
  * Transform - base class for all Transformers
  *
  * @link https://github.com/jasonlam604/Stringizer
+ *
  * @copyright Copyright (c) 2016 Jason Lam
  * @license https://github.com/jasonlam604/Stringizer/blob/master/LICENSE.md (MIT License)
  */
 class Transformer
 {
-
     /**
      * Holds the string value to apply transformations on
      *
@@ -36,12 +37,13 @@ class Transformer
     /**
      * Setter
      *
-     * @param string $value
+     * @param  string  $value
      */
-    private function setValue($value) {
+    private function setValue($value)
+    {
 
-        if (! isset($value) ) {
-            throw new \InvalidArgumentException("String to transform contains a null");
+        if (! isset($value)) {
+            throw new \InvalidArgumentException('String to transform contains a null');
         }
 
         $this->value = $value;

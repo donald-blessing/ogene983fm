@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,17 +23,15 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function () {
+Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function (): void {
     Route::get('/', [HomeController::class, 'dashboard'])->name('dashboard');
 });
 Route::get('/home', [HomeController::class, 'index']);
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
-
 Route::get('/tags/{tag}', [TagController::class, 'show'])->name('tag.show');
 Route::get('/search', [SearchController::class, 'show'])->name('search');
-
 
 Route::get('/clear-cache', function () {
     Artisan::call('view:clear');
@@ -40,11 +40,12 @@ Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
     Artisan::call('config:cache');
     if (function_exists('exec')) {
-        exec('rm ' . storage_path('logs/*'));
+        exec('rm '.storage_path('logs/*'));
     }
+
     return redirect()->route('home');
 });
 
-Route::get('/test', function () {
+Route::get('/test', function (): void {
     dd($_SERVER['DOCUMENT_ROOT']);
 });

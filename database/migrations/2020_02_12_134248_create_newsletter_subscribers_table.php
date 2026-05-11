@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +15,7 @@ class CreateNewsletterSubscribersTable extends Migration
      */
     public function up()
     {
-        Schema::create('newsletter_subscribers', function (Blueprint $table) {
+        Schema::create('newsletter_subscribers', function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->string('UUID')->unique();
             $table->string('email', 255)->unique();

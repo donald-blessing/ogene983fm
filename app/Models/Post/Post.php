@@ -2,10 +2,18 @@
 
 namespace App\Models\Post;
 
+use App\Models\Category\Category;
+use App\Models\Description\Description;
+use App\Models\Image\Image;
+use App\Models\Presenter\Presenter;
+use App\Models\Tag\Tag;
 use App\Traits\AboutTrait;
 use App\Traits\Taggable;
 use App\Traits\UploadImage;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
@@ -15,21 +23,22 @@ use Spatie\Sluggable\SlugOptions;
 /**
  * App\Models\Post\Post
  *
- * @property-read \App\Models\Presenter\Presenter $author
- * @property-read \App\Models\Category\Category $category
- * @property-read \App\Models\Description\Description|null $description
+ * @property-read Presenter $author
+ * @property-read Category $category
+ * @property-read Description|null $description
  * @property-read mixed $about
  * @property-read mixed $cover_image
  * @property-read mixed $excerpt
  * @property-read mixed $summary
- * @property-read \App\Models\Image\Image|null $image
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag\Tag[] $tags
+ * @property-read Image|null $image
+ * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post myPosts()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post query()
- * @mixin \Eloquent
+ *
  * @property int $id
  * @property string $title
  * @property string $slug
@@ -37,8 +46,9 @@ use Spatie\Sluggable\SlugOptions;
  * @property int $category_id
  * @property int $programme_id
  * @property string $content
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereCategoryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereContent($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereCreatedAt($value)
@@ -48,6 +58,8 @@ use Spatie\Sluggable\SlugOptions;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereUserId($value)
+ *
+ * @mixin \Eloquent
  */
 class Post extends Model implements Searchable
 {
@@ -81,57 +93,43 @@ class Post extends Model implements Searchable
 
     /**
      * Get the route key for the model.
-     *
-     * @return string
      */
     public function getRouteKeyName(): string
     {
         return 'slug';
     }
 
-    /**
-     * @return SearchResult
-     */
     public function getSearchResult(): SearchResult
     {
         $url = route('post.show', $this->slug);
-        return new \Spatie\Searchable\SearchResult(
+
+        return new SearchResult(
             $this,
             $this->id,
             $url
         );
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function author(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function author(): BelongsTo
     {
-        return $this->belongsTo('App\Models\Presenter\Presenter');
+        return $this->belongsTo(Presenter::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo('App\Models\Category\Category');
-    }
-
-    /**
-     * @param $query
      * @return mixed
      */
     public function scopeMyPosts($query)
     {
-        return $query->whereHas('users', function ($query) {
+        return $query->whereHas('users', function ($query): void {
             $query->where('users.id', Auth::user()->id);
         });
     }
 
-    /**
-     * @return string
-     */
     public function url(): string
     {
         return route('post.show', $this->slug);

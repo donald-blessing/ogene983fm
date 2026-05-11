@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Post\PostController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function () {
-    Route::group(['prefix' => 'news-and-event'], function () {
+Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function (): void {
+    Route::group(['prefix' => 'news-and-event'], function (): void {
         Route::get('/', [PostController::class, 'dashboard'])->name('post.dashboard');
         Route::get('/create', [PostController::class, 'create'])->name('post.create');
         Route::post('/store', [PostController::class, 'store'])->name('post.store');
@@ -13,7 +15,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], funct
         Route::delete('/{post}/delete', [PostController::class, 'destroy'])->name('post.delete');
     });
 });
-Route::group(['prefix' => 'news-and-event'], function () {
+Route::group(['prefix' => 'news-and-event'], function (): void {
     Route::get('/', [PostController::class, 'index'])->name('post.index');
     Route::get('/{category}', [PostController::class, 'category'])->name('post.category');
     Route::get('/{category}/{post}', [PostController::class, 'show'])->name('post.show');

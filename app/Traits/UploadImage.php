@@ -4,24 +4,18 @@ namespace App\Traits;
 
 use App\Helpers\Helper;
 use App\Models\Image\Image;
-use App\Traits\UploadAble;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
-
 /**
  * Trait UploadImage
- * @package App\Traits
  */
 trait UploadImage
 {
     use UploadAble;
 
     /**
-     * @param UploadedFile $file
-     * @param null $folder
-     * @param string $disk
-     * @param null $filename
+     * @param  string  $disk
      * @return false|string
      */
     public function uploadImage(UploadedFile $file, $folder = null, $filename = null)
@@ -36,17 +30,15 @@ trait UploadImage
             throw $th;
         }
         DB::commit();
+
         return true;
     }
 
     /**
      * Update image in model
      *
-     * @param UploadedFile $file
-     * @param null $folder
-     * @param string $disk
-     * @param null $filename
-     * @return boolean
+     * @param  string  $disk
+     * @return bool
      */
     public function updateImage(UploadedFile $file, $folder = null, $filename = null)
     {
@@ -62,22 +54,22 @@ trait UploadImage
                 $folder = $helper->getFileDirectoryName($imageFile);
             }
 
-            $image->image = $this->uploadFile($file, \str_replace(asset(""), "", $folder), $filename);
+            $image->image = $this->uploadFile($file, \str_replace(asset(''), '', $folder), $filename);
             $image->save();
             $this->deleteFile($imageFile);
         } catch (\Throwable $th) {
             DB::rollback();
             throw $th;
-            return false;
         }
         DB::commit();
+
         return true;
     }
 
     /**
      * Delete model images
      *
-     * @return boolean
+     * @return bool
      */
     public function deleteImage()
     {
@@ -88,11 +80,13 @@ trait UploadImage
             $img = Image::findOrFail($id);
             $this->deleteFile($img->image);
             $img->delete();
-        } catch (\Throwable $th) {
+        } catch (\Throwable) {
             DB::rollback();
+
             return false;
         }
         DB::commit();
+
         return true;
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +15,7 @@ class AddDayToProgrammeTimesTable extends Migration
      */
     public function up()
     {
-        Schema::table('programme_times', function (Blueprint $table) {
+        Schema::table('programme_times', function (Blueprint $table): void {
             $table->string('day');
         });
     }
@@ -25,7 +27,7 @@ class AddDayToProgrammeTimesTable extends Migration
      */
     public function down()
     {
-        Schema::table('programme_times', function (Blueprint $table) {
+        Schema::table('programme_times', function (Blueprint $table): void {
             $table->dropColumn('day');
         });
     }

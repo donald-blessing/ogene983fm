@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\User\PermissionController;
 use App\Http\Controllers\User\RoleController;
 use App\Http\Controllers\User\UserAboutController;
@@ -12,17 +14,17 @@ use App\Http\Controllers\User\UserRoleController;
 use App\Http\Controllers\User\UserSocialMediaHandleController;
 use Illuminate\Support\Facades\Route;
 
-//categories
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
+// categories
+Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function (): void {
 
-    Route::group(['middleware' => ['superAdmin']], function () {
+    Route::group(['middleware' => ['superAdmin']], function (): void {
         Route::get('members', [UserController::class, 'index'])->name('users.index');
         Route::resource('roles', RoleController::class);
         Route::resource('permissions', PermissionController::class);
     });
 
-    Route::group(['prefix' => 'member'], function () {
-        Route::group(['middleware' => ['superAdmin']], function () {
+    Route::group(['prefix' => 'member'], function (): void {
+        Route::group(['middleware' => ['superAdmin']], function (): void {
             Route::post('/roles/{user}/edit', [UserRoleController::class, 'edit'])->name('roles.edit.user');
             Route::post('/roles/{user}/save', [UserRoleController::class, 'store'])->name('roles.store.user');
             Route::post('/roles/{user}/update', [UserRoleController::class, 'update'])->name('roles.update.user');
@@ -32,7 +34,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
             Route::post('/permissions/{user}/update', [UserPermissionController::class, 'update'])->name('permissions.update.user');
         });
 
-        Route::group(['prefix' => 'profile'], function () {
+        Route::group(['prefix' => 'profile'], function (): void {
             Route::get('/{user}/address', [UserAddressController::class, 'create'])->name('user.address.create');
             Route::post('/{user}/address', [UserAddressController::class, 'store'])->name('user.address.store');
             Route::get('/{user}/address/{address}/edit', [UserAddressController::class, 'edit'])->name('user.address.edit');
@@ -43,7 +45,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
             Route::post('/{user}-image/update', [UserAvatarController::class, 'update'])->name('user.avatar.update');
             Route::get('/{user}', [UserProfileController::class, 'getProfile'])->name('user.myProfile');
             Route::delete('/{user}/delete', [UserController::class, 'destroy'])->name('user.delete');
-            Route::get('/{user}/verify', [UserController::class, 'verifyUser'])->name('user.verify');
+            Route::get('/{user}/verify', UserController::verifyUser(...))->name('user.verify');
 
             Route::get('/{user}/social-media-handle', [UserSocialMediaHandleController::class, 'create'])->name('user.socialmediahandle.create');
             Route::post('/{user}/social-media-handle', [UserSocialMediaHandleController::class, 'store'])->name('user.socialmediahandle.store');
@@ -61,8 +63,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
     });
 });
 
-
-Route::group(['prefix' => 'member', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'member', 'middleware' => ['auth']], function (): void {
     Route::post('/{user}/profile-dialog', [UserProfileController::class, 'profileDialog'])->name('user.profile.dialog');
     Route::get('/{user}/profile', [UserProfileController::class, 'show'])->name('user.profile');
     Route::get('/profile/{user}/change-password', [UserProfileController::class, 'changePassword'])->name('user.profile.changePassword');

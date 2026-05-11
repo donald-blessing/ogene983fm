@@ -1,10 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+declare(strict_types=1);
 
-class CreateAboutTraitTable extends Migration
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateDescriptionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +15,8 @@ class CreateAboutTraitTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('descriptions')) {
-            Schema::create('descriptions', function (Blueprint $table) {
+        if (! Schema::hasTable('descriptions')) {
+            Schema::create('descriptions', function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->text('body');
                 $table->morphs('described');

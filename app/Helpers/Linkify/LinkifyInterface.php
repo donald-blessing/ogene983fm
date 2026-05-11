@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Helpers\Linkify;
 
 /*
@@ -15,34 +18,30 @@ namespace App\Helpers\Linkify;
  */
 interface LinkifyInterface
 {
-
     /**
      * Add HTML links to both URLs and email addresses.
      *
-     * @param string $text    Text to process.
-     * @param array  $options Options.
-     *
+     * @param  string  $text  Text to process.
+     * @param  array  $options  Options.
      * @return string Processed text.
      */
-    public function process($text, array $options = array());
+    public function process($text, array $options = []);
 
     /**
      * Add HTML links to URLs.
      *
-     * @param string $text    Text to process.
-     * @param array  $options Options.
-     *
+     * @param  string  $text  Text to process.
+     * @param  array  $options  Options.
      * @return string Processed text.
      */
-    public function processUrls($text, array $options = array());
+    public function processUrls($text, array $options = []);
 
     /**
      * Add HTML links to email addresses.
      *
-     * @param string $text    Text to process.
-     * @param array  $options Options.
-     *
+     * @param  string  $text  Text to process.
+     * @param  array  $options  Options.
      * @return string Processed text.
      */
-    public function processEmails($text, array $options = array());
+    public function processEmails($text, array $options = []);
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Programme\Programme;
 use App\Models\Programme\ProgrammeTime;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class ProgrammeTimeController extends Controller
@@ -13,7 +14,7 @@ class ProgrammeTimeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -23,7 +24,7 @@ class ProgrammeTimeController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create(Programme $programme)
     {
@@ -33,14 +34,13 @@ class ProgrammeTimeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(Request $request, Programme $programme)
     {
         $request->flash();
         $this->validate($request, [
-            'programmeDay'  => ['required', 'numeric'],
+            'programmeDay' => ['required', 'numeric'],
             'from' => ['required', 'string'],
             'to' => ['required', 'string'],
         ]);
@@ -49,8 +49,8 @@ class ProgrammeTimeController extends Controller
             $programmeTime = ProgrammeTime::firstOrCreate(
                 [
                     'from' => strtotime($request->from),
-                    'to'   => strtotime($request->to),
-                    'day'  => $request->programmeDay,
+                    'to' => strtotime($request->to),
+                    'day' => $request->programmeDay,
                 ]
             );
             $programme->programmeTimes()->attach([$programmeTime->id]);
@@ -60,6 +60,7 @@ class ProgrammeTimeController extends Controller
         }
         DB::commit();
         alert()->success('Programme schedule was uploaded successfully');
+
         return redirect()->route('programme.dashboard');
     }
 
@@ -67,7 +68,7 @@ class ProgrammeTimeController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -78,9 +79,9 @@ class ProgrammeTimeController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function edit(Programme  $programme, ProgrammeTime $programmeTime)
+    public function edit(Programme $programme, ProgrammeTime $programmeTime)
     {
         return view('site.dashboard.programmes.schedule.edit', ['programme' => $programme, 'programmeTime' => $programmeTime]);
     }
@@ -88,15 +89,14 @@ class ProgrammeTimeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, Programme $programme, ProgrammeTime $programmeTime)
     {
         $request->flash();
         $this->validate($request, [
-            'programmeDay'  => ['required', 'numeric'],
+            'programmeDay' => ['required', 'numeric'],
             'from' => ['required', 'string'],
             'to' => ['required', 'string'],
         ]);
@@ -105,8 +105,8 @@ class ProgrammeTimeController extends Controller
             $programmeTime->update(
                 [
                     'from' => strtotime($request->from),
-                    'to'   => strtotime($request->to),
-                    'day'  => $request->programmeDay,
+                    'to' => strtotime($request->to),
+                    'day' => $request->programmeDay,
                 ]
             );
         } catch (\Throwable $th) {
@@ -115,6 +115,7 @@ class ProgrammeTimeController extends Controller
         }
         DB::commit();
         alert()->success('Programme schedule was updated successfully');
+
         return redirect()->route('programme.dashboard');
     }
 
@@ -122,7 +123,7 @@ class ProgrammeTimeController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {

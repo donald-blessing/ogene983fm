@@ -4,31 +4,24 @@ namespace App\Traits;
 
 use App\Helpers\Helper;
 use App\Models\Upload\Upload;
-use App\Traits\UploadAble;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Trait UploadFiles
- * @package App\Traits
  */
 trait UploadFiles
 {
     use UploadAble;
 
-
     /**
      * Upload file
      *
-     * @param \Illuminate\Http\UploadedFile $files
-     * @param string|array $title
-     * @param string|array $descriptions
-     * @param string $folder
-     * @param string $filename
-     *
+     * @param  string|array  $title
+     * @param  string|array  $descriptions
      * @return false|string
      */
-    public function upload(UploadedFile $files, $title = null, $descriptions = null, string $folder = null, string $filename = null)
+    public function upload(UploadedFile $files, $title = null, $descriptions = null, ?string $folder = null, ?string $filename = null)
     {
         DB::beginTransaction();
         try {
@@ -52,20 +45,18 @@ trait UploadFiles
             throw $th;
         }
         DB::commit();
+
         return true;
     }
 
     /**
      * Update upload in model
      *
-     * @param \App\Models\Upload\Upload $uploadId
-     * @param UploadedFile $file
-     * @param null $folder
-     * @param string $disk
-     * @param null $filename
-     * @return boolean
+     * @param  Upload  $uploadId
+     * @param  string  $disk
+     * @return bool
      */
-    public function updateUpload(Upload $upload, UploadedFile $file = null, $title = null, $descriptions = null, $folder = null, $filename = null)
+    public function updateUpload(Upload $upload, ?UploadedFile $file = null, $title = null, $descriptions = null, $folder = null, $filename = null)
     {
         DB::beginTransaction();
         try {
@@ -74,8 +65,8 @@ trait UploadFiles
             if ($folder == null) {
                 $folder = $helper->getFileDirectoryName($uploadFile);
             }
-            if ($file) {
-                $upload->file = $this->uploadFile($file, \str_replace(asset(""), "", $folder), $filename);
+            if ($file instanceof UploadedFile) {
+                $upload->file = $this->uploadFile($file, \str_replace(asset(''), '', $folder), $filename);
                 unlink(base_path($uploadFile));
             }
             $upload->title = $title;
@@ -84,17 +75,16 @@ trait UploadFiles
         } catch (\Throwable $th) {
             DB::rollback();
             throw $th;
-            return false;
         }
         DB::commit();
+
         return true;
     }
 
     /**
      * Delete model uploads
      *
-     * @param \App\Models\Upload\Upload $uploadId
-     * @return boolean
+     * @return bool
      */
     public function deleteUpload(Upload $uploadId)
     {
@@ -104,11 +94,13 @@ trait UploadFiles
             $uploadFile = Upload::findOrFail($uploadId);
             $this->deleteFile($uploadFile->file);
             $uploadFile->delete();
-        } catch (\Throwable $th) {
+        } catch (\Throwable) {
             DB::rollback();
+
             return false;
         }
         DB::commit();
+
         return true;
     }
 

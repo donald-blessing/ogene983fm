@@ -2,14 +2,20 @@
 
 namespace App\Models\Category;
 
+use App\Models\Description\Description;
 use App\Models\Gallery\Album;
+use App\Models\Image\Image;
 use App\Models\Metro\Metro;
 use App\Models\Post\Post;
+use App\Models\Tag\Tag;
 use App\Traits\AboutTrait;
 use App\Traits\HasScopeChecks;
 use App\Traits\Taggable;
 use App\Traits\UploadImage;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\HasSlug;
@@ -18,11 +24,11 @@ use Spatie\Sluggable\SlugOptions;
 /**
  * App\Models\Category\Category
  *
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Gallery\Album[] $albums
+ * @property-read Collection|Album[] $albums
  * @property-read int|null $albums_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Category\Category[] $childrenCategories
+ * @property-read Collection|Category[] $childrenCategories
  * @property-read int|null $children_categories_count
- * @property-read \App\Models\Description\Description|null $description
+ * @property-read Description|null $description
  * @property-read mixed $about
  * @property-read mixed $bottom_parent
  * @property-read mixed $cover_image
@@ -30,34 +36,39 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read mixed $parents
  * @property-read mixed $summary
  * @property-read mixed $top_parent
- * @property-read \App\Models\Image\Image|null $image
- * @property-read \App\Models\Category\Category $parent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Post\Post[] $posts
+ * @property-read Image|null $image
+ * @property-read Category $parent
+ * @property-read Collection|Post[] $posts
  * @property-read int|null $posts_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Category\Category[] $subcategories
+ * @property-read Collection|Category[] $subcategories
  * @property-read int|null $subcategories_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag\Tag[] $tags
+ * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category featured()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category nonParent()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category query()
- * @mixin \Eloquent
+ *
  * @property int $id
  * @property string $name
  * @property string $slug
  * @property int|null $category_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category whereCategoryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Category\Category whereUpdatedAt($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|Metro[] $metroArticles
+ *
+ * @property-read Collection|Metro[] $metroArticles
  * @property-read int|null $metro_articles_count
+ *
+ * @mixin \Eloquent
  */
 class Category extends Model implements Searchable
 {
@@ -76,10 +87,6 @@ class Category extends Model implements Searchable
         'name',
         'slug',
         'category_id',
-    ];
-
-    protected $casts = [
-        'category_id' =>  'integer',
     ];
 
     /**
@@ -106,28 +113,29 @@ class Category extends Model implements Searchable
     public function getSearchResult(): SearchResult
     {
         // $url = route('category.show', $this->slug);
-        return new \Spatie\Searchable\SearchResult(
+        return new SearchResult(
             $this,
-            $this->id,
-            null
+            $this->id
         );
     }
 
     public function parent()
     {
-        return $this->belongsTo('App\Models\Category\Category');
+        return $this->belongsTo(Category::class);
     }
 
     public function getParentsAttribute()
     {
         $parents = collect([]);
-        $parent = Category::find($this->category_id);
-        while (!is_null($parent)) {
+        $parent = $this->find($this->category_id);
+        while (! is_null($parent)) {
             $parents->push($parent);
             $parent = $parent->parent;
         }
+
         return $parents;
     }
+
     public function isParent()
     {
         return $this->category_id == null;
@@ -148,7 +156,7 @@ class Category extends Model implements Searchable
      */
     public function childrenCategories()
     {
-        return $this->hasMany('App\Models\Category\Category')->with('categories');
+        return $this->hasMany(Category::class)->with('categories');
     }
 
     /**
@@ -156,14 +164,14 @@ class Category extends Model implements Searchable
      */
     public function subcategories()
     {
-        return $this->hasMany('App\Models\Category\Category', 'category_id');
+        return $this->hasMany(Category::class, 'category_id');
     }
 
     /**
      * Fetch categories by featured.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query     *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query  *
+     * @return Builder
      */
     public function scopeFeatured($query)
     {
@@ -173,12 +181,12 @@ class Category extends Model implements Searchable
     /**
      * Fetch categories by featured.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query     *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query  *
+     * @return Builder
      */
     public function scopeNonParent($query)
     {
-        return $query->where('category_id', '<>', null);
+        return $query->where('category_id', '<>');
     }
 
     public function metroArticles()
@@ -194,5 +202,12 @@ class Category extends Model implements Searchable
     public function albums()
     {
         return $this->hasMany(Album::class, 'category_id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'category_id' => 'integer',
+        ];
     }
 }

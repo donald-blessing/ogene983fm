@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'facebook' => '<li><a href=":url" class="social-button :class" id=":id"><span class="fa fa-facebook-official"></span></a></li>',
     'twitter' => '<li><a href=":url" class="social-button :class" id=":id"><span class="fa fa-twitter"></span></a></li>',

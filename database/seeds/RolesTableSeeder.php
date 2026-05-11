@@ -1,13 +1,12 @@
 <?php
 
-
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolesTableSeeder extends Seeder
 {
-
     public static function defaultPermissions()
     {
         return [
@@ -23,6 +22,7 @@ class RolesTableSeeder extends Seeder
 
         ];
     }
+
     /**
      * Run the database seeds.
      *
@@ -32,10 +32,10 @@ class RolesTableSeeder extends Seeder
     {
 
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Seed the default permissions
-        $permissions = $this->defaultPermissions();
+        $permissions = static::defaultPermissions();
 
         foreach ($permissions as $perms) {
             Permission::firstOrCreate(['name' => $perms]);
@@ -47,8 +47,6 @@ class RolesTableSeeder extends Seeder
         Permission::create(['name' => 'publish discussion']);
         Permission::create(['name' => 'unpublish discussion']);
 
-
-
         $role = Role::create(['name' => 'super admin']);
         $role->givePermissionTo(Permission::all());
 
@@ -57,12 +55,10 @@ class RolesTableSeeder extends Seeder
 
         $role = Role::create(['name' => 'presenter']);
         $role->givePermissionTo([
-            'edit discussion', 'delete discussion', 'publish discussion', 'unpublish discussion'
+            'edit discussion', 'delete discussion', 'publish discussion', 'unpublish discussion',
         ]);
 
-        $role = Role::create(['name' => 'fan']);
-
-
+        Role::create(['name' => 'fan']);
 
     }
 }

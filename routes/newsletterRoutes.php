@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Newsletter\NewsletterController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'dashboard/newsletter'], function () {
+Route::group(['prefix' => 'dashboard/newsletter'], function (): void {
     Route::get('/', [NewsletterController::class, 'index'])->name('newsletter.dashboard');
     Route::get('/new', [NewsletterController::class, 'create'])->name('newsletter.create');
     Route::post('/{newsletter}/preview', [NewsletterController::class, 'show'])->name('newsletter.show');
@@ -17,7 +19,7 @@ Route::group(['prefix' => 'dashboard/newsletter'], function () {
     Route::post('/{newsletter}/media/delete', [NewsletterController::class, 'destroyMedia'])->name('newsletter.delete.media');
 });
 
-Route::group(['prefix' => 'newsletter'], function () {
+Route::group(['prefix' => 'newsletter'], function (): void {
     Route::post('/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
     Route::get('/{newsletter}/unsubscribe', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 });
