@@ -13,6 +13,21 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /**
+ * Security: Axios baseURL Bypass Prevention
+ * Ensures that if a baseURL is configured, requests cannot bypass it using absolute URLs.
+ * This remediates potential SSRF and credential leakage vulnerabilities.
+ */
+window.axios.interceptors.request.use((config) => {
+    if (config.baseURL) {
+        const isAbsolute = /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(config.url);
+        if (isAbsolute && !config.url.startsWith(config.baseURL)) {
+            throw new Error(`Security Error: Request URL ${config.url} is outside the allowed baseURL ${config.baseURL}`);
+        }
+    }
+    return config;
+});
+
+/**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
  * allows your team to easily build robust real-time web applications.

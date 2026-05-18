@@ -54,6 +54,13 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - **MANDATORY**: Extract repeated code into reusable methods, classes, or traits.
 - **ALWAYS**: Use eager loading to prevent N+1 query problems.
 
+### 4. Security
+
+- **Axios Usage**: To prevent `baseURL` bypass (SSRF/Credential Leakage), ensure that if a `baseURL` is configured, outgoing requests do not use absolute URLs that point elsewhere.
+- **Global Protection**: We use a global interceptor in `bootstrap.js` to protect the default Axios instance.
+- **Custom Instances**: If using `axios.create()`, you MUST manually apply the security interceptor found in `bootstrap.js`.
+- **Sanitization**: Always sanitize user-provided input before using it in URLs or database queries.
+
 ## UI/UX Design Principles
 
 A comprehensive guide for building accessible, polished, and performant web interfaces.
