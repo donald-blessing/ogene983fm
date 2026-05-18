@@ -10,6 +10,7 @@ use App\Traits\ControllerTrait;
 use Carbon\Carbon;
 use F9Web\LaravelDeletable\Exceptions\NoneDeletableModel;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -26,7 +27,7 @@ class UserController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['auth', 'admin']);
+        $this->middleware(['auth', 'role:super admin']);
     }
 
     public function getChart()
@@ -178,9 +179,9 @@ class UserController extends Controller
     /**
      * Mark user as verified
      *
-     * @return User
+     * @return RedirectResponse
      */
-    public static function verifyUser(User $user)
+    public function verifyUser(User $user)
     {
         DB::beginTransaction();
         try {

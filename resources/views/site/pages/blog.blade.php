@@ -24,6 +24,7 @@
 <!-- Blog Section Begin -->
 <section class="blog-section spad">
     <div class="container">
+        @livewire('sponsorship-banner')
         <div class="row">
             <div class="order-2 col-lg-3 col-md-6 col-sm-8 order-lg-1">
                 <div class="blog-sidebar">

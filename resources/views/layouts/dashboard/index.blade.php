@@ -24,6 +24,7 @@
         <link rel="stylesheet" type="text/css" href="{{ asset('backend/css/main.css') }}">
         <!-- Font-icon css-->
         <link rel="stylesheet" href="{{ asset('frontend/css/font-awesome.min.css') }}" />
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
         @stack('css')
     </head>
 

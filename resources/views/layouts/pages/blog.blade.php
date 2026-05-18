@@ -25,15 +25,20 @@
         <link rel="stylesheet" href="{{ asset('frontend/css/jquery-ui.min.css') }}" type="text/css">
         <link rel="stylesheet" href="{{ asset('frontend/css/slicknav.min.css') }}" type="text/css">
         <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}" type="text/css">
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
         @stack('css')
     </head>
 
-    <body>
+    <body style="padding-bottom: 80px;">
         @include('layouts.pages.includes.navbar')
 
         @yield('content')
 
         @include('layouts.pages.includes.footer')
+
+        @persist('player')
+            @livewire('persistent-player')
+        @endpersist
     </body>
 
 </html>

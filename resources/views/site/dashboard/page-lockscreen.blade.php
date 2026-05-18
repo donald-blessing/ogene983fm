@@ -11,7 +11,7 @@
     <div class="logo">
         <h1>Vali</h1>
     </div>
-    <div class="lock-box"><img class="rounded-circle user-image" src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/128.jpg">
+    <div class="lock-box"><img class="rounded-circle user-image" src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/128.jpg" alt="User avatar">
         <h4 class="text-center user-name">John Doe</h4>
         <p class="text-center text-muted">Account Locked</p>
         <form class="unlock-form" action="index.html">

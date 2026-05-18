@@ -8,7 +8,7 @@
       <div class="row user">
         <div class="col-md-12">
           <div class="profile">
-            <div class="info"><img class="user-img" src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/128.jpg">
+            <div class="info"><img class="user-img" src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/128.jpg" alt="User image">
               <h4>John Doe</h4>
               <p>FrontEnd Developer</p>
             </div>
@@ -27,7 +27,7 @@
           <div class="tab-content">
             <div class="tab-pane active" id="user-timeline">
               <div class="timeline-post">
-                <div class="post-media"><a href="#"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg"></a>
+                <div class="post-media"><a href="#"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg" alt="Post author"></a>
                   <div class="content">
                     <h5><a href="#">John Doe</a></h5>
                     <p class="text-muted"><small>2 January at 9:30</small></p>
@@ -43,7 +43,7 @@
                 </ul>
               </div>
               <div class="timeline-post">
-                <div class="post-media"><a href="#"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg"></a>
+                <div class="post-media"><a href="#"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg" alt="Post author"></a>
                   <div class="content">
                     <h5><a href="#">John Doe</a></h5>
                     <p class="text-muted"><small>2 January at 9:30</small></p>

@@ -1,21 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Metro;
 
 use App\Models\Category\Category;
 use App\Models\Description\Description;
-use App\Models\Image\Image;
 use App\Models\Tag\Tag;
-use App\Models\Upload\Upload;
 use App\Models\User;
 use App\Traits\AboutTrait;
 use App\Traits\Taggable;
-use App\Traits\UploadFiles;
-use App\Traits\UploadImage;
-use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\Metro\MetroFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\HasSlug;
@@ -24,64 +27,66 @@ use Spatie\Sluggable\SlugOptions;
 /**
  * App\Models\Metro\Metro
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Metro newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Metro newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Metro query()
- *
- * @property int $id
- * @property string $slug
- * @property string $title
- * @property string $author
- * @property string $content
- * @property int $user_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property-read Category $category
  * @property-read Description|null $description
  * @property-read mixed $about
  * @property-read mixed $cover_image
  * @property-read mixed $excerpt
  * @property-read mixed $summary
- * @property-read Image|null $image
  * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
  * @property-read User $user
- *
- * @method static \Illuminate\Database\Eloquent\Builder|Metro whereAuthor($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Metro whereContent($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Metro whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Metro whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Metro whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Metro whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Metro whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Metro whereUserId($value)
- *
- * @property-read Collection|Upload[] $uploads
- * @property-read int|null $uploads_count
- * @property int|null $category_id
- * @property-read Category|null $category
- *
- * @method static \Illuminate\Database\Eloquent\Builder|Metro whereCategoryId($value)
- *
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro query()
+ * @property int $id
+ * @property int $user_id
+ * @property int $category_id
+ * @property string $title
+ * @property string $slug
+ * @property string $content
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro whereContent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Metro\Metro whereUserId($value)
+ * @property string $author
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @method static \Database\Factories\Metro\MetroFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Metro whereAuthor($value)
  * @mixin \Eloquent
  */
-class Metro extends Model implements Searchable
+class Metro extends Model implements HasMedia, Searchable
 {
     use AboutTrait;
     use HasFactory;
     use HasSlug;
+    use InteractsWithMedia;
     use Taggable;
-    use UploadFiles;
-    use UploadImage;
+
+    protected static function newFactory()
+    {
+        return MetroFactory::new();
+    }
+
+    protected $fillable = [
+        'id',
+        'user_id',
+        'category_id',
+        'title',
+        'slug',
+        'content',
+        'author',
+    ];
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = ['id', 'slug', 'title', 'content', 'author', 'user_id'];
-
-    /**
-     * Get the options for generating the slug
+     * Get the options for generating the slug.
      */
     public function getSlugOptions(): SlugOptions
     {
@@ -101,37 +106,35 @@ class Metro extends Model implements Searchable
         return 'slug';
     }
 
-    /**
-     * Get the search result
-     */
     public function getSearchResult(): SearchResult
     {
         $url = route('metro.show', $this->slug);
 
         return new SearchResult(
             $this,
-            $this->title,
+            $this->id,
             $url
         );
     }
 
-    /**
-     * Get the owner of the article
-     *
-     * @return void
-     */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function url(): string
+    public function registerMediaCollections(): void
     {
-        return route('metro.show', $this->slug);
+        $this->addMediaCollection('cover_images')
+            ->singleFile();
+    }
+
+    public function getCoverImageAttribute()
+    {
+        return $this->getFirstMediaUrl('cover_images');
     }
 }

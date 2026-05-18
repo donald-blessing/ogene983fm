@@ -5,6 +5,7 @@ namespace App\Models\Programme;
 use carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,24 +15,26 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read mixed $to
  * @property-read Collection|Programme[] $programmes
  * @property-read int|null $programmes_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime onAir()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime query()
- *
  * @property int $id
  * @property string $day
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereDay($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereFrom($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereTo($value)
- *
  * @mixin \Eloquent
  */
 class ProgrammeTime extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Programme\ProgrammeTimeFactory::new();
+    }
     public $timestamps = false;
 
     protected $fillable = ['day', 'from', 'to'];

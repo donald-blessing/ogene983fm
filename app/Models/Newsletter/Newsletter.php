@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Newsletter;
 
 use App\Models\Description\Description;
 use App\Traits\AboutTrait;
+use Database\Factories\Newsletter\NewsletterFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Spatie\Searchable\Searchable;
@@ -19,11 +23,9 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read mixed $content
  * @property-read mixed $excerpt
  * @property-read mixed $summary
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Newsletter\Newsletter newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Newsletter\Newsletter newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Newsletter\Newsletter query()
- *
  * @property int $id
  * @property string $subject
  * @property string $slug
@@ -31,7 +33,6 @@ use Spatie\Sluggable\SlugOptions;
  * @property string $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Newsletter\Newsletter whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Newsletter\Newsletter whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Newsletter\Newsletter whereMessage($value)
@@ -39,15 +40,21 @@ use Spatie\Sluggable\SlugOptions;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Newsletter\Newsletter whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Newsletter\Newsletter whereSubject($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Newsletter\Newsletter whereUpdatedAt($value)
- *
+ * @method static \Database\Factories\Newsletter\NewsletterFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 class Newsletter extends Model implements Searchable
 {
     use AboutTrait;
+    use HasFactory;
     use HasSlug;
 
-    protected $fillable = ['title', 'slug'];
+    protected $fillable = ['subject', 'message', 'status', 'slug'];
+
+    protected static function newFactory()
+    {
+        return NewsletterFactory::new();
+    }
 
     /**
      * Get the options for generating the slug.
@@ -55,9 +62,9 @@ class Newsletter extends Model implements Searchable
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugsFrom('title')
+            ->generateSlugsFrom('subject')
             ->saveSlugsTo('slug')
-            ->slugsShouldBeNoLongerThan(50);
+            ->slugsShouldBeNoLongerThan(255);
     }
 
     /**

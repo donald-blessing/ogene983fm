@@ -23,7 +23,7 @@ class ProgrammeController extends Controller
      */
     public function dashboard()
     {
-        $programmes = Programme::with(['programmeTimes', 'image', 'description'])->orderBy('created_at', 'desc')->get();
+        $programmes = Programme::with(['programmeTimes', 'media', 'description'])->orderBy('created_at', 'desc')->get();
 
         return view('site.dashboard.programmes.index', ['programmes' => $programmes]);
     }
@@ -35,7 +35,7 @@ class ProgrammeController extends Controller
      */
     public function index()
     {
-        $programmes = Programme::with(['description', 'image', 'programmeTimes'])->get();
+        $programmes = Programme::with(['description', 'media', 'programmeTimes'])->get();
         $routes = [];
         foreach ($programmes as $programme) {
             $routes[] = route('programme.show', ['programme' => $programme->slug]);
@@ -82,7 +82,12 @@ class ProgrammeController extends Controller
             );
 
             $programme->storeAbout($request->description);
-            $programme->uploadImage($request->file('cover_image'), 'images/programmes/'.$programme->slug);
+
+            if ($request->hasFile('cover_image')) {
+                $programme->addMediaFromRequest('cover_image')
+                    ->toMediaCollection('cover_images');
+            }
+
             foreach ($request->programmeDay as $day) {
                 $programmeTime = ProgrammeTime::firstOrCreate(
                     [
@@ -189,7 +194,8 @@ class ProgrammeController extends Controller
             if ($programme->save()) {
                 $programme->storeAbout($request->description);
                 if ($request->hasFile('cover_image')) {
-                    $programme->updateImage($request->file('cover_image'));
+                    $programme->addMediaFromRequest('cover_image')
+                        ->toMediaCollection('cover_images');
                 }
             }
             $programmeTime = [];
@@ -235,7 +241,6 @@ class ProgrammeController extends Controller
         try {
             $programme = Programme::findOrFail($programme->id);
             $programme->deleteAbout();
-            $programme->deleteImage();
             $programme->delete();
         } catch (\Throwable $th) {
             DB::rollback();

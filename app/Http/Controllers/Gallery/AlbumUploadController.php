@@ -66,7 +66,11 @@ class AlbumUploadController extends Controller
             $albumUpload->album_id = $album->id;
             $albumUpload->save();
             $albumUpload->storeAbout($request->about);
-            $albumUpload->uploadItem($request->file('upload'), "uploads/gallery/$album->slug/$albumUpload->slug");
+
+            if ($request->hasFile('upload')) {
+                $albumUpload->addMediaFromRequest('upload')
+                    ->toMediaCollection('images');
+            }
         } catch (\Throwable $th) {
             DB::rollback();
             throw $th;
@@ -117,7 +121,8 @@ class AlbumUploadController extends Controller
             $albumUpload->save();
             $albumUpload->storeAbout($request->about);
             if ($request->hasFile('upload')) {
-                $albumUpload->updateItem($request->file('upload'));
+                $albumUpload->addMediaFromRequest('upload')
+                    ->toMediaCollection('images');
             }
         } catch (\Throwable $th) {
             DB::rollback();
@@ -142,7 +147,6 @@ class AlbumUploadController extends Controller
         try {
             $albumUpload = AlbumUpload::findOrFail($id);
             $albumUpload->deleteAbout();
-            $albumUpload->deleteImage();
             $albumUpload->delete();
         } catch (\Throwable $th) {
             DB::rollback();

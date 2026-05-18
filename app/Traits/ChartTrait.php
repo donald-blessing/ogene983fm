@@ -1,26 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Traits;
 
-use App\Http\Controllers\Careers\JobController;
-use App\Http\Controllers\Challenger\ChallengerController;
-use App\Http\Controllers\Gallery\AlbumController;
-use App\Http\Controllers\HealthAid\HealthAidController;
-use App\Http\Controllers\NewsAndEvent\NewsAndEventController;
-use App\Http\Controllers\PharmaAdvert\PharmaAdvertController;
-use App\Http\Controllers\PharmaConsult\PharmaConsultChatController;
-use App\Http\Controllers\PharmaDirectory\PharmaDirectoryController;
-use App\Http\Controllers\PharmaFund\PharmaFundController;
-use App\Http\Controllers\PharmaLearn\PharmaLearnController;
-use App\Http\Controllers\PharmaSource\PharmaSourceProductController;
-use App\Http\Controllers\PharmaTrack\PharmaTrackController;
-use App\Http\Controllers\PlagiarismChecker\PlagiarismCheckerController;
 use App\Http\Controllers\User\UserController;
 use App\Models\User;
 
 trait ChartTrait
 {
-    public $borderColors = [
+    public array $borderColors = [
         '#CDA776',
         '#989898',
         '#CB252B',
@@ -40,7 +29,7 @@ trait ChartTrait
         'rgba(205,220,57, 1.0)',
     ];
 
-    public $fillColors = [
+    public array $fillColors = [
         '#DEB887',
         '#A9A9A9',
         '#DC143C',
@@ -58,19 +47,16 @@ trait ChartTrait
         'rgba(255, 159, 64, 0.2)',
         'rgba(233,30,99, 0.2)',
         'rgba(205,220,57, 0.2)',
-
     ];
 
     /**
      * Process chart object
      *
-     * @param  Chart  $chart
-     * @param  array|collection  $labels
-     * @param  array|collection  $values
-     * @param  string  $type  Type of chart
-     * @return void
+     * @param  mixed  $chart
+     * @param  mixed  $labels
+     * @param  mixed  $values
      */
-    public function processChart(&$chart, string $heading, $labels, $values, $type = 'bar')
+    public function processChart(&$chart, string $heading, $labels, $values, string $type = 'bar'): void
     {
         $chart->labels($labels);
         $chart->dataset($heading, $type, $values)
@@ -79,65 +65,17 @@ trait ChartTrait
             ->fill(false);
     }
 
-    public function getCharts(?User $user = null)
+    /**
+     * Get all applicable charts for the user.
+     */
+    public function getCharts(?User $user = null): array
     {
-
         $charts = [];
-        $usersChart = (new UserController)->getChart();
-        foreach ($usersChart as $key => $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new PharmaDirectoryController)->getChart();
-        foreach ($usersChart as $key => $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new PharmaSourceProductController)->getChart($user);
-        foreach ($usersChart as $key => $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new PharmaTrackController)->getChart($user);
-        foreach ($usersChart as $key => $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new HealthAidController)->getChart($user);
-        foreach ($usersChart as $key => $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new PharmaFundController)->getChart($user);
-        foreach ($usersChart as $key => $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new PharmaAdvertController)->getChart($user);
-        foreach ($usersChart as $key => $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new ChallengerController)->getChart($user);
-        foreach ($usersChart as $key => $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new NewsAndEventController)->getChart($user);
-        foreach ($usersChart as $key => $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new AlbumController)->getChart($user);
-        foreach ($usersChart as $key => $chart) {
-            $charts[] = $chart;
-        }
-        // $usersChart = (new PharmaConsultChatController)->getChart($user);
-        // foreach ($usersChart as $key => $chart) {
-        // $charts[] = $chart;
-        // }
-        $usersChart = (new PharmaLearnController)->getChart($user);
-        foreach ($usersChart as $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new PlagiarismCheckerController)->getChart($user);
-        foreach ($usersChart as $chart) {
-            $charts[] = $chart;
-        }
-        $usersChart = (new JobController)->getChart($user);
-        foreach ($usersChart as $chart) {
-            $charts[] = $chart;
+
+        // Only include charts from controllers that actually exist
+        if (class_exists(UserController::class)) {
+            $userController = new UserController;
+            $charts[] = $userController->getChart();
         }
 
         return $charts;

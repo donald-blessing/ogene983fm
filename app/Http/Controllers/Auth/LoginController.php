@@ -27,7 +27,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/';
+    protected $redirectTo = '/dashboard';
 
     /**
      * Create a new controller instance.
@@ -51,16 +51,17 @@ class LoginController extends Controller
             $credentials = $request->only('email', 'password');
             if (Auth::attempt($credentials, $request->remember)) { // login attempt
                 // login successful, redirect the user to your preferred url/route...
-                return redirect()->intended('/');
+                return redirect()->intended($this->redirectTo);
             }
+
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records.',
+            ])->onlyInput('email');
         } catch (\Throwable $th) {
             session()->flash('error', $th->getMessage());
 
             return back();
         }
-
-        // login failed...
-        return redirect('/login');
     }
 
     public function logout()

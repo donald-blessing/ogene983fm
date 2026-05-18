@@ -4,18 +4,22 @@ namespace App\Models\Programme;
 
 use App\Models\Description\Description;
 use App\Models\Discussion\Discussion;
-use App\Models\Image\Image;
 use App\Models\Presenter\Presenter;
 use App\Models\Tag\Tag;
 use App\Models\User;
 use App\Traits\AboutTrait;
 use App\Traits\Taggable;
-use App\Traits\UploadImage;
 use Carbon\Carbon;
+use Database\Factories\Programme\ProgrammeFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\HasSlug;
@@ -32,7 +36,6 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read mixed $cover_image
  * @property-read mixed $excerpt
  * @property-read mixed $summary
- * @property-read Image|null $image
  * @property-read Collection|Presenter[] $presenters
  * @property-read int|null $presenters_count
  * @property-read Collection|ProgrammeDay[] $programmeDays
@@ -41,34 +44,39 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read int|null $programme_times_count
  * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme myProgrammes()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme onAir()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme userProgrammes(\App\Models\User $user)
- *
  * @property int $id
  * @property string $title
  * @property string $slug
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereUpdatedAt($value)
- *
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @method static \Database\Factories\Programme\ProgrammeFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
-class Programme extends Model implements Searchable
+class Programme extends Model implements HasMedia, Searchable
 {
     use AboutTrait;
+    use HasFactory;
     use HasSlug;
+    use InteractsWithMedia;
     use Taggable;
-    use UploadImage;
+
+    protected static function newFactory()
+    {
+        return ProgrammeFactory::new();
+    }
 
     protected $fillable = ['title'];
 
@@ -207,5 +215,16 @@ class Programme extends Model implements Searchable
     public function url(): string
     {
         return route('programme.show', $this->slug);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('cover_images')
+            ->singleFile();
+    }
+
+    public function getCoverImageAttribute()
+    {
+        return $this->getFirstMediaUrl('cover_images');
     }
 }

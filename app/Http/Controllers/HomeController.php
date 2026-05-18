@@ -36,10 +36,10 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $posts = Post::with(['category', 'image', 'description'])->limit(6)->get();
+        $posts = Post::with(['category', 'media', 'description'])->limit(6)->get();
         $songOfTheWeek = SongOfTheWeek::currentSong()->first();
         $albums = Album::orderBy('updated_at', 'desc')->take(6)->get();
-        $programmes = Programme::with(['description', 'image', 'programmeTimes'])->get();
+        $programmes = Programme::with(['description', 'media', 'programmeTimes'])->get();
 
         return view('site.pages.index', [
             'albums' => $albums,

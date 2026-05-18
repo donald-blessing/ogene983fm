@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Contact;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contact\Contact;
+use App\Services\LoyaltyService;
 use App\Traits\sendMails;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -14,6 +17,10 @@ class ContactController extends Controller
 {
     use sendMails;
 
+    public function __construct(
+        protected LoyaltyService $loyaltyService
+    ) {}
+
     /**
      * Display a listing of the resource.
      *
@@ -21,19 +28,9 @@ class ContactController extends Controller
      */
     public function index()
     {
-        $contacts = Contact::orderBy('created', 'desc')->paginate(50);
+        $contacts = Contact::orderBy('created_at', 'desc')->paginate(50);
 
         return view('site.dashboard.contact.index', ['contacts' => $contacts]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -60,6 +57,10 @@ class ContactController extends Controller
                     'message' => $request->message,
                 ]
             );
+
+            if (Auth::check()) {
+                $this->loyaltyService->awardContactPoints(Auth::user());
+            }
         } catch (\Throwable $th) {
             DB::rollback();
             throw $th;
@@ -120,6 +121,7 @@ class ContactController extends Controller
         }
         $this->sendMail($to, $bcc, $cc, $details);
         alert()->success('Email sent successfully!');
+        session()->flash('success', 'Email sent successfully!');
 
         return back();
     }
@@ -152,7 +154,8 @@ class ContactController extends Controller
             $details['from'] = Auth::user()->email;
         }
         $this->sendMail($to, $bcc, $cc, $details);
-        alert()->success('Emaill sent successfully!');
+        alert()->success('Email sent successfully!');
+        session()->flash('success', 'Email sent successfully!');
 
         return back();
     }
@@ -165,5 +168,8 @@ class ContactController extends Controller
     public function destroy(Contact $contact)
     {
         $contact->delete();
+        session()->flash('success', 'Contact was deleted successfully!');
+
+        return back();
     }
 }

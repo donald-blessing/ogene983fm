@@ -10,7 +10,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
 - php - 8.4
-- laravel/framework (LARAVEL) - v11
+- laravel/framework (LARAVEL) - v12
 - laravel/prompts (PROMPTS) - v0
 - laravel/socialite (SOCIALITE) - v5
 - livewire/livewire (LIVEWIRE) - v4
@@ -19,37 +19,56 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/sail (SAIL) - v1
 - phpunit/phpunit (PHPUNIT) - v11
 - rector/rector (RECTOR) - v2
+- laravel/pint (PINT) - v1
 
 ## Skills Activation
 
 This project has domain-specific skills available in `**/skills/**`. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
 
-## Conventions
+- `laravel-best-practices` — Apply this whenever writing, reviewing, or refactoring Laravel PHP code.
+- `livewire-development` — Use for any task or question involving Livewire v4.
+- `ui-ux-pro-max` — Use for building accessible, polished, and performant web interfaces.
 
-- You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, and naming.
-- Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
-- Check for existing components to reuse before writing a new one.
+## Core Development Principles
 
-## Verification Scripts
+### 1. Code Analysis & Understanding (MANDATORY)
 
-- Do not create verification scripts or tinker when tests cover that functionality and prove they work. Unit and feature tests are more important.
+- **ALWAYS** scan, analyze, and understand existing code patterns, conventions, and standards before making any implementation.
+- Study the codebase architecture, naming conventions, and design patterns used.
+- Review similar implementations in the codebase to maintain consistency.
 
-## Application Structure & Architecture
+### 2. Implementation Standards
 
-- Stick to existing directory structure; don't create new base folders without approval.
-- Do not change the application's dependencies without approval.
+- Follow PSR-1, PSR-2, and PSR-12.
+- Use descriptive, self-documenting variable and method names (e.g., `isRegisteredForDiscounts`, not `discount()`).
+- **Strict Typing**: Always use `declare(strict_types=1);` at the top of every PHP file.
+- **Type Hints**: Use explicit return type declarations and type hints for all method parameters.
+- Use PHP 8.4 constructor property promotion when all properties can be promoted.
+- Use enums and match expressions where appropriate.
 
-## Frontend Bundling
+### 3. DRY & SOLID Principles
 
-- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+- **SRP**: Each class should have only one reason to change.
+- **OCP**: Classes should be open for extension but closed for modification.
+- **LSP/ISP/DIP**: Adhere to behavioral contracts, focused interfaces, and depend on abstractions.
+- **MANDATORY**: Extract repeated code into reusable methods, classes, or traits.
+- **ALWAYS**: Use eager loading to prevent N+1 query problems.
 
-## Documentation Files
+## UI/UX Design Principles
 
-- You must only create documentation files if explicitly requested by the user.
+A comprehensive guide for building accessible, polished, and performant web interfaces.
 
-## Replies
+### Accessibility (WCAG 2.1)
+- **Images**: Every `<img>` must have meaningful `alt` text.
+- **Icon buttons**: All icon-only buttons need `aria-label`.
+- **Focus states**: Never remove focus outlines without replacement.
+- **Keyboard-first**: All flows are fully keyboard-operable.
 
-- Be concise in your explanations - focus on what's important rather than explaining obvious details.
+### Interactions & Layout
+- **No dead zones**: If it looks interactive, it should be interactive.
+- **Loading states**: Show spinner and keep original label; ensure minimum duration to avoid flicker.
+- **Typography**: Consistent hierarchy, proper line height, and use curly quotes (" ") over straight ones.
+- **Safe areas**: Account for notches and insets with `env(safe-area-*)`.
 
 === boost rules ===
 
@@ -57,150 +76,69 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 ## Tools
 
-- Laravel Boost is an MCP server with tools designed specifically for this application. Prefer Boost tools over manual alternatives like shell commands or file reads.
-- Use `database-query` to run read-only queries against the database instead of writing raw SQL in tinker.
-- Use `database-schema` to inspect table structure before writing migrations or models.
-- Use `get-absolute-url` to resolve the correct scheme, domain, and port for project URLs. Always use this before sharing a URL with the user.
-- Use `browser-logs` to read browser logs, errors, and exceptions. Only recent logs are useful, ignore old entries.
+- Prefer Boost tools (MCP) over manual alternatives.
+- Use `database-query` for read-only queries and `database-schema` to inspect tables.
+- Use `search-docs` before making code changes to ensure idiomatic Laravel 12 / Livewire v4 patterns.
 
-## Searching Documentation (IMPORTANT)
+## Artisan & Tinker
 
-- Always use `search-docs` before making code changes. Do not skip this step. It returns version-specific docs based on installed packages automatically.
-- Pass a `packages` array to scope results when you know which packages are relevant.
-- Use multiple broad, topic-based queries: `['rate limiting', 'routing rate limiting', 'routing']`. Expect the most relevant results first.
-- Do not add package names to queries because package info is already shared. Use `test resource table`, not `filament 4 test resource table`.
-
-### Search Syntax
-
-1. Use words for auto-stemmed AND logic: `rate limit` matches both "rate" AND "limit".
-2. Use `"quoted phrases"` for exact position matching: `"infinite scroll"` requires adjacent words in order.
-3. Combine words and phrases for mixed queries: `middleware "rate limit"`.
-4. Use multiple queries for OR logic: `queries=["authentication", "middleware"]`.
-
-## Artisan
-
-- Run Artisan commands directly via the command line (e.g., `php artisan route:list`). Use `php artisan list` to discover available commands and `php artisan [command] --help` to check parameters.
-- Inspect routes with `php artisan route:list`. Filter with: `--method=GET`, `--name=users`, `--path=api`, `--except-vendor`, `--only-vendor`.
-- Read configuration values using dot notation: `php artisan config:show app.name`, `php artisan config:show database.default`. Or read config files directly from the `config/` directory.
-- To check environment variables, read the `.env` file directly.
-
-## Tinker
-
-- Execute PHP in app context for debugging and testing code. Do not create models without user approval, prefer tests with factories instead. Prefer existing Artisan commands over custom tinker code.
-- Always use single quotes to prevent shell expansion: `php artisan tinker --execute 'Your::code();'`
-  - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
+- Pass `--no-interaction` to all Artisan commands.
+- Use single quotes for tinker execution to prevent shell expansion.
 
 === php rules ===
 
 # PHP
 
+- Always declare `declare(strict_types=1);` at the top of every `.php` file.
 - Always use curly braces for control structures, even for single-line bodies.
-- Use PHP 8 constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
-- Use explicit return type declarations and type hints for all method parameters: `function isAccessible(User $user, ?string $path = null): bool`
-- Use TitleCase for Enum keys: `FavoritePerson`, `BestLake`, `Monthly`.
-- Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
+- Use PHP 8.4 constructor property promotion.
+- Prefer PHPDoc blocks over inline comments. Only add comments for *why*, not *what*.
 - Use array shape type definitions in PHPDoc blocks.
-
-=== deployments rules ===
-
-# Deployment
-
-- Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
-
-=== herd rules ===
-
-# Laravel Herd
-
-- The application is served by Laravel Herd at `https?://[kebab-case-project-dir].test`. Use the `get-absolute-url` tool to generate valid URLs. Never run commands to serve the site. It is always available.
-- Use the `herd` CLI to manage services, PHP versions, and sites (e.g. `herd sites`, `herd services:start <service>`, `herd php:list`). Run `herd list` to discover all available commands.
 
 === laravel/core rules ===
 
 # Do Things the Laravel Way
 
-- Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using `php artisan list` and check their parameters with `php artisan [command] --help`.
-- If you're creating a generic PHP class, use `php artisan make:class`.
-- Pass `--no-interaction` to all Artisan commands to ensure they work without user input. You should also pass the correct `--options` to ensure correct behavior.
+- Use `php artisan make:` commands for new files.
+- **Happy path last**: Handle error conditions first, success case last.
+- **Early returns**: Use early returns instead of nested if/else.
+- **CRUD focus**: Stick to CRUD methods; extract new controllers for non-CRUD actions.
+- Use tuple notation for routes: `[Controller::class, 'method']`.
+- Use `config()` helper, avoid `env()` outside config files.
 
-### Model Creation
+=== laravel/v12 rules ===
 
-- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `php artisan make:model --help` to check the available options.
+# Laravel 12
 
-## APIs & Eloquent Resources
-
-- For APIs, default to using Eloquent API Resources and API versioning unless existing API routes do not, then you should follow existing application convention.
-
-## URL Generation
-
-- When generating links to other pages, prefer named routes and the `route()` function.
-
-## Testing
-
-- When creating models for tests, use the factories for the models. Check if the factory has custom states that can be used before manually setting up the model.
-- Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`. Follow existing conventions whether to use `$this->faker` or `fake()`.
-- When creating tests, make use of `php artisan make:test [options] {name}` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
-
-## Vite Error
-
-- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
-
-=== laravel/v11 rules ===
-
-# Laravel 11
-
-- CRITICAL: ALWAYS use `search-docs` tool for version-specific Laravel documentation and updated code examples.
-- This project upgraded from Laravel 10 without migrating to the new streamlined Laravel 11 file structure.
-- This is perfectly fine and recommended by Laravel. Follow the existing structure from Laravel 10. We do not need to migrate to the Laravel 11 structure unless the user explicitly requests it.
-
-## Laravel 10 Structure
-
-- Middleware typically lives in `app/Http/Middleware/` and service providers in `app/Providers/`.
-- There is no `bootstrap/app.php` application configuration in a Laravel 10 structure:
-    - Middleware registration is in `app/Http/Kernel.php`
-    - Exception handling is in `app/Exceptions/Handler.php`
-    - Console commands and schedule registration is in `app/Console/Kernel.php`
-    - Rate limits likely exist in `RouteServiceProvider` or `app/Http/Kernel.php`
-
-## Database
-
-- When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.
-- Laravel 11 allows limiting eagerly loaded records natively, without external packages: `$query->latest()->limit(10);`.
-
-### Models
-
-- Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
-
-## New Artisan Commands
-
-- List Artisan commands using Boost's MCP tool, if available. New commands available in Laravel 11:
-    - `php artisan make:enum`
-    - `php artisan make:class`
-    - `php artisan make:interface`
+- This project upgraded to Laravel 12 but maintains the **Laravel 10 directory structure** (e.g., `app/Http/Kernel.php` exists).
+- **Middleware**: Registered in `app/Http/Kernel.php`.
+- **Exceptions**: Handled in `app/Exceptions/Handler.php`.
+- **Database**: Use native `limit(10)` on eager loads. Casts should be set in a `casts()` method.
 
 === livewire/core rules ===
 
-# Livewire
+# Livewire v4
 
-- Livewire allow to build dynamic, reactive interfaces in PHP without writing JavaScript.
-- You can use Alpine.js for client-side interactions instead of JavaScript frameworks.
-- Keep state server-side so the UI reflects it. Validate and authorize in actions as you would in HTTP requests.
+- Keep state server-side. Validate and authorize in actions.
+- Use Alpine.js for client-side interactions.
+- **Migration note**: Components now live in `App\Livewire`.
+
+=== pint/core rules ===
+
+# Laravel Pint & Rector
+
+- **Pint**: Run `vendor/bin/pint --dirty --format agent` after modifying PHP files.
+- **Rector**: Use `vendor/bin/rector process` to maintain modern PHP 8.4 and Laravel 12 standards.
+- Always check the `rector.php` config for active rulesets.
 
 === phpunit/core rules ===
 
 # PHPUnit
 
-- This application uses PHPUnit for testing. All tests must be written as PHPUnit classes. Use `php artisan make:test --phpunit {name}` to create a new test.
-- If you see a test using "Pest", convert it to PHPUnit.
-- Every time a test has been updated, run that singular test.
-- When the tests relating to your feature are passing, ask the user if they would like to also run the entire test suite to make sure everything is still passing.
-- Tests should cover all happy paths, failure paths, and edge cases.
-- You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files; these are core to the application.
-
-## Running Tests
-
-- Run the minimal number of tests, using an appropriate filter, before finalizing.
-- To run all tests: `php artisan test --compact`.
-- To run all tests in a file: `php artisan test --compact tests/Feature/ExampleTest.php`.
-- To filter on a particular test name: `php artisan test --compact --filter=testName` (recommended after making a change to a related file).
+- This application uses PHPUnit. All tests must be written as PHPUnit classes.
+- **Conversion**: If you see a test using "Pest", convert it to PHPUnit.
+- **Coverage**: Tests should cover all happy paths, failure paths, and edge cases.
+- **Execution**: Run minimal tests using `--filter` before finalizing.
+- Full suite: `php artisan test --compact`.
 
 </laravel-boost-guidelines>

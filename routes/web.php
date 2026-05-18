@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function (): void {
+Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'role:admin']], function (): void {
     Route::get('/', [HomeController::class, 'dashboard'])->name('dashboard');
 });
 Route::get('/home', [HomeController::class, 'index']);

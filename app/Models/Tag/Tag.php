@@ -32,22 +32,18 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read int|null $presenters_count
  * @property-read Collection|Programme[] $programmes
  * @property-read int|null $programmes_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag\Tag newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag\Tag newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag\Tag query()
- *
  * @property int $id
  * @property string $slug
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag\Tag whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag\Tag whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag\Tag whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag\Tag whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag\Tag whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 class Tag extends Model implements Searchable

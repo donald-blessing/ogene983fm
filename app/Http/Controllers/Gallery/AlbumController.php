@@ -19,7 +19,7 @@ class AlbumController extends Controller
      */
     public function dashboard()
     {
-        $albums = Album::with(['image', 'description'])->orderBy('created_at', 'desc')->get();
+        $albums = Album::with(['media', 'description'])->orderBy('created_at', 'desc')->get();
 
         return view('site.dashboard.gallery.index', ['albums' => $albums]);
     }
@@ -31,7 +31,7 @@ class AlbumController extends Controller
      */
     public function index()
     {
-        $albums = Album::with(['image', 'description'])->get();
+        $albums = Album::with(['media', 'description'])->get();
         $routes = [];
         foreach ($albums as $album) {
             $routes[] = route('gallery.album.show', ['album' => $album->slug]);
@@ -74,7 +74,12 @@ class AlbumController extends Controller
             $album->save();
 
             $album->storeAbout($request->about);
-            $album->uploadImage($request->file('cover_image'), 'images/gallery/'.$album->slug);
+
+            if ($request->hasFile('cover_image')) {
+                $album->addMediaFromRequest('cover_image')
+                    ->toMediaCollection('cover_images');
+            }
+
             $helper = new Helper;
             $tags = $helper->getKeywords(implode(' ', [$request->title, $request->summary]));
             $album->attachTags($tags);
@@ -150,7 +155,8 @@ class AlbumController extends Controller
 
             $album->storeAbout($request->about);
             if ($request->hasFile('cover_image')) {
-                $album->upatedImage($request->file('cover_image'));
+                $album->addMediaFromRequest('cover_image')
+                    ->toMediaCollection('cover_images');
             }
             $helper = new Helper;
             $tags = $helper->getKeywords(implode(' ', [$request->title, $request->summary]));
@@ -176,7 +182,6 @@ class AlbumController extends Controller
         try {
             $album = Album::findOrFail($album->id);
             $album->deleteAbout();
-            $album->deleteImage();
             $album->delete();
         } catch (\Throwable $th) {
             DB::rollback();

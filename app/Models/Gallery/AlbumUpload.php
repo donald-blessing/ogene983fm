@@ -3,16 +3,19 @@
 namespace App\Models\Gallery;
 
 use App\Models\Description\Description;
-use App\Models\Image\Image;
 use App\Traits\AboutTrait;
-use App\Traits\UploadImage;
+use Database\Factories\Gallery\AlbumUploadFactory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Laravelista\Comments\Comment;
 use Laravelista\Comments\Commentable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\HasSlug;
@@ -32,34 +35,38 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read mixed $excerpt
  * @property-read mixed $item
  * @property-read mixed $summary
- * @property-read Image|null $image
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload query()
- *
  * @property int $id
  * @property int $album_id
  * @property string $title
  * @property string $slug
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereAlbumId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Gallery\AlbumUpload whereUpdatedAt($value)
- *
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @method static \Database\Factories\Gallery\AlbumUploadFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
-class AlbumUpload extends Model implements Searchable
+class AlbumUpload extends Model implements HasMedia, Searchable
 {
     use AboutTrait;
     use Commentable;
+    use HasFactory;
     use HasSlug;
-    use UploadImage;
+    use InteractsWithMedia;
+
+    protected static function newFactory()
+    {
+        return AlbumUploadFactory::new();
+    }
 
     protected $fillable = [
         'id',
@@ -76,7 +83,6 @@ class AlbumUpload extends Model implements Searchable
                 DB::beginTransaction();
                 try {
                     $upload->deleteAbout();
-                    $upload->deleteItem();
                     $upload->delete();
                 } catch (\Throwable $th) {
                     DB::rollback();
@@ -118,26 +124,17 @@ class AlbumUpload extends Model implements Searchable
 
     public function getItemAttribute()
     {
-        return $this->image->image ? asset($this->image->image) : null;
-    }
-
-    public function uploadItem(UploadedFile $file, $folder = null, $filename = null)
-    {
-        return $this->uploadImage($file, $folder, $filename);
-    }
-
-    public function updateItem(UploadedFile $file, $folder = null, $filename = null)
-    {
-        return $this->updateImage($file, $folder, $filename);
-    }
-
-    public function deleteItem()
-    {
-        return $this->deleteImage();
+        return $this->getFirstMediaUrl('images');
     }
 
     public function album()
     {
         return $this->belongsTo(Album::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')
+            ->singleFile();
     }
 }

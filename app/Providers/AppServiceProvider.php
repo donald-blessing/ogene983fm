@@ -32,17 +32,17 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
 
         view()->composer(['layouts.pages.includes.navbar', 'site.pages.index'], function ($view): void {
-            $programmes = Programme::with(['description', 'image', 'programmeTimes'])->get();
+            $programmes = Programme::with(['description', 'media', 'programmeTimes'])->get();
             $view->with('programmes', $programmes);
         });
 
         view()->composer('layouts.pages.includes.navbar', function ($view): void {
-            $presenters = Presenter::with(['description', 'image'])->get();
+            $presenters = Presenter::with(['description', 'media'])->get();
             $view->with('presenters', $presenters);
         });
 
         view()->composer(['layouts.pages.includes.navbar', 'site.pages.index', 'site.pages.blog', 'site.pages.programmes.blog', 'site.pages.presenters.blog', 'site.pages.gallery.blog'], function ($view): void {
-            $categories = Category::with(['description', 'image'])->get();
+            $categories = Category::with(['description', 'media'])->get();
             $view->with('categories', $categories);
         });
 
@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         view()->composer(['site.pages.blog', 'site.pages.programmes.blog', 'site.pages.presenters.blog', 'site.pages.gallery.blog'], function ($view): void {
-            $recents = Post::with(['category', 'category.description', 'category.image', 'description', 'image'])->orderBy('created_at', 'desc')->limit(5)->get();
+            $recents = Post::with(['category', 'category.description', 'category.media', 'description', 'media'])->orderBy('created_at', 'desc')->limit(5)->get();
             $view->with('recents', $recents);
         });
     }

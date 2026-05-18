@@ -48,7 +48,7 @@
             <div class="row">
                 <div class="col-lg-3 col-md-3">
                     <div class="logo">
-                        <a href="{{ route('home') }}">
+                        <a href="{{ route('home') }}" wire:navigate>
                             <img src="{{ asset('images/logo.png') }}" alt="">
                         </a>
                     </div>
@@ -81,27 +81,27 @@
         <div class="container">
             <nav class="nav-menu mobile-menu">
                 <ul>
-                    <li><a href="{{ route('home') }}">Home</a></li>
-                    <li><a href="{{ route('metro.index') }}">Metro</a></li>
-                    <li><a href="{{ route('discussion.index') }}">Today's Show</a></li>
-                    <li><a href="{{ route('post.index') }}">News/Events</a>
+                    <li><a href="{{ route('home') }}" wire:navigate>Home</a></li>
+                    <li><a href="{{ route('metro.index') }}" wire:navigate>Metro</a></li>
+                    <li><a href="{{ route('discussion.index') }}" wire:navigate>Today's Show</a></li>
+                    <li><a href="{{ route('post.index') }}" wire:navigate>News/Events</a>
                         @isset($categories)
                         <ul class="dropdown">
                             @foreach ($categories as $category)
-                            <li><a href="{{ route('post.category', ['category' => $category->slug]) }}">{{ $category->name }}</a></li>
+                            <li><a href="{{ route('post.category', ['category' => $category->slug]) }}" wire:navigate>{{ $category->name }}</a></li>
                             @endforeach
                         </ul>
                         @endisset
                     </li>
 
-                    <li><a href="{{ route('gallery.album.index') }}">Gallery</a></li>
-                    <li><a href="{{ route('about') }}">About</a>
+                    <li><a href="{{ route('gallery.album.index') }}" wire:navigate>Gallery</a></li>
+                    <li><a href="{{ route('about') }}" wire:navigate>About</a>
                         <ul class="dropdown">
-                            <li><a href="{{ route('programme.index') }}">Programmes</a></li>
-                            <li><a href="{{ route('presenter.index') }}">OAP<small>s</small></a></li>
+                            <li><a href="{{ route('programme.index') }}" wire:navigate>Programmes</a></li>
+                            <li><a href="{{ route('presenter.index') }}" wire:navigate>OAP<small>s</small></a></li>
                         </ul>
                     </li>
-                    <li><a href="{{ route('contact') }}">Contact</a></li>
+                    <li><a href="{{ route('contact') }}" wire:navigate>Contact</a></li>
                 </ul>
             </nav>
             <div id="mobile-menu-wrap"></div>

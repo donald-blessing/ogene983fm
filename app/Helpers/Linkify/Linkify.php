@@ -119,7 +119,7 @@ class Linkify implements LinkifyInterface
             }
         }
 
-return implode('', $chunks);
+        return implode('', $chunks);
     }
 
     /** * Add HTML links to URLs in plain text. * * @see
@@ -189,8 +189,8 @@ return implode('', $chunks);
                 }
             }
 
-return '<a href="mailto:'.$match[0].'"'.$options['attr']
-                .'>'.$match[0].'</a>';
+            return '<a href="mailto:'.$match[0].'"'.$options['attr']
+                            .'>'.$match[0].'</a>';
         };
 
         return preg_replace_callback($pattern,

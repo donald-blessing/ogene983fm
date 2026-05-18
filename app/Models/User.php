@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Description\Description;
-use App\Models\Image\Image;
 use App\Models\Metro\Metro;
 use App\Models\Post\Post;
 use App\Models\Programme\Programme;
 use App\Traits\AboutTrait;
-use App\Traits\UploadImage;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -18,14 +21,20 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Laravelista\Comments\Comment;
 use Laravelista\Comments\Commenter;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 /**
  * App\Models\User
@@ -53,7 +62,6 @@ use Spatie\Searchable\SearchResult;
  * @property-read mixed $is_presenter
  * @property-read mixed $is_super_admin
  * @property-read mixed $summary
- * @property-read Image|null $image
  * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @property-read Collection|Permission[] $permissions
@@ -64,7 +72,6 @@ use Spatie\Searchable\SearchResult;
  * @property-read int|null $programmes_count
  * @property-read Collection|Role[] $roles
  * @property-read int|null $roles_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User admins()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User fans()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User newModelQuery()
@@ -83,26 +90,27 @@ use Spatie\Searchable\SearchResult;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUsername($value)
- *
  * @property Carbon|null $email_verified_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
- *
  * @property-read Collection|Metro[] $metroArticles
  * @property-read int|null $metro_articles_count
- *
  * @method static Builder<static>|User withoutPermission($permissions)
  * @method static Builder<static>|User withoutRole($roles, $guard = null)
- *
+ * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
+ * @property-read string $avatar
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
  * @mixin \Eloquent
  */
-class User extends Authenticatable implements Searchable
+class User extends Authenticatable implements FilamentUser, HasMedia, Searchable
 {
     use AboutTrait;
     use Commenter;
+    use HasFactory;
     use HasRoles;
+    use HasSlug;
+    use InteractsWithMedia;
     use Notifiable;
-    use UploadImage;
 
     /**
      * The attributes that are mass assignable.
@@ -110,7 +118,7 @@ class User extends Authenticatable implements Searchable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'username',
+        'name', 'email', 'password', 'username', 'email_verified_at', 'loyalty_points',
     ];
 
     /**
@@ -122,24 +130,51 @@ class User extends Authenticatable implements Searchable
         'password', 'remember_token',
     ];
 
-    /**
-     * Boot function
-     *
-     * @return void
-     */
-    protected static function boot()
+    public function canAccessPanel(Panel $panel): bool
     {
-        parent::boot();
-        $users = self::whereNull('slug')->get();
-        if ($users) {
-            foreach ($users as $user) {
-                $user->slug = Str::random(40);
-                $user->save();
-            }
-        }
-        self::saving(function ($model): void {
-            $model->slug = Str::random(40);
-        });
+        return $this->hasRole(['super admin', 'admin']);
+    }
+
+    public function loyaltyLogs(): HasMany
+    {
+        return $this->hasMany(\App\Models\Loyalty\LoyaltyLog::class);
+    }
+
+    public function addLoyaltyPoints(int $points, string $reason, string $actionType): void
+    {
+        $this->increment('loyalty_points', $points);
+        $this->loyaltyLogs()->create([
+            'points' => $points,
+            'reason' => $reason,
+            'action_type' => $actionType,
+        ]);
+    }
+
+    /**
+     * Register media collections.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatars')
+            ->singleFile();
+    }
+
+    /**
+     * Get user avatar URL.
+     */
+    public function getAvatarAttribute(): string
+    {
+        return $this->getFirstMediaUrl('avatars') ?: asset('images/default-avatar.png');
+    }
+
+    /**
+     * Get the options for generating the slug.
+     */
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('slug');
     }
 
     /**
@@ -177,7 +212,7 @@ class User extends Authenticatable implements Searchable
      */
     public function posts(): HasMany
     {
-        return $this->hasMany(Post::class, 'presenter_id');
+        return $this->hasMany(Post::class, 'user_id');
     }
 
     /**
@@ -225,7 +260,7 @@ class User extends Authenticatable implements Searchable
      */
     public function getIsOwnerAttribute(): bool
     {
-        return auth()->user()->id == $this->user->id;
+        return Auth::id() === $this->id;
     }
 
     /**
@@ -283,6 +318,8 @@ class User extends Authenticatable implements Searchable
     {
         return [
             'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'loyalty_points' => 'integer',
         ];
     }
 }

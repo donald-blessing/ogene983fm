@@ -1,29 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Post;
 
-use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Category\Category;
 use App\Models\Post\Post;
-use Illuminate\Http\Request;
+use App\Services\LoyaltyService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function dashboard()
-    {
-        $posts = Post::orderBy('created_at', 'desc')->get();
-
-        return view('site.dashboard.posts.index', ['posts' => $posts]);
-    }
+    public function __construct(
+        protected LoyaltyService $loyaltyService
+    ) {}
 
     /**
      * Display a listing of the resource.
@@ -32,65 +24,13 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with(['category', 'image', 'description'])->get();
-        $routes = [];
-        foreach ($posts as $post) {
-            $routes[] = route('post.show', ['category' => $post->category->slug, 'post' => $post->slug]);
-        }
+        $posts = Post::with(['category', 'media', 'description'])->latest()->paginate(10);
+        
+        $routes = $posts->map(function ($post) {
+            return route('post.show', ['category' => $post->category->slug, 'post' => $post->slug]);
+        })->toArray();
 
         return view('site.pages.blog', ['blogs' => $posts, 'routes' => $routes, 'title' => 'Blog']);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        $categories = Category::nonParent()->pluck('name', 'id');
-
-        return view('site.dashboard.posts.create', ['categories' => $categories]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @return Response
-     */
-    public function store(Request $request)
-    {
-        $request->flash();
-        $this->validate($request, [
-            'title' => ['required', 'string', 'max:190', 'unique:posts,title'],
-            'content' => ['required', 'string'],
-            'summary' => ['required', 'string'],
-            'cover_image' => ['required', 'file', 'mimes:png,jpg,jpeg'],
-            'category' => ['required', 'numeric', 'exists:categories,id'],
-        ]);
-        DB::beginTransaction();
-        try {
-            $post = Post::firstOrCreate([
-                'title' => $request->title,
-                'category_id' => $request->category,
-                'user_id' => Auth::user()->id ?? 1,
-                'content' => $request->content,
-            ]);
-            $post->storeAbout($request->summary);
-            $post->uploadImage($request->file('cover_image'), 'images/posts/'.Category::find($request->category)->slug.'/'.$post->slug);
-            $helper = new Helper;
-            $tags = $helper->getKeywords(implode(' ', [$request->title, $request->summary]));
-            $post->attachTags($tags);
-        } catch (\Throwable $th) {
-            DB::rollback();
-            alert()->error('There was an error while uploading the post!'.$th->getMessage());
-
-            return back();
-        }
-        DB::commit();
-        alert()->success('Post was uploaded successfully!');
-
-        return redirect()->route('post.dashboard');
     }
 
     /**
@@ -100,11 +40,11 @@ class PostController extends Controller
      */
     public function category(Category $category)
     {
-        $posts = $category->posts;
-        $routes = [];
-        foreach ($posts as $post) {
-            $routes[] = route('post.category', ['category' => $post->category->slug]);
-        }
+        $posts = $category->posts()->with(['category', 'media', 'description'])->latest()->paginate(10);
+        
+        $routes = $posts->map(function ($post) {
+            return route('post.category', ['category' => $post->category->slug]);
+        })->toArray();
 
         return view('site.pages.blog', ['blogs' => $posts, 'routes' => $routes, 'title' => $category->name]);
     }
@@ -116,89 +56,18 @@ class PostController extends Controller
      */
     public function show(Category $category, Post $post)
     {
-        $helper = new Helper;
-        $categoryName = $helper->uppercaseWords($category->name);
-        $title = $categoryName.' - '.$helper->uppercaseWords($post->title);
+        if (Auth::check()) {
+            $this->loyaltyService->awardPostReadPoints(Auth::user(), $post->id);
+        }
+
+        // Use Laravel's string helper directly in view if needed, or format here
+        $categoryName = str($category->name)->title()->value();
+        $title = $categoryName . ' - ' . str($post->title)->title()->value();
+        
         $breadcrumb['category'] = $categoryName;
-        $breadcrumb['title'] = $helper->uppercaseWords($post->title);
+        $breadcrumb['title'] = str($post->title)->title()->value();
         $breadcrumb['route'] = route('post.category', ['category' => $category->slug]);
 
         return view('site.pages.blog-details', ['blog' => $post, 'breadcrumb' => $breadcrumb, 'category' => $category, 'title' => $title]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @return Response
-     */
-    public function edit(Post $post)
-    {
-        $categories = Category::pluck('name', 'id');
-
-        return view('site.dashboard.posts.edit', ['categories' => $categories, 'post' => $post]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @return Response
-     */
-    public function update(Request $request, Post $post)
-    {
-        $request->flash();
-        $this->validate($request, [
-            'title' => ['required', 'string', 'max:190'],
-            'content' => ['required', 'string'],
-            'summary' => ['required', 'string'],
-            'cover_image' => ['file', 'mimes:png,jpg,jpeg'],
-            'category' => ['numeric', 'exists:categories,id'],
-        ]);
-        DB::beginTransaction();
-        try {
-            $post->title = $request->title;
-            $post->category_id = $request->category;
-            $post->content = $request->content;
-            $post->save();
-            $post->storeAbout($request->summary);
-            if ($request->hasFile('cover_image')) {
-                $post->updateImage($request->file('cover_image'));
-            }
-            $helper = new Helper;
-            $tags = $helper->getKeywords(implode(' ', [$request->title, $request->summary]));
-            $post->syncTags($tags);
-        } catch (\Throwable $th) {
-            DB::rollback();
-            alert()->error('There was an error while updating the post!'.$th->getMessage());
-
-            return back();
-        }
-        DB::commit();
-        alert()->success('Post was updated successfully!');
-
-        return redirect()->route('post.dashboard');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @return Response
-     */
-    public function destroy(Post $post)
-    {
-        DB::beginTransaction();
-        try {
-            $post->deleteAbout();
-            $post->deleteImage();
-            $post->delete();
-        } catch (\Throwable $th) {
-            DB::rollback();
-            alert()->error('There was an error while deleting the post!'.$th->getMessage());
-
-            return back();
-        }
-        DB::commit();
-        alert()->success('Post was deleted successfully!');
-
-        return redirect()->route('post.dashboard');
     }
 }

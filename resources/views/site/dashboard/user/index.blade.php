@@ -55,10 +55,10 @@ PharmacyTherapon || Dashboard - Members
                                 <td>
                                     <ul class="list-inline list-unstyled">
                                         <li>
-                                            <a href="#" data-url={{ route('roles.edit.user',['user' => $user->slug]) }} class="m-1 edit_role btn btn-primary">Roles</a>
+                                            <a href="#" class="m-1 edit_role btn btn-primary">Roles</a>
                                         </li>
                                         <li>
-                                            <a href="#" data-url="{{ route('permissions.edit.user', ['user' => $user->slug]) }}" class="m-1 edit_permission btn btn-warning">Permissions</a>
+                                            <a href="#" class="m-1 edit_permission btn btn-warning">Permissions</a>
                                         </li>
                                         <li>
                                             <a href="{{ route('user.profile', ['user'=> $user->slug]) }}" class="m-1 btn btn-info">View Profile</a>

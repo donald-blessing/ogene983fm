@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Contact\ContactController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'admin']], function (): void {
+Route::group(['prefix' => 'dashboard', 'middleware' => ['auth', 'role:admin']], function (): void {
     Route::group(['prefix' => 'contacts'], function (): void {
         Route::get('/', [ContactController::class, 'index'])->name('contact.dashboard');
         Route::get('/{contact}', [ContactController::class, 'show'])->name('contact.show');

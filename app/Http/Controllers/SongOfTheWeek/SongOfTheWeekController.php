@@ -4,16 +4,12 @@ namespace App\Http\Controllers\SongOfTheWeek;
 
 use App\Http\Controllers\Controller;
 use App\Models\SongOfTheWeek\SongOfTheWeek;
-use App\Traits\UploadAble;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class SongOfTheWeekController extends Controller
 {
-    use UploadAble;
-
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +17,7 @@ class SongOfTheWeekController extends Controller
      */
     public function dashboard()
     {
-        $songsOfTheWeek = SongOfTheWeek::All();
+        $songsOfTheWeek = SongOfTheWeek::all();
 
         return view('site.dashboard.songOfTheWeek.index', ['songsOfTheWeek' => $songsOfTheWeek]);
     }
@@ -33,7 +29,7 @@ class SongOfTheWeekController extends Controller
      */
     public function index()
     {
-        $songsOfTheWeek = SongOfTheWeek::All();
+        $songsOfTheWeek = SongOfTheWeek::all();
 
         return view('site.pages.songOfTheWeek.index', ['songsOfTheWeek' => $songsOfTheWeek]);
     }
@@ -66,13 +62,15 @@ class SongOfTheWeekController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            $slug = Str::slug($request->title);
             $songOfTheWeek = new SongOfTheWeek;
             $songOfTheWeek->title = $request->title;
             $songOfTheWeek->artist = $request->artist;
             $songOfTheWeek->album = $request->album;
-            $songOfTheWeek->album_art = $this->uploadFile($request->file('albumArt'), "uploads/song-of-the-week/$slug");
-            $songOfTheWeek->song = $this->uploadFile($request->file('song'), "uploads/song-of-the-week/$slug", $slug.'.'.$request->file('song')->getClientOriginalExtension());
+
+            // MediaLibrary will handle the file names and paths
+            $songOfTheWeek->addMediaFromRequest('albumArt')->toMediaCollection('album_arts');
+            $songOfTheWeek->addMediaFromRequest('song')->toMediaCollection('songs');
+
             $songOfTheWeek->save();
             $songOfTheWeek->storeAbout($request->about);
         } catch (\Throwable $th) {
@@ -114,26 +112,27 @@ class SongOfTheWeekController extends Controller
     {
         $request->flash();
         $this->validate($request, [
-            'title' => ['required', 'string', 'max:190', 'unique:song_of_the_weeks,title'],
+            'title' => ['required', 'string', 'max:190', 'unique:song_of_the_weeks,title,'.$songOfTheWeek->id],
             'artist' => ['required', 'string', 'max:190'],
             'album' => ['required', 'string', 'max:190'],
             'about' => ['required', 'string'],
-            'albumArt' => ['required', 'file', 'mimes:png,jpg,jpeg'],
-            'song' => ['required', 'file', 'mimes:ogg,mp3,wav,wmv'],
+            'albumArt' => ['nullable', 'file', 'mimes:png,jpg,jpeg'],
+            'song' => ['nullable', 'file', 'mimes:ogg,mp3,wav,wmv'],
         ]);
         DB::beginTransaction();
         try {
-            $slug = Str::slug($request->title);
-            $songOfTheWeek = new SongOfTheWeek;
             $songOfTheWeek->title = $request->title;
             $songOfTheWeek->artist = $request->artist;
             $songOfTheWeek->album = $request->album;
+
             if ($request->hasFile('albumArt')) {
-                $songOfTheWeek->album_art = $this->uploadFile($request->file('albumArt'), "uploads/song-of-the-week/$slug");
+                $songOfTheWeek->addMediaFromRequest('albumArt')->toMediaCollection('album_arts');
             }
+
             if ($request->hasFile('song')) {
-                $songOfTheWeek->song = $this->uploadFile($request->file('song'), "uploads/song-of-the-week/$slug", $slug.'.'.$request->file('song')->getClientOriginalExtension());
+                $songOfTheWeek->addMediaFromRequest('song')->toMediaCollection('songs');
             }
+
             $songOfTheWeek->storeAbout($request->about);
             $songOfTheWeek->save();
         } catch (\Throwable $th) {
@@ -155,11 +154,7 @@ class SongOfTheWeekController extends Controller
     {
         DB::beginTransaction();
         try {
-            $albumArt = $songOfTheWeek->album_art;
-            $song = $songOfTheWeek->song;
-            // delete files
-            $this->deleteFile($albumArt);
-            $this->deleteFile($song);
+            // MediaLibrary automatically handles file deletion when the model is deleted or media is cleared
             $songOfTheWeek->deleteAbout();
             $songOfTheWeek->delete();
         } catch (\Throwable $th) {

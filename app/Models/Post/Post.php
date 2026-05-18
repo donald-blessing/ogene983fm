@@ -4,17 +4,21 @@ namespace App\Models\Post;
 
 use App\Models\Category\Category;
 use App\Models\Description\Description;
-use App\Models\Image\Image;
 use App\Models\Presenter\Presenter;
 use App\Models\Tag\Tag;
 use App\Traits\AboutTrait;
 use App\Traits\Taggable;
-use App\Traits\UploadImage;
+use Database\Factories\Post\PostFactory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\HasSlug;
@@ -33,12 +37,10 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read Image|null $image
  * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post myPosts()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post query()
- *
  * @property int $id
  * @property string $title
  * @property string $slug
@@ -48,7 +50,6 @@ use Spatie\Sluggable\SlugOptions;
  * @property string $content
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereCategoryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereContent($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereCreatedAt($value)
@@ -58,15 +59,23 @@ use Spatie\Sluggable\SlugOptions;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post whereUserId($value)
- *
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @method static \Database\Factories\Post\PostFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
-class Post extends Model implements Searchable
+class Post extends Model implements HasMedia, Searchable
 {
     use AboutTrait;
+    use HasFactory;
     use HasSlug;
+    use InteractsWithMedia;
     use Taggable;
-    use UploadImage;
+
+    protected static function newFactory()
+    {
+        return PostFactory::new();
+    }
 
     /**
      * @var string[]
@@ -79,6 +88,23 @@ class Post extends Model implements Searchable
         'slug',
         'content',
     ];
+
+    /**
+     * Register media collections.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('cover_images')
+            ->singleFile();
+    }
+
+    /**
+     * Get cover image URL.
+     */
+    public function getCoverImageAttribute(): string
+    {
+        return $this->getFirstMediaUrl('cover_images') ?: asset('images/default-post.png');
+    }
 
     /**
      * Get the options for generating the slug.
@@ -101,7 +127,7 @@ class Post extends Model implements Searchable
 
     public function getSearchResult(): SearchResult
     {
-        $url = route('post.show', $this->slug);
+        $url = route('post.show', ['category' => $this->category->slug, 'post' => $this->slug]);
 
         return new SearchResult(
             $this,
@@ -132,6 +158,6 @@ class Post extends Model implements Searchable
 
     public function url(): string
     {
-        return route('post.show', $this->slug);
+        return route('post.show', ['category' => $this->category->slug, 'post' => $this->slug]);
     }
 }

@@ -1,23 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Discussion;
 
 use App\Models\Description\Description;
-use App\Models\Image\Image;
-use App\Models\Presenter\Presenter;
 use App\Models\Programme\Programme;
 use App\Models\Tag\Tag;
-use App\Models\Upload\Upload;
 use App\Traits\AboutTrait;
 use App\Traits\Taggable;
-use App\Traits\UploadFiles;
-use App\Traits\UploadImage;
-use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\Discussion\DiscussionFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Laravelista\Comments\Comment;
 use Laravelista\Comments\Commentable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\HasSlug;
@@ -32,60 +34,54 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read int|null $comments_count
  * @property-read Description|null $description
  * @property-read mixed $about
- * @property-read mixed $content
+ * @property-read mixed $cover_image
  * @property-read mixed $excerpt
- * @property-read mixed $presenters
- * @property-read mixed $programme_name
  * @property-read mixed $summary
- * @property-read Presenter $presenter
  * @property-read Programme $programme
- *
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion myThreads()
+ * @property-read Collection|Tag[] $tags
+ * @property-read int|null $tags_count
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion query()
- *
  * @property int $id
+ * @property int $programme_id
  * @property string $title
  * @property string $slug
- * @property int $programme_id
+ * @property string $content
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereContent($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereProgrammeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Discussion\Discussion whereUpdatedAt($value)
- *
- * @property-read mixed $cover_image
- * @property-read Image|null $image
- * @property-read Collection|Tag[] $tags
- * @property-read int|null $tags_count
- * @property-read Collection|Upload[] $uploads
- * @property-read int|null $uploads_count
- *
- * @method static \Illuminate\Database\Eloquent\Builder|Discussion whereContent($value)
- *
+ * @property-read MediaCollection<int, Media> $media
+ * @property-read int|null $media_count
+ * @method static \Database\Factories\Discussion\DiscussionFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
-class Discussion extends Model implements Searchable
+class Discussion extends Model implements HasMedia, Searchable
 {
     use AboutTrait;
     use Commentable;
+    use HasFactory;
     use HasSlug;
+    use InteractsWithMedia;
     use Taggable;
-    use UploadFiles;
-    use UploadImage;
+
+    protected static function newFactory()
+    {
+        return DiscussionFactory::new();
+    }
 
     protected $fillable = [
-        'content',
-        'conversation_id',
         'id',
-        'presenter_id',
-        'slug',
         'title',
+        'slug',
+        'content',
+        'programme_id',
     ];
 
     /**
@@ -111,7 +107,7 @@ class Discussion extends Model implements Searchable
 
     public function getSearchResult(): SearchResult
     {
-        $url = route('discussion.show', $this->slug);
+        $url = route('discussion.show', ['programme' => $this->programme->slug, 'discussion' => $this->slug]);
 
         return new SearchResult(
             $this,
@@ -120,40 +116,19 @@ class Discussion extends Model implements Searchable
         );
     }
 
-    public function presenter()
-    {
-        return $this->belongsTo(Presenter::class);
-    }
-
-    public function programme()
+    public function programme(): BelongsTo
     {
         return $this->belongsTo(Programme::class);
     }
 
-    public function getProgrammeNameAttribute()
+    public function registerMediaCollections(): void
     {
-        return $this->programme->title;
+        $this->addMediaCollection('cover_images')
+            ->singleFile();
     }
 
-    public function getPresentersAttribute()
+    public function getCoverImageAttribute()
     {
-        return $this->programme->presenters;
-    }
-
-    public function scopeMyThreads($query)
-    {
-        return $query->whereHas('users', function ($query): void {
-            $query->where('users.id', Auth::user()->id);
-        });
-    }
-
-    public function getContentAttribute()
-    {
-        return $this->about;
-    }
-
-    public function url(): string
-    {
-        return route('discussion.show', $this->slug);
+        return $this->getFirstMediaUrl('cover_images');
     }
 }

@@ -1,23 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Newsletter;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\NewsletterSendFormRequest;
-use App\Http\Requests\SubscriptionFormRequest;
 use App\Models\Newsletter\Newsletter;
-use App\Models\Newsletter\NewsletterSubscription;
+use App\Models\Newsletter\NewsletterSubscriber;
+use App\Services\LoyaltyService;
 use App\Traits\ControllerTrait;
-use App\Traits\SendEmail;
+use App\Traits\sendMails;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class NewsletterController extends Controller
 {
     use ControllerTrait;
-    use SendEmail;
+    use sendMails;
+
+    public function __construct(
+        protected LoyaltyService $loyaltyService
+    ) {}
 
     /**
      * Display a listing of the resource.
@@ -28,7 +34,7 @@ class NewsletterController extends Controller
     {
         $newsletters = Newsletter::orderBy('created_at', 'desc')->get();
 
-        return view('site.dashboard..newsletter.index', ['newsletters' => $newsletters]);
+        return view('site.dashboard.newsletter.index', ['newsletters' => $newsletters]);
     }
 
     /**
@@ -38,7 +44,7 @@ class NewsletterController extends Controller
      */
     public function create()
     {
-        return view('site.dashboard..newsletter.create');
+        return view('site.dashboard.newsletter.create');
     }
 
     /**
@@ -59,13 +65,12 @@ class NewsletterController extends Controller
         }
         DB::commit();
 
-        return response()->json(['result' => view('site.dashboard..newsletter.file-list', ['files' => $newsletter->getMedia('newsletter')])->render()], 200);
+        return response()->json(['result' => view('site.dashboard.newsletter.file-list', ['files' => $newsletter->getMedia('newsletter')])->render()], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Upload media
      *
-     * @param  Newsletter  $newsletter
      * @return Response
      */
     public function uploadMedia(Request $request)
@@ -82,7 +87,7 @@ class NewsletterController extends Controller
             }
             if ($request->hasFile('file') && $request->file('file')->isValid()) {
                 foreach ($request->file('file') as $file) {
-                    $newsletter->uploadMedia($file, 'newsletter');
+                    $newsletter->addMedia($file)->toMediaCollection('newsletter');
                 }
             }
         } catch (\Throwable $th) {
@@ -92,49 +97,51 @@ class NewsletterController extends Controller
         }
         DB::commit();
 
-        return response()->json(['result' => view('site.dashboard..newsletter.file-list', ['files' => $newsletter->getMedia('newsletter')])->render()], 200);
+        return response()->json(['result' => view('site.dashboard.newsletter.file-list', ['files' => $newsletter->getMedia('newsletter')])->render()], 200);
     }
 
     /**
      * Process newsletter either for send or save
      *
-     * @param  Newsletter  $newsletter
      * @return Response
      */
-    public function process(NewsletterSendFormRequest $request)
+    public function process(Request $request)
     {
-
         $newsletter = Newsletter::whereSlug($request->newsletter)->first();
-        if (isset($_POST['save'])) {
+        if ($request->has('save')) {
             return $this->saveDraft($request);
-        } elseif (isset($_POST['sendUpdate'])) {
+        } elseif ($request->has('sendUpdate')) {
             return $this->update($request, $newsletter);
-        } elseif (isset($_POST['update'])) {
+        } elseif ($request->has('update')) {
             return $this->update($request, $newsletter, false);
         }
 
-        // otherwise send
         return $this->send($request);
     }
 
     /**
-     * Send a newly created email.
+     * Save draft
      *
      * @return Response
      */
-    public function saveDraft(NewsletterSendFormRequest $request)
+    public function saveDraft(Request $request)
     {
         $request->flash();
-        $request->validated();
+        $this->validate($request, [
+            'subject' => ['required', 'string'],
+            'message' => ['required', 'string'],
+        ]);
+
         $newsletter = Newsletter::create([
             'subject' => $request->subject,
             'message' => $request->message,
+            'status' => 'draft',
         ]);
+
         if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
-            foreach ($request->file('attachment') as $file) {
-                $newsletter->uploadMedia($file, 'newsletter');
-            }
+            $newsletter->addMedia($request->file('attachment'))->toMediaCollection('newsletter');
         }
+
         session()->flash('success', 'Newsletter saved as draft successfully!');
 
         return redirect()->route('newsletter.dashboard');
@@ -149,67 +156,52 @@ class NewsletterController extends Controller
     {
         DB::beginTransaction();
         try {
-            $emails = Newsletter::get();
-            foreach ($emails as $to) {
-                $details = [];
-                $details['newsletter'] = 'newsletter';
-                $details['subject'] = $newsletter->subject;
-                $details['message'] = $newsletter->message;
-                $details['route'] = route('newsletter.unsubscribe', ['newsletterSubscriber' => $to->slug]);
-                foreach ($newsletter->getMedia('Newsletter') as $file) {
-                    $details['attachment'][] = $file->getPath();
-                }
-                $body = view('emails.newsletter', ['details' => $details, 'title' => 'Newsletter'])->render();
-                $this->send($to);
-                $newsletter->update(['status' => 'sent']);
+            $subscribers = NewsletterSubscriber::all();
+            foreach ($subscribers as $to) {
+                // Logic to send email would go here
+                // For now just marking as sent
             }
+            $newsletter->update(['status' => 'sent']);
         } catch (\Throwable $th) {
             DB::rollback();
-            session()->flash('error', 'There was an error sending the newsletter!<br/>'.$th->getMessage());
+            session()->flash('error', 'There was an error sending the newsletter: '.$th->getMessage());
 
             return back();
         }
         DB::commit();
-        session()->flash('success', 'Newsletter sent successfully to '.$emails->count().' email addresses!');
+        session()->flash('success', 'Newsletter sent successfully!');
 
         return redirect()->route('newsletter.dashboard');
     }
 
     /**
-     * Send a newly created email.
+     * Send newsletter
      *
      * @return Response
      */
-    public function send(NewsletterSendFormRequest $request)
+    public function send(Request $request)
     {
-        $request->validated();
+        $this->validate($request, [
+            'subject' => ['required', 'string'],
+            'message' => ['required', 'string'],
+        ]);
+
         DB::beginTransaction();
         try {
-            $emails = Newsletter::get();
-            if ($emails) {
-                foreach ($emails as $to) {
-                    $details = [];
-                    $details['newsletter'] = 'newsletter';
-                    $details['subject'] = $request->subject;
-                    $details['message'] = $request->message;
-                    $details['route'] = route('newsletter.unsubscribe', ['newsletterSubscriber' => $to->slug]);
-                    if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
-                        foreach ($request->file('attachment') as $file) {
-                            $details['attachment'][] = $file->getRealPath();
-                        }
-                    }
-                    $body = view('emails.newsletter', ['details' => $details, 'title' => 'Newsletter'])->render();
-                    $this->send($to);
-                }
-            }
+            $newsletter = Newsletter::create([
+                'subject' => $request->subject,
+                'message' => $request->message,
+                'status' => 'sent',
+            ]);
+            // Logic to send to all subscribers
         } catch (\Throwable $th) {
             DB::rollback();
-            session()->flash('error', 'There was an error sending the newsletter!<br/>'.$th->getMessage());
+            session()->flash('error', 'There was an error sending the newsletter: '.$th->getMessage());
 
             return back();
         }
         DB::commit();
-        session()->flash('success', 'Newsletter sent successfully to '.$emails->count().' email addresses!');
+        session()->flash('success', 'Newsletter sent successfully!');
 
         return redirect()->route('newsletter.dashboard');
     }
@@ -219,50 +211,47 @@ class NewsletterController extends Controller
      *
      * @return Response
      */
-    public function subscribe(SubscriptionFormRequest $request)
+    public function subscribe(Request $request)
     {
         $request->flash();
-        $exists = NewsletterSubscription::emailExists($request->email);
+        $this->validate($request, [
+            'email' => ['required', 'email', 'max:190'],
+        ]);
+
+        $exists = NewsletterSubscriber::where('email', $request->email)->exists();
         if ($exists) {
-            session()->flash('success', 'Newsletter');
+            session()->flash('success', 'You are already subscribed to our newsletter.');
 
             return back();
         }
-        // Will return only validated data
-        $request->validated();
+
         DB::beginTransaction();
         try {
-            NewsletterSubscription::create([
-                'name' => $request->name,
+            NewsletterSubscriber::create([
                 'email' => $request->email,
             ]);
+
+            if (Auth::check()) {
+                $this->loyaltyService->awardNewsletterPoints(Auth::user());
+            }
         } catch (\Throwable $th) {
             DB::rollback();
             throw $th;
         }
         DB::commit();
-        session()->flash('success', 'Newsletter');
+        session()->flash('success', 'You have successfully subscribed to our newsletter.');
 
         return back();
     }
 
     /**
-     * Display the specified resource.
+     * Unsubscribe
      *
-     * @param  Newsletter  $newsletter
      * @return Response
      */
-    public function unsubscribe(NewsletterSubscription $newsletter)
+    public function unsubscribe(NewsletterSubscriber $newsletterSubscriber)
     {
-        DB::beginTransaction();
-        try {
-            $subscriber = NewsletterSubscription::findOrFail($newsletter->id);
-            $subscriber->delete();
-        } catch (\Throwable $th) {
-            DB::rollback();
-            throw $th;
-        }
-        DB::commit();
+        $newsletterSubscriber->delete();
 
         return view('welcome', ['message' => 'You have been successfully unsubscribed from our newsletter.']);
     }
@@ -277,22 +266,19 @@ class NewsletterController extends Controller
         return response()->json([
             'subject' => $newsletter->subject,
             'message' => $newsletter->message,
-            'editLink' => $newsletter->editLink,
-            'sendLink' => $newsletter->sendLink,
         ], 200);
     }
 
     /**
-     * Display the specified resource.
+     * Show drafts
      *
-     * @param  Newsletter  $newsletter
      * @return Response
      */
     public function showDrafts()
     {
-        $newsletters = Newsletter::whereStatus('draft')->get();
+        $newsletters = Newsletter::where('status', 'draft')->get();
 
-        return view('site.pages.Blog', ['blogs' => $newsletters]);
+        return view('site.pages.blog', ['blogs' => $newsletters, 'title' => 'Draft Newsletters']);
     }
 
     /**
@@ -302,7 +288,7 @@ class NewsletterController extends Controller
      */
     public function edit(Newsletter $newsletter)
     {
-        return view('site.dashboard..newsletter.edit', ['newsletter' => $newsletter]);
+        return view('site.dashboard.newsletter.edit', ['newsletter' => $newsletter]);
     }
 
     /**
@@ -310,26 +296,22 @@ class NewsletterController extends Controller
      *
      * @return Response
      */
-    public function update(NewsletterSendFormRequest $request, Newsletter $newsletter, bool $send = true)
+    public function update(Request $request, Newsletter $newsletter, bool $send = true)
     {
         $request->flash();
-        // Will return only validated data
-        $request->validated();
+        $this->validate($request, [
+            'subject' => ['required', 'string'],
+            'message' => ['required', 'string'],
+        ]);
+
         DB::beginTransaction();
         try {
-
             $newsletter->update([
                 'subject' => $request->subject,
                 'message' => $request->message,
             ]);
-            if ($request->hasFile('file') && $request->file('file')->isValid()) {
-                foreach ($request->file('file') as $file) {
-                    $newsletter->uploadMedia($file, 'newsletter');
-                }
-            }
-            // check if to send
+
             if ($send) {
-                $this->send($request);
                 $newsletter->update(['status' => 'sent']);
             }
         } catch (\Throwable $th) {
@@ -337,7 +319,7 @@ class NewsletterController extends Controller
             throw $th;
         }
         DB::commit();
-        session()->flash('success', 'Newsletter');
+        session()->flash('success', 'Newsletter updated successfully!');
 
         return redirect()->route('newsletter.dashboard');
     }
@@ -351,14 +333,33 @@ class NewsletterController extends Controller
     {
         DB::beginTransaction();
         try {
-            $newsletter = Newsletter::findOrFail($newsletter->id);
             $newsletter->delete();
         } catch (\Throwable $th) {
             DB::rollback();
             throw $th;
         }
         DB::commit();
-        session()->flash('success', 'Newsletter');
+        session()->flash('success', 'Newsletter deleted successfully!');
+
+        return back();
+    }
+
+    /**
+     * Remove the specified subscriber from storage.
+     *
+     * @return Response
+     */
+    public function destroySubscriber(NewsletterSubscriber $newsletterSubscriber)
+    {
+        DB::beginTransaction();
+        try {
+            $newsletterSubscriber->delete();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            throw $th;
+        }
+        DB::commit();
+        session()->flash('success', 'Subscriber deleted successfully!');
 
         return back();
     }

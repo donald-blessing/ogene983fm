@@ -57,7 +57,7 @@ $helper = new Helper;
                                 </div>
                                 <a data-poster="{{ $item->cover_image }}" data-sub-html=".caption" data-html="#video{{ $loop->index }}">
                                     <div class="col-md-4">
-                                        <img src="{{ $item->cover_image }}" class="img-fluid" style="width: 100%">
+                                        <img src="{{ $item->cover_image }}" class="img-fluid" style="width: 100%" alt="{{ $item->title }}">
                                         <div class="caption text-center mt-30">
                                             <h4>{{ $item->title }}</h4>
                                             <p>{{ $item->about }}</p>
@@ -73,7 +73,7 @@ $helper = new Helper;
                                 </div>
                                 <a data-poster="{{ $item->cover_image }}" data-html="#audio{{ $loop->index }}">
                                     <div class="col-md-4">
-                                        <img src="{{ $item->cover_image }}" class="img-fluid" style="width: 100%">
+                                        <img src="{{ $item->cover_image }}" class="img-fluid" style="width: 100%" alt="{{ $item->title }}">
                                         <div class="caption text-center mt-30">
                                             <h4>{{ $item->title }}</h4>
                                             <p>{{ $item->about }}</p>
@@ -83,7 +83,7 @@ $helper = new Helper;
                                 @else
                                 <div class="col-md-4">
                                     <a href="{{ $item->item }}">
-                                        <img src="{{ $item->item }}" class="img-fluid" style="width: 100%">
+                                        <img src="{{ $item->item }}" class="img-fluid" style="width: 100%" alt="{{ $item->title }}">
                                         <div class="caption text-center mt-30">
                                             <h4>{{ $item->title }}</h4>
 

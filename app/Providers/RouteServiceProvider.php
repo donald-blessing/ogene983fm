@@ -47,11 +47,6 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
 
-            // include routes for categories
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/categoriesRoute.php'));
-
             // include routes for usersRoutes
             Route::middleware('web')
                 ->namespace($this->namespace)
@@ -96,6 +91,11 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/metro.php'));
+
+            // include routes for song of the week
+            Route::middleware('web')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/song-of-the-week.php'));
         });
     }
 

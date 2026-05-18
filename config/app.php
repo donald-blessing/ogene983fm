@@ -3,6 +3,7 @@
 declare(strict_types=1);
 use App\Providers\AppServiceProvider;
 use App\Providers\EventServiceProvider;
+use App\Providers\Filament\AdminPanelProvider;
 use App\Providers\RouteServiceProvider;
 use Collective\Html\FormFacade;
 use Collective\Html\HtmlFacade;
@@ -240,6 +241,7 @@ return [
          */
         AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
+        AdminPanelProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         EventServiceProvider::class,
         RouteServiceProvider::class,

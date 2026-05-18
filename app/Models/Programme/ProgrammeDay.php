@@ -13,16 +13,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read mixed $day
  * @property-read Collection|Programme[] $programmes
  * @property-read int|null $programmes_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeDay newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeDay newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeDay query()
- *
  * @property int $id
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeDay whereDay($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeDay whereId($value)
- *
  * @mixin \Eloquent
  */
 class ProgrammeDay extends Model

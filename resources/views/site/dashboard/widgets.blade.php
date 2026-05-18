@@ -90,16 +90,16 @@
                 <h3 class="tile-title">Chat</h3>
                 <div class="messanger">
                     <div class="messages">
-                        <div class="message"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/tonypeterson/48.jpg">
+                        <div class="message"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/tonypeterson/48.jpg" alt="User avatar">
                             <p class="info">Hello there!<br>Good Morning</p>
                         </div>
-                        <div class="message me"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg">
+                        <div class="message me"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg" alt="My avatar">
                             <p class="info">Hi<br>Good Morning</p>
                         </div>
-                        <div class="message"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/tonypeterson/48.jpg">
+                        <div class="message"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/tonypeterson/48.jpg" alt="User avatar">
                             <p class="info">How are you?</p>
                         </div>
-                        <div class="message me"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg">
+                        <div class="message me"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg" alt="My avatar">
                             <p class="info">I'm Fine.</p>
                         </div>
                     </div>

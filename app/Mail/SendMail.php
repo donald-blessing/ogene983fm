@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Traits\UploadAble;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -10,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 class SendMail extends Mailable
 {
     use Queueable, SerializesModels;
-    use UploadAble;
 
     /**
      * Create a new message instance.
@@ -31,9 +29,11 @@ class SendMail extends Mailable
                 $mail->attach($file);
             }
         }
-        if ($this->details['from']) {
-            $mail = $this->from($this->details['from']);
-        }
+
+        $from = $this->details['from'] ?? config('mail.from.address');
+        $name = config('mail.from.name');
+
+        $mail->from($from, $name);
 
         return $mail->view('emails.sendMail');
     }
