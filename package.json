@@ -11,5 +11,11 @@
         "lodash": "^4.17.23",
         "postcss": "^8.4.31",
         "vite": "^6.2.0"
+    },
+    "dependencies": {
+        "@tailwindcss/vite": "^4.3.0",
+        "laravel-echo": "^2.3.4",
+        "pusher-js": "^8.5.0",
+        "tailwindcss": "^4.3.0"
     }
 }

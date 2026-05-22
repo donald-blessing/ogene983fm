@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Post;
 
 use App\Models\Category\Category;
@@ -15,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Laravelista\Comments\Commentable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
@@ -34,7 +37,6 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read mixed $cover_image
  * @property-read mixed $excerpt
  * @property-read mixed $summary
- * @property-read Image|null $image
  * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post\Post myPosts()
@@ -62,11 +64,16 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @method static \Database\Factories\Post\PostFactory factory($count = null, $state = [])
+ * @property-read Collection<int, \Laravelista\Comments\Comment> $approvedComments
+ * @property-read int|null $approved_comments_count
+ * @property-read Collection<int, \Laravelista\Comments\Comment> $comments
+ * @property-read int|null $comments_count
  * @mixin \Eloquent
  */
 class Post extends Model implements HasMedia, Searchable
 {
     use AboutTrait;
+    use Commentable;
     use HasFactory;
     use HasSlug;
     use InteractsWithMedia;
@@ -131,7 +138,7 @@ class Post extends Model implements HasMedia, Searchable
 
         return new SearchResult(
             $this,
-            $this->id,
+            $this->title,
             $url
         );
     }

@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereFrom($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereTo($value)
+ * @method static \Database\Factories\Programme\ProgrammeTimeFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 class ProgrammeTime extends Model

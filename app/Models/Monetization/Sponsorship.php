@@ -9,6 +9,32 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property string|null $link
+ * @property \Illuminate\Support\Carbon $start_time
+ * @property \Illuminate\Support\Carbon $end_time
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship active()
+ * @method static \Database\Factories\Monetization\SponsorshipFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereEndTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereLink($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereStartTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Sponsorship extends Model implements HasMedia
 {
     use HasFactory;

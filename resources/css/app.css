@@ -1,47 +1,127 @@
-@import 'tailwindcss';
-@import '../../vendor/filament/support/resources/css/index.css';
-@import '../../vendor/filament/actions/resources/css/index.css';
-@import '../../vendor/filament/forms/resources/css/index.css';
-@import '../../vendor/filament/infolists/resources/css/index.css';
-@import '../../vendor/filament/notifications/resources/css/index.css';
-@import '../../vendor/filament/schemas/resources/css/index.css';
-@import '../../vendor/filament/tables/resources/css/index.css';
-@import '../../vendor/filament/widgets/resources/css/index.css';
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
-@source '../**/*.vue';
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Righteous&display=swap');
 
 @theme {
-    --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+    /* Typography */
+    --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Righteous", cursive;
+
+    /* Color Palette: Ogene Radio Fusion */
+    --color-primary: #BF00FF;      /* Electric Purple */
+    --color-secondary: #39FF14;    /* Neon Green */
+    --color-accent: #FFAA00;       /* Sunburst Orange */
+    --color-bg-dark: #0A0E27;      /* Midnight Blue */
+    --color-bg-oled: #000000;      /* OLED Black */
+
+    /* Glass Blurs */
+    --blur-glass: 20px;
 }
 
-@variant dark (&:where(.dark, .dark *));
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    body {
+        background-color: var(--color-bg-dark);
+        color: white;
+        font-family: var(--font-sans);
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(191, 0, 255, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(57, 255, 20, 0.1) 0px, transparent 50%);
+    }
 
-/* Persistent Player Styles */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-display);
+        letter-spacing: 0.05em;
+    }
+}
+
+@layer components {
+    .glass-panel {
+        backdrop-filter: blur(var(--blur-glass));
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .liquid-glass {
+        backdrop-filter: blur(var(--blur-glass));
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        filter: saturate(1.5);
+    }
+
+    .neon-border-purple {
+        border: 1px solid rgba(191, 0, 255, 0.5);
+        box-shadow: 0 0 15px rgba(191, 0, 255, 0.3);
+    }
+
+    .neon-border-green {
+        border: 1px solid rgba(57, 255, 20, 0.5);
+        box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+    }
+
+    .btn-fusion {
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .btn-fusion:active {
+        transform: scale(0.95);
+    }
+
+    .btn-fusion-primary {
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+    .btn-fusion-primary:hover {
+        background-color: rgba(191, 0, 255, 0.8);
+        box-shadow: 0 0 20px rgba(191, 0, 255, 0.5);
+    }
+
+    .btn-fusion-secondary {
+        background-color: var(--color-secondary);
+        color: var(--color-bg-dark);
+    }
+
+    .btn-fusion-secondary:hover {
+        background-color: rgba(57, 255, 20, 0.8);
+        box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+    }
+}
+
+/* Custom Utilities for Persistent Player */
 .btn-circle.btn-lg {
-    width: 50px;
-    height: 50px;
-    padding: 10px 16px;
-    font-size: 18px;
-    line-height: 1.33;
-    border-radius: 25px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
 }
 
-.persistent-player-container .custom-range::-webkit-slider-thumb {
-    background: #dc3545;
+.persistent-player-container {
+    backdrop-filter: blur(var(--blur-glass));
+    background-color: rgba(255, 255, 255, 0.05);
+    border-top: 2px solid rgba(191, 0, 255, 0.3);
+    padding: 1rem 1.5rem;
 }
 
-.persistent-player-container .custom-range::-moz-range-thumb {
-    background: #dc3545;
+input[type="range"].custom-range {
+    accent-color: var(--color-primary);
+    height: 0.375rem;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    cursor: pointer;
 }
-
-.persistent-player-container .custom-range::-ms-thumb {
-    background: #dc3545;
-}
-

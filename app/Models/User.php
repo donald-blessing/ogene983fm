@@ -100,6 +100,10 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read string $avatar
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ * @property int $loyalty_points
+ * @property-read Collection<int, \App\Models\Loyalty\LoyaltyLog> $loyaltyLogs
+ * @property-read int|null $loyalty_logs_count
+ * @method static Builder<static>|User whereLoyaltyPoints($value)
  * @mixin \Eloquent
  */
 class User extends Authenticatable implements FilamentUser, HasMedia, Searchable

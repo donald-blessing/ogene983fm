@@ -34,8 +34,9 @@ class UserProfileController extends Controller
             abort(404);
         }
 
-        // Optimization: Eager load counts for valid relationships
+        // Optimization: Eager load counts and relationships
         $user->loadCount(['programmes', 'posts', 'metroArticles']);
+        $user->load(['description', 'media']);
 
         $items = [];
 
@@ -76,6 +77,7 @@ class UserProfileController extends Controller
             'confirm_password' => 'required|same:new_password',
         ]);
 
+        /** @var User $user */
         $user = Auth::user();
 
         if (! Hash::check($request->old_password, $user->password)) {
@@ -125,6 +127,7 @@ class UserProfileController extends Controller
     public function profileDialog(User $user)
     {
         if (View::exists('site.pages.user.profileModal')) {
+            $user->load(['description', 'media']);
             $profile = view('site.pages.user.profileModal', ['user' => $user])->render();
 
             return response()->json([$profile], 200);
@@ -140,6 +143,8 @@ class UserProfileController extends Controller
      */
     public function show(User $user)
     {
+        $user->load(['description', 'media']);
+
         return view('site.pages.user.profile', ['user' => $user]);
     }
 

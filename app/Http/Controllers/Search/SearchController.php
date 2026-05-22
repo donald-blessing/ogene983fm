@@ -35,7 +35,7 @@ class SearchController extends Controller
             ->registerModel(Category::class, 'name')
             ->search($searchString);
 
-        $blogs = $searchResults->map(fn ($result) => $searchResult->searchable ?? $result->searchable);
+        $blogs = $searchResults->map(fn ($result) => $result->searchable);
 
         // The view site.pages.blog expects $blogs and $routes
         $routes = $searchResults->map(fn ($result) => $result->url);

@@ -1,11 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Models\Gallery\Album;
-use App\Models\Post\Post;
-use App\Models\Programme\Programme;
-use App\Models\SongOfTheWeek\SongOfTheWeek;
 use App\Models\User;
 use Illuminate\Contracts\Support\Renderable;
 
@@ -26,7 +24,7 @@ class HomeController extends Controller
      */
     public function dashboard()
     {
-        return view('site.dashboard.index', ['usersCount' => User::all()->count()]);
+        return view('site.dashboard.index', ['usersCount' => User::count()]);
     }
 
     /**
@@ -36,21 +34,12 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $posts = Post::with(['category', 'media', 'description'])->limit(6)->get();
-        $songOfTheWeek = SongOfTheWeek::currentSong()->first();
-        $albums = Album::orderBy('updated_at', 'desc')->take(6)->get();
-        $programmes = Programme::with(['description', 'media', 'programmeTimes'])->get();
-
-        return view('site.pages.index', [
-            'albums' => $albums,
-            'posts' => $posts,
-            'programmes' => $programmes,
-            'songOfTheWeek' => $songOfTheWeek,
-        ]);
+        // Data is now handled by view composers in AppServiceProvider for better performance and consistency
+        return view('site.pages.index');
     }
 
     /**
-     * Show the application dashboard.
+     * Show the application about page.
      *
      * @return Renderable
      */
@@ -60,7 +49,7 @@ class HomeController extends Controller
     }
 
     /**
-     * Show the application dashboard.
+     * Show the application contact page.
      *
      * @return Renderable
      */

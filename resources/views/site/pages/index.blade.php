@@ -1,281 +1,154 @@
 @extends('layouts.pages.index')
 @section('title')
-Home
+Authentically Eastern
 @endsection
 @section('content')
 
-@isset($programmes)
-<!-- Hero Section Begin -->
-<section class="hero-section">
-    <div class="hero-items owl-carousel">
-        @foreach ($programmes as $programme)
-        <div class="single-hero-items set-bg" data-setbg="{{ $programme->cover_image }}">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-5">
-                        @php
-                        $time=$programme->programmeTimes;
-                        $time->each(function ($item, $key) {
-                        $item->day=$item->day.'s';
-                        });
-                        @endphp
-                        <span>{{ $time->implode('day', ', ') }}</span>
-                        <h1>{{ ucwords($programme->title) }}</h1>
-                        <p>{{ date('h:i a', strtotime($time->first()->from)) }} to {{ date('h:i a', strtotime($time->first()->to))}}</p>
-                        <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}" class="primary-btn">About</a>
-                    </div>
-                </div>
+<!-- Hero Section -->
+<section class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Main Hero Card -->
+        <div class="lg:col-span-8 glass-panel rounded-[2rem] p-8 md:p-12 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:rotate-12 transition-transform duration-1000">
+                <i class="fa fa-music text-[10rem]"></i>
+            </div>
+            
+            <span class="inline-block bg-secondary text-bg-dark font-black px-4 py-1 rounded-full uppercase tracking-tighter text-xs mb-6">
+                Now Trending
+            </span>
+            
+            <h1 class="text-5xl md:text-7xl font-display text-white mb-6 leading-tight">
+                Authentically <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary italic">Eastern</span>
+            </h1>
+            
+            <p class="text-xl text-white/70 max-w-xl mb-10 leading-relaxed font-light">
+                Voice of the East, bringing you the best in highlife, local news, and community stories. 98.3 FM – Staying true to our roots.
+            </p>
+            
+            <div class="flex flex-wrap gap-4">
+                <button @click="$dispatch('toggle-player')" class="btn-fusion-primary group/btn flex items-center gap-3">
+                    <i class="fa fa-play-circle text-2xl group-hover/btn:scale-110 transition-transform"></i>
+                    Listen Live
+                </button>
+                <a href="{{ route('about') }}" wire:navigate class="btn-fusion liquid-glass hover:bg-white/10 flex items-center gap-2">
+                    Our Story
+                </a>
             </div>
         </div>
-        @endforeach
 
+        <!-- On Air Widget -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            <div class="glass-panel rounded-3xl p-6 border-l-4 border-secondary">
+                <h4 class="text-secondary mb-4 flex items-center gap-2">
+                    <span class="h-2 w-2 bg-secondary rounded-full animate-ping"></span>
+                    On Air Now
+                </h4>
+                @if($programmes->isNotEmpty())
+                    @php $onAir = $programmes->first(); @endphp
+                    <div class="flex gap-4">
+                        <img src="{{ $onAir->coverImage }}" alt="{{ $onAir->title }}" class="h-20 w-20 rounded-2xl object-cover ring-2 ring-white/10">
+                        <div>
+                            <h5 class="text-white text-lg">{{ $onAir->title }}</h5>
+                            <p class="text-white/50 text-sm italic">With your favorite OAPs</p>
+                        </div>
+                    </div>
+                @else
+                    <p class="text-white/40 italic">Ogene Mix Session</p>
+                @endif
+            </div>
+
+            <!-- Loyalty Mini-Card -->
+            @auth
+            <div class="glass-panel rounded-3xl p-6 bg-gradient-to-br from-primary/20 to-transparent">
+                <div class="flex justify-between items-start mb-2">
+                    <h5 class="text-white">Your Rewards</h5>
+                    <i class="fa fa-star text-accent animate-spin-slow"></i>
+                </div>
+                <p class="text-3xl font-display text-white mb-1">{{ auth()->user()->loyalty_points }}</p>
+                <p class="text-white/50 text-[10px] uppercase font-bold tracking-widest">Ogene Points</p>
+                <a href="{{ route('dashboard') }}" class="mt-4 block text-center py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-xs font-bold">Manage Account</a>
+            </div>
+            @endauth
+        </div>
     </div>
 </section>
-<!-- Hero Section End -->
-@endisset
 
-<div class="m-5">
-    <div class="row">
-        <div class="col-md-8">
-            @isset($songOfTheWeek)
-            <!-- Deal Of The Week Section Begin-->
-            <section class="deal-of-week set-bg spad" data-setbg="{{ asset($songOfTheWeek->albumArt) }}">
-                <div class="container">
-                    <div class="text-center col-lg-6">
-                        <div class="section-title">
-                            <h2>Song Of The Week</h2>
-                            <h3>{{ $songOfTheWeek->title }}</h3>
-                            <p>
-                                {!! $songOfTheWeek->about !!}
-                            </p>
-                            <div class="product-price">
-                                {!! $songOfTheWeek->album !!}
-                                <span>/ {!! $songOfTheWeek->artist !!}</span>
+<!-- Categories Grid -->
+<section class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-16">
+    <div class="flex items-end justify-between mb-12">
+        <div>
+            <h2 class="text-4xl text-white">Explore <span class="text-secondary">Vibrations</span></h2>
+            <p class="text-white/50 mt-2">Music, Culture, News, and Everything In-Between</p>
+        </div>
+        <a href="{{ route('post.index') }}" wire:navigate class="hidden sm:block text-primary font-bold hover:text-white transition-colors">View All News →</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        @foreach($categories->take(6) as $category)
+        <a href="{{ route('post.category', ['category' => $category->slug]) }}" wire:navigate class="group relative aspect-[4/3] rounded-[2.5rem] overflow-hidden glass-panel border-0 hover:neon-border-purple transition-all duration-500">
+            <img src="{{ $category->coverImage }}" alt="{{ $category->name }}" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 group-hover:opacity-80 transition-all duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-bg-dark via-bg-dark/20 to-transparent"></div>
+            
+            <div class="absolute bottom-8 left-8 right-8">
+                <span class="text-secondary text-[10px] font-black uppercase tracking-[0.2em] mb-2 block">{{ $category->posts->count() }} Updates</span>
+                <h3 class="text-3xl text-white group-hover:translate-x-2 transition-transform duration-500">{{ $category->name }}</h3>
+            </div>
+        </a>
+        @endforeach
+    </div>
+</section>
+
+<!-- News & Features Section -->
+<section class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-16">
+    <div class="glass-panel rounded-[3rem] p-8 md:p-16 border-white/5">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <!-- Latest Blog -->
+            <div>
+                <h2 class="text-4xl mb-10">Latest <span class="text-primary">Frequency</span></h2>
+                <div class="space-y-8">
+                    @foreach($posts->take(3) as $post)
+                    <a href="{{ route('post.show', ['category' => $post->category->slug, 'post' => $post->slug]) }}" wire:navigate class="flex gap-6 group">
+                        <div class="w-24 h-24 shrink-0 rounded-2xl overflow-hidden glass-panel border-0">
+                            <img src="{{ $post->coverImage }}" alt="{{ $post->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div>
+                            <span class="text-primary text-[10px] font-bold uppercase tracking-widest">{{ $post->category->name }}</span>
+                            <h4 class="text-xl text-white group-hover:text-secondary transition-colors line-clamp-2 mt-1">{{ $post->title }}</h4>
+                            <div class="flex items-center gap-4 mt-2 text-white/40 text-xs">
+                                <span><i class="fa fa-calendar-o mr-1"></i> {{ $post->created_at->format('M d') }}</span>
+                                <span><i class="fa fa-comment-o mr-1"></i> {{ $post->comments_count }}</span>
                             </div>
                         </div>
-                        {{-- <div class="countdown-timer" id="countdown">
-                            <div class="cd-item">
-                                <span>56</span>
-                                <p>Days</p>
-                            </div>
-                            <div class="cd-item">
-                                <span>12</span>
-                                <p>Hrs</p>
-                            </div>
-                            <div class="cd-item">
-                                <span>40</span>
-                                <p>Mins</p>
-                            </div>
-                            <div class="cd-item">
-                                <span>52</span>
-                                <p>Secs</p>
-                            </div>
-                        </div>
-                        <a href="#" class="primary-btn">Shop Now</a> --}}
-                    </div>
-                </div>
-            </section>
-            <!-- Deal Of The Week Section End -->
-            @endisset
-
-            @isset($categories)
-            @foreach ($categories as $category)
-
-            @if ($loop->odd )
-            <!-- Women Banner Section Begin -->
-            <section class="mt-4 women-banner spad">
-                <div class="container-fluid">
-                    <div class="row">
-                        @empty ($category->category_id)
-                        <div class="col-lg-3">
-                            <div class="product-large set-bg" data-setbg="{{ $category->coverImage }}">
-                                <h2>{{ $category->name }}</h2>
-                                <a href="{{ route('post.category', ['category' => $category->slug]) }}">Discover More</a>
-                            </div>
-                        </div>
-                        @else
-                        <div class="col-lg-8 offset-lg-1">
-                            <div class="filter-control">
-                                <ul>
-                                    @foreach ($category->subcategories as $subcat)
-                                    <li @if ($loop->first) class="active" @endif>{{ $subcat->name }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            @php
-                            $categoryPosts=$category->posts->sortByDesc('updated_at');
-                            @endphp
-                            <div class="product-slider owl-carousel">
-                                @foreach ($categoryPosts as $post)
-                                <div class="product-item">
-                                    <div class="pi-pic">
-                                        <img src="{{ $post->coverImage }}" alt="">
-                                        <div class="sale">{{ $post->category->name }}</div>
-                                        <div class="icon">
-                                            <i class="icon_heart_alt"></i>
-                                        </div>
-
-                                    </div>
-                                    <div class="pi-text">
-                                        <div class="tag-list">
-                                            <div class="tag-item">
-                                                <i class="fa fa-calendar-o"></i>
-                                                {{ $post->updated_at->toFormattedDateString() }}
-                                            </div>
-                                            <div class="tag-item">
-                                                <i class="fa fa-comment-o"></i>
-                                                {{ $post->comments ? $post->comments->count() : 0 }}
-                                            </div>
-                                        </div>
-                                        <a href="{{ route('post.show', ['category' => $post->category->slug, 'post' => $post->slug]) }}">
-                                            <h4>{{ $post->title }}</h4>
-                                        </a>
-                                        <p>
-                                            {{ $post->about }}
-                                        </p>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        @endempty
-                    </div>
-                </div>
-            </section>
-            <!-- Women Banner Section End -->
-
-            @else
-
-            <!-- Man Banner Section Begin -->
-            <section class="man-banner spad">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div class="filter-control">
-                                <ul>
-                                    @foreach ($category->subcategories as $subcat)
-                                    <li @if ($loop->first) class="active" @endif>{{ $subcat->name }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            @php
-                            $categoryPosts=$category->posts->sortByDesc('updated_at');
-                            @endphp
-                            <div class="product-slider owl-carousel">
-                                @foreach ($categoryPosts as $post)
-                                <div class="product-item">
-                                    <div class="pi-pic">
-                                        <img src="{{ $post->coverImage }}" alt="">
-                                        <div class="sale">{{ $post->category->name }}</div>
-                                        <div class="icon">
-                                            <i class="icon_heart_alt"></i>
-                                        </div>
-
-                                    </div>
-                                    <div class="pi-text">
-                                        <div class="tag-list">
-                                            <div class="tag-item">
-                                                <i class="fa fa-calendar-o"></i>
-                                                {{ $post->updated_at->toFormattedDateString() }}
-                                            </div>
-                                            <div class="tag-item">
-                                                <i class="fa fa-comment-o"></i>
-                                                {{ $post->comments ? $post->comments->count() : 0 }}
-                                            </div>
-                                        </div>
-                                        <a href="{{ route('post.show', ['category' => $post->category->slug, 'post' => $post->slug]) }}">
-                                            <h4>{{ $post->title }}</h4>
-                                        </a>
-                                        <p>
-                                            {{ $post->about }}
-                                        </p>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="col-lg-3 offset-lg-1">
-                            <div class="product-large set-bg" data-setbg="{{ $category->coverImage }}">
-                                <h2>{{ $category->name }}</h2>
-                                <a href="{{ route('post.category', ['category' => $category->slug]) }}">Discover More</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <!-- Man Banner Section End -->
-            @endif
-            @endforeach
-            @endisset
-
-            @isset($albums)
-            <!-- Instagram Section Begin -->
-            @forelse ($albums as $album)
-            <div class="instagram-photo">
-                <div class="insta-item set-bg" data-setbg="{{ $album->coverImage }}">
-                    <div class="inside-text">
-                        <i class="ti-instagram"></i>
-                        <h5><a href="{{ route('gallery.album.show', ['album' => $album->slug]) }}">{{ $album->title }}</a></h5>
-                    </div>
+                    </a>
+                    @endforeach
                 </div>
             </div>
-            @empty
-            @endforelse
-            <!-- Instagram Section End -->
-            @endisset
 
-
-            @if($posts->count()>0)
-            <!-- Latest Blog Section Begin -->
-            <section class="latest-blog spad">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="section-title">
-                                <h2>From The Blog</h2>
-                            </div>
+            <!-- Song of the Week -->
+            <div class="relative">
+                <div class="sticky top-32">
+                    <h2 class="text-4xl mb-10 text-right">Ogene <span class="text-accent">Star</span></h2>
+                    @if($songOfTheWeek)
+                    <div class="liquid-glass rounded-[2rem] p-8 text-center border-accent/20">
+                        <div class="relative w-48 h-48 mx-auto mb-8">
+                            <div class="absolute inset-0 bg-accent/20 blur-[40px] animate-pulse rounded-full"></div>
+                            <img src="{{ $songOfTheWeek->getFirstMediaUrl('album_arts') }}" alt="{{ $songOfTheWeek->title }}" class="relative w-full h-full rounded-full object-cover border-4 border-accent/50 animate-spin-slow">
+                        </div>
+                        <h3 class="text-2xl text-white mb-2">{{ $songOfTheWeek->title }}</h3>
+                        <p class="text-accent font-display text-lg mb-6">{{ $songOfTheWeek->artist }}</p>
+                        <div class="flex justify-center">
+                            <span class="px-6 py-2 rounded-full bg-accent/10 border border-accent/30 text-accent font-bold text-sm">SONG OF THE WEEK</span>
                         </div>
                     </div>
-                    <div class="row">
-                        @foreach ($posts as $post)
-                        <div class="col-lg-4 col-md-6">
-                            <div class="single-latest-blog">
-                                <a href="{{ route('post.show', ['category' => $post->category->slug, 'post' => $post->slug]) }}">
-                                    <img src="{{ $post->coverImage }}" alt="">
-                                </a>
-                                <div class="text-center latest-text">
-                                    <div class="catagory-name">{{ $post->category->name }}</div>
-                                    <div class="tag-list">
-                                        <div class="tag-item">
-                                            <i class="fa fa-calendar-o"></i>
-                                            {{ $post->updated_at->toFormattedDateString() }}
-                                        </div>
-                                        <div class="tag-item">
-                                            <i class="fa fa-comment-o"></i>
-                                            {{ $post->comments ? $post->comments->count() : 0 }}
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('post.show', ['category' => $post->category->slug, 'post' => $post->slug]) }}">
-                                        <h4>{{ $post->title }}</h4>
-                                    </a>
-                                    <p>{{ $post->about }}</p>
-                                    <a href="{{ route('post.show', ['category' => $post->category->slug, 'post' => $post->slug]) }}" class="primary-btn">Read more</a>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
+                    @else
+                    <div class="liquid-glass rounded-[2rem] p-12 text-center text-white/30 italic">
+                        Selecting this week's favorite...
                     </div>
-
+                    @endif
                 </div>
-            </section>
-            <!-- Latest Blog Section End -->
-            @endif
-        </div>
-
-        <div class="col-md-4">
-            <a class="twitter-timeline" href="https://twitter.com/ogenefm983?ref_src=twsrc%5Etfw">Tweets by Ogene983FM</a>
-            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
 @endsection

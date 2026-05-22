@@ -78,6 +78,18 @@ class Programme extends Model implements HasMedia, Searchable
         return ProgrammeFactory::new();
     }
 
+    protected static function booted()
+    {
+        static::updated(function (Programme $programme): void {
+            if ($programme->wasChanged('title')) {
+                broadcast(new \App\Events\NowPlaying(
+                    $programme->title,
+                    $programme->coverImage
+                ))->toOthers();
+            }
+        });
+    }
+
     protected $fillable = ['title'];
 
     /**

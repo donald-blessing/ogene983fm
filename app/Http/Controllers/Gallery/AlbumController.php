@@ -19,7 +19,7 @@ class AlbumController extends Controller
      */
     public function dashboard()
     {
-        $albums = Album::with(['media', 'description'])->orderBy('created_at', 'desc')->get();
+        $albums = Album::with(['media', 'description', 'category'])->orderBy('created_at', 'desc')->get();
 
         return view('site.dashboard.gallery.index', ['albums' => $albums]);
     }
@@ -31,7 +31,7 @@ class AlbumController extends Controller
      */
     public function index()
     {
-        $albums = Album::with(['media', 'description'])->get();
+        $albums = Album::with(['media', 'description', 'category'])->get();
         $routes = [];
         foreach ($albums as $album) {
             $routes[] = route('gallery.album.show', ['album' => $album->slug]);
@@ -100,6 +100,7 @@ class AlbumController extends Controller
      */
     public function show(Album $album)
     {
+        $album->load(['description', 'media', 'category']);
         $helper = new Helper;
         $title = 'Gallery Album - '.$helper->uppercaseWords($album->title);
         $breadcrumb['category'] = 'Gallery';

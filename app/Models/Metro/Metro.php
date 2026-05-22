@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Laravelista\Comments\Commentable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
@@ -60,11 +61,16 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read int|null $media_count
  * @method static \Database\Factories\Metro\MetroFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Metro whereAuthor($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravelista\Comments\Comment> $approvedComments
+ * @property-read int|null $approved_comments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravelista\Comments\Comment> $comments
+ * @property-read int|null $comments_count
  * @mixin \Eloquent
  */
 class Metro extends Model implements HasMedia, Searchable
 {
     use AboutTrait;
+    use Commentable;
     use HasFactory;
     use HasSlug;
     use InteractsWithMedia;

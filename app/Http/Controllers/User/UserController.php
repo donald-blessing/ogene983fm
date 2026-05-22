@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\User;
 
 use App\Charts\UserChart;
@@ -14,7 +16,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -34,7 +35,7 @@ class UserController extends Controller
     {
         $usersChart = new UserChart;
         $usersChart->labels(['Total Members', 'Admins']);
-        $usersChart->dataset('Members', 'line', [User::get()->count(),  User::admins()->get()->count()]);
+        $usersChart->dataset('Members', 'line', [User::count(), User::admins()->count()]);
 
         return $usersChart;
     }
@@ -46,7 +47,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users ??= User::orderBy('created_at', 'desc')->get();
+        $users = User::with(['description', 'media', 'roles'])->orderBy('created_at', 'desc')->get();
 
         return $this->displayIndex($users);
     }
@@ -68,6 +69,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $user->load(['description', 'media']);
+
         return view('site.dashboard.user.page-user', ['user' => $user, 'mode' => 'edit']);
     }
 
@@ -81,7 +84,7 @@ class UserController extends Controller
     {
         DB::beginTransaction();
         try {
-            $user = User::whereSlug($user)->first();
+            $user = User::whereSlug($user)->firstOrFail();
             $user->delete();
         } catch (NoneDeletableModel $th) {
             DB::rollback();
@@ -125,14 +128,14 @@ class UserController extends Controller
 
     public function getUsersWithPermission($permissions)
     {
-        $users = User::permission($permissions)->orderBy('created_at', 'desc')->get(); // Returns only users with the permission
+        $users = User::with(['description', 'media', 'roles'])->permission($permissions)->orderBy('created_at', 'desc')->get();
 
         return $this->displayIndex($users);
     }
 
     public function getUsersWithRoles($roles)
     {
-        $users = User::role($roles)->orderBy('created_at', 'desc')->get(); // Returns only users with the role 'expert'
+        $users = User::with(['description', 'media', 'roles'])->role($roles)->orderBy('created_at', 'desc')->get();
 
         return $this->displayIndex($users);
     }
@@ -171,9 +174,7 @@ class UserController extends Controller
      */
     public static function getUser(User $user)
     {
-        $user = User::whereSlug($user->slug)->first();
-
-        return User::findOrFail($user->id);
+        return User::whereSlug($user->slug)->with(['description', 'media'])->firstOrFail();
     }
 
     /**

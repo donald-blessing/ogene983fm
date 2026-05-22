@@ -105,6 +105,12 @@
                     @if ((\Route::current()->getName() == 'post.show')||(\Route::current()->getName() == 'discussion.show'))
                     @comments(['model' => $blog])
                     @endif
+
+                    @if (\Route::current()->getName() == 'discussion.show')
+                    <div class="mt-12">
+                        @livewire('live-chat')
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
