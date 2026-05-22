@@ -167,6 +167,11 @@ class Programme extends Model implements HasMedia, Searchable
         return $this->belongsToMany(ProgrammeDay::class);
     }
 
+    public function episodes()
+    {
+        return $this->hasMany(Episode::class);
+    }
+
     /**
      * Scope a query to only include current programme on air
      *

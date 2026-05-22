@@ -124,18 +124,19 @@ class ProgrammeController extends Controller
      */
     public function show(Programme $programme)
     {
+        $programme->load(['description', 'media', 'episodes.media', 'presenters.media']);
+
         $helper = new Helper;
         $title = 'Programmes - '.$helper->uppercaseWords($programme->title);
         $breadcrumb['category'] = 'Programmes';
         $breadcrumb['title'] = $helper->uppercaseWords($programme->title);
         $breadcrumb['route'] = route('programme.index');
-        if (empty($programme->tags)) {
-            $helper = new Helper;
-            $tags = $helper->getKeywords(implode(' ', [$programme->title, $programme->about]));
-            $programme->attachTags($tags);
-        }
 
-        return view('site.pages.blog-details', ['blog' => $programme, 'breadcrumb' => $breadcrumb, 'presenters' => $programme->presenters, 'title' => $title]);
+        return view('site.pages.programmes.show', [
+            'programme' => $programme,
+            'breadcrumb' => $breadcrumb,
+            'title' => $title
+        ]);
     }
 
     /**

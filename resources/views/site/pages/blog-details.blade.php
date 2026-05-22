@@ -107,8 +107,9 @@
                     @endif
 
                     @if (\Route::current()->getName() == 'discussion.show')
-                    <div class="mt-12">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
                         @livewire('live-chat')
+                        @livewire('voice-recorder')
                     </div>
                     @endif
                 </div>
