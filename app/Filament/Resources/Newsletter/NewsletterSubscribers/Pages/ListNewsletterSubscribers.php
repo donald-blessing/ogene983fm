@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Newsletter\NewsletterSubscribers\Pages;
 
 use App\Filament\Resources\Newsletter\NewsletterSubscribers\NewsletterSubscriberResource;

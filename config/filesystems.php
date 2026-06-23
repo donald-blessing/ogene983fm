@@ -47,12 +47,12 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => $_SERVER['DOCUMENT_ROOT'].'/media',
+            'root' => storage_path('app'),
         ],
 
         'public' => [
             'driver' => 'local',
-            'root' => $_SERVER['DOCUMENT_ROOT'].'/media',
+            'root' => public_path('media'),
             'url' => env('APP_URL').'/media',
             'visibility' => 'public',
         ],

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             RolesTableSeeder::class,
             ProgrammeDaysTableSeeder::class,
             UsersTableSeeder::class,
+            RealisticContentSeeder::class,
         ]);
     }
 }

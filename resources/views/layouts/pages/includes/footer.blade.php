@@ -1,84 +1,79 @@
-<!-- Footer Section Begin -->
-<footer class="footer-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3">
-                <div class="footer-left">
-                    <div class="footer-logo" style="background-color: white; padding: 15px;">
-                        <a href="#"><img src="{{ asset('images/logo.png') }}" alt=""></a>
-                    </div>
-                    <ul>
-                        <li>Address: KM 80 Enugu/Onitsha Expressway, Awka, Anambra State, Nigeria</li>
-                        <li>Phone: +234 807 772 6636,<br/> +234 816 749 4172</li>
-                        <li>Email: info@ogene983fm.com, ogenefm983@gmail.com</li>
-                    </ul>
-                    <div class="footer-social">
-                        <a href="https://www.facebook.com/ogene983fm"><i class="fa fa-facebook"></i></a>
-                        <a href="https://twitter.com/ogenefm983"><i class="fa fa-twitter"></i></a>
-                        <a href="https://instagram.com/ogene983fm"><i class="fa fa-instagram"></i></a>
-                    </div>
+<!-- Footer -->
+<footer class="mt-24 border-t border-white/5 bg-bg-oled/30 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-16">
+            <!-- Brand Column -->
+            <div class="lg:col-span-4">
+                <a href="{{ route('home') }}" wire:navigate class="inline-block mb-8 transition-transform hover:scale-105">
+                    <img src="{{ asset('images/logo.png') }}" alt="Ogene 98.3 FM" class="h-12 w-auto">
+                </a>
+                <p class="text-white/50 text-sm leading-relaxed mb-8 max-w-sm">
+                    The Voice of the People. Ogene 98.3 FM is the heartbeat of the East, bringing you the best in entertainment, news, and culture.
+                </p>
+                <div class="flex gap-4">
+                    <a href="https://www.facebook.com/ogene983fm" target="_blank" class="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-white/40 hover:text-primary hover:neon-border-purple transition-all">
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                    <a href="https://twitter.com/ogenefm983" target="_blank" class="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-white/40 hover:text-secondary hover:neon-border-green transition-all">
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com/ogene983fm" target="_blank" class="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-white/40 hover:text-accent hover:shadow-[0_0_15px_rgba(255,170,0,0.3)] transition-all">
+                        <i class="fa fa-instagram"></i>
+                    </a>
                 </div>
             </div>
-            <div class="col-lg-5 text-center">
-                <div class="footer-widget">
-                    <h5>Quick Links</h5>
-                    <ul>
-                        <li><a href="{{ route('home') }}">Home</a></li>
-                        <li><a href="#">Metro</a></li>
-                        <li><a href="{{ route('post.index') }}">Blog</a></li>
-                        <li><a href="{{ route('programme.index') }}">Programmes</a></li>
-                        <li><a href="{{ route('presenter.index') }}">On Air Personalities</a></li>
-                        <li><a href="{{ route('contact') }}">Contact</a></li>
+
+            <!-- Links Column -->
+            <div class="lg:col-span-4 grid grid-cols-2 gap-8">
+                <div>
+                    <h5 class="font-display text-white mb-6 uppercase tracking-widest text-xs">Explore</h5>
+                    <ul class="space-y-4">
+                        <li><a href="{{ route('home') }}" wire:navigate class="text-white/40 hover:text-secondary text-sm transition-colors">Home</a></li>
+                        <li><a href="{{ route('metro.index') }}" wire:navigate class="text-white/40 hover:text-secondary text-sm transition-colors">Metro</a></li>
+                        <li><a href="{{ route('post.index') }}" wire:navigate class="text-white/40 hover:text-secondary text-sm transition-colors">News</a></li>
+                        <li><a href="{{ route('gallery.album.index') }}" wire:navigate class="text-white/40 hover:text-secondary text-sm transition-colors">Gallery</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-display text-white mb-6 uppercase tracking-widest text-xs">Station</h5>
+                    <ul class="space-y-4">
+                        <li><a href="{{ route('about') }}" wire:navigate class="text-white/40 hover:text-secondary text-sm transition-colors">About Us</a></li>
+                        <li><a href="{{ route('programme.index') }}" wire:navigate class="text-white/40 hover:text-secondary text-sm transition-colors">Programmes</a></li>
+                        <li><a href="{{ route('presenter.index') }}" wire:navigate class="text-white/40 hover:text-secondary text-sm transition-colors">OAPs</a></li>
+                        <li><a href="{{ route('contact') }}" wire:navigate class="text-white/40 hover:text-secondary text-sm transition-colors">Contact</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <div class="newslatter-item">
-                    <h5>Join Our Newsletter Now</h5>
-                    <p>Get E-mail updates about latest happenings.</p>
-                    <form action="{{ route('newsletter.subscribe') }}" method="POST" class="subscribe-form">
-                        @csrf
-                        <input type="text" placeholder="Enter Your Mail" name="email" required>
-                        @error('email')
-                        <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                        <button type="submit">Subscribe</button>
-                    </form>
-                </div>
+
+            <!-- Newsletter Column -->
+            <div class="lg:col-span-4">
+                <h5 class="font-display text-white mb-6 uppercase tracking-widest text-xs text-primary">Stay in the Loop</h5>
+                <p class="text-white/40 text-sm mb-6 font-light italic">
+                    Subscribe to our newsletter for the latest frequency updates.
+                </p>
+                <form action="{{ route('newsletter.subscribe') }}" method="POST" class="relative group">
+                    @csrf
+                    <input type="email" placeholder="Email address..." name="email" required
+                           class="input-fusion w-full !rounded-2xl !pr-24 text-sm">
+                    <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-primary text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-primary/80 transition-colors">
+                        Join
+                    </button>
+                </form>
             </div>
         </div>
-    </div>
-    <div class="copyright-reserved">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="copyright-text">
-                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                        Copyright &copy;<script>
-                            document.write(new Date().getFullYear());
 
-                        </script> All rights reserved | Ogene98.3FM
-                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                    </div>
-
-                </div>
+        <div class="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-white/20 text-[10px] uppercase font-bold tracking-[0.3em]">
+                &copy; {{ date('Y') }} Ogene 98.3 FM. All Rights Reserved.
+            </p>
+            <div class="flex gap-6">
+                <span class="text-white/20 text-[10px] uppercase font-bold tracking-widest italic">{{ app(\App\Settings\GeneralSettings::class)->site_motto }}</span>
             </div>
         </div>
     </div>
 </footer>
-<!-- Footer Section End -->
 
-<!-- Js Plugins -->
-<script src="{{ asset('frontend/js/jquery-3.3.1.min.js') }}"></script>
-<script src="{{ asset('frontend/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('frontend/js/jquery-ui.min.js') }}"></script>
-<script src="{{ asset('frontend/js/jquery.countdown.min.js') }}"></script>
-<script src="{{ asset('frontend/js/jquery.nice-select.min.js') }}"></script>
-<script src="{{ asset('frontend/js/jquery.zoom.min.js') }}"></script>
-<script src="{{ asset('frontend/js/jquery.dd.min.js') }}"></script>
-<script src="{{ asset('frontend/js/jquery.slicknav.js') }}"></script>
-<script src="{{ asset('frontend/js/owl.carousel.min.js') }}"></script>
-<script src="{{ asset('frontend/js/main.js') }}"></script>
+<!-- Modern Interaction Scripts -->
+<script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
 @stack('js')
+@livewireScripts

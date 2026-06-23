@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\SongOfTheWeek;
 
 use App\Models\Description\Description;
@@ -89,6 +91,18 @@ class SongOfTheWeek extends Model implements HasMedia, Searchable
 
         $this->addMediaCollection('songs')
             ->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(400)
+            ->height(400)
+            ->format('webp');
+
+        $this->addMediaConversion('webp')
+            ->format('webp')
+            ->quality(80);
     }
 
     public function getAlbumArtAttribute(): ?string

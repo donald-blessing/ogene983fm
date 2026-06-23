@@ -18,12 +18,15 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $user = User::create([
-            'name' => 'Admin',
-            'username' => 'admin',
-            'email' => 'info@ogene983fm.com',
-            'password' => Hash::make('ImUtU*dd#03Y93'),
-        ]);
+        $user = User::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'name' => 'Admin',
+                'email' => 'info@ogene983fm.com',
+                'password' => Hash::make('ImUtU*dd#03Y93'),
+                'email_verified_at' => now(),
+            ]
+        );
 
         $role_r = Role::where('name', '=', 'admin')->firstOrFail();
         $user->assignRole($role_r); // Assigning role to user

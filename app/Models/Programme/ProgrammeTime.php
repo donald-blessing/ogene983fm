@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Programme;
 
 use carbon\Carbon;
+use Database\Factories\Programme\ProgrammeTimeFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,8 +37,9 @@ class ProgrammeTime extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\Programme\ProgrammeTimeFactory::new();
+        return ProgrammeTimeFactory::new();
     }
+
     public $timestamps = false;
 
     protected $fillable = ['day', 'from', 'to'];

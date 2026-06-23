@@ -1,18 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helpers;
 
 use App\Helpers\compareDirectories\compareDirectories;
 use App\Helpers\Linkify\Linkify;
 use App\Helpers\Sentence\Sentence;
 use App\Helpers\Stringizer\Stringizer;
+use App\Services\SeoService;
+use App\Support\FileUtil;
+use App\Support\StrUtil;
 use Carbon\Carbon;
 use DonatelloZa\RakePlus\RakePlus;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Route;
 // # or
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Route;
 use OpenGraph;
 use SEO;
 use SEOMeta;
@@ -32,19 +36,7 @@ class Helper
      */
     public function isEmpty($value)
     {
-        if (is_string($value)) {
-            $value = trim($value);
-        }
-
-        if (is_array($value)) {
-            if (count(array_filter($value)) === 0) {
-                return true;
-            }
-        } elseif (! isset($value) || empty($value) || $value == '' || is_null($value)) {
-            return true;
-        }
-
-        return false;
+        return StrUtil::isReallyEmpty($value);
     }
 
     /**
@@ -56,19 +48,7 @@ class Helper
      */
     public function stringSearch($haystack, $arr)
     {
-        $found = false;
-        if (is_array($arr)) {
-            foreach ($arr as $value) {
-                $found = $this->searchWholeWord($haystack, $value);
-                if ($found) {
-                    break;
-                }
-            }
-        } else {
-            $found = $this->searchWholeWord($haystack, $arr);
-        }
-
-        return $found;
+        return StrUtil::containsAny((string) $haystack, $arr);
     }
 
     /**
@@ -79,21 +59,12 @@ class Helper
      */
     public function containsArrayItem($str, array $words)
     {
-        if (! is_string($str)) {
-            return false;
-        }
-        foreach ($words as $word) {
-            if (is_string($word) && stripos($str, $word) === false) {
-                return true;
-            }
-        }
-
-        return false;
+        return StrUtil::containsAny((string) $str, $words);
     }
 
     public function searchWholeWord($haystack, $needle)
     {
-        return preg_match("/\b$needle\b/i", (string) $haystack) === 1;
+        return StrUtil::containsWholeWord((string) $haystack, (string) $needle);
     }
 
     public function getFileExtension($target_file)
@@ -2045,32 +2016,17 @@ class Helper
 
     public function deleteFile($folder = null, $filename = null)
     {
-        $disk = 'public';
-        Storage::disk($disk)->delete($folder.$filename);
+        return FileUtil::delete($folder.$filename);
     }
 
     public function uploadFile(UploadedFile $uploadedFile, $folder = null, $filename = null)
     {
-        $disk = 'public';
-        $name = $this->isEmpty($filename) ? str_random(25) : $filename;
-
-        return $uploadedFile->storeAs($folder, $name.'.'.$uploadedFile->getClientOriginalExtension(), $disk);
+        return FileUtil::upload($uploadedFile, $folder, $filename);
     }
 
     public function checkFile($path)
     {
-        $new_path = $path;
-        $filename = $this->getFilename($path);
-        $extension = $this->getFileExtension($path);
-        $dir = $this->getFileDirectoryName($path);
-        $i = 1;
-        while (file_exists($new_path)) {
-            // add and combine the filename, iterator, extension
-            $new_path = implode('/', [$dir, $filename.'_'.$i.'.'.$extension]);
-            $i++;
-        }
-
-        return $new_path;
+        return FileUtil::getUniquePath((string) $path);
     }
 
     /**
@@ -2081,7 +2037,7 @@ class Helper
      */
     public function isFile($file)
     {
-        $ext = pathinfo($file, PATHINFO_EXTENSION);
+        $ext = pathinfo((string) $file, PATHINFO_EXTENSION);
 
         return (string) $ext !== '';
     }
@@ -2094,12 +2050,7 @@ class Helper
      */
     public function isVideo($filename)
     {
-        if ($this->isEmpty($filename)) {
-            return false;
-        }
-        $EXT_LIST = ['mp4', 'mov', 'mpg', 'mpeg', 'wmv', 'mkv', 'ogg', 'webm'];
-
-        return $this->contains($filename, 'video') || in_array($this->getFileExtension($filename), $EXT_LIST);
+        return FileUtil::isVideo((string) $filename);
     }
 
     public function isImage($filename)
@@ -2712,12 +2663,7 @@ HEAD;
 
     public function SEOIndex($title, $description, $type)
     {
-        SEO::setTitle($title);
-        SEO::setDescription($description);
-        SEO::opengraph()->setUrl('www.pharmacytherapon.com');
-        SEO::setCanonical(url()->current());
-        SEO::opengraph()->addProperty('type', $type);
-        SEO::twitter()->setSite('@PharmaTherapon');
+        app(SeoService::class)->setIndexSeo($title, $description, $type);
     }
 
     public function SEOPage($title, $description, $type, array $property)

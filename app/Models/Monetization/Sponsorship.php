@@ -4,21 +4,29 @@ declare(strict_types=1);
 
 namespace App\Models\Monetization;
 
+use Database\Factories\Monetization\SponsorshipFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @property int $id
  * @property string $title
  * @property string|null $link
- * @property \Illuminate\Support\Carbon $start_time
- * @property \Illuminate\Support\Carbon $end_time
+ * @property Carbon $start_time
+ * @property Carbon $end_time
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship active()
  * @method static \Database\Factories\Monetization\SponsorshipFactory factory($count = null, $state = [])
@@ -33,16 +41,30 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereStartTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereUpdatedAt($value)
+ * @property int $clicks
+ * @property int $impressions
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereClicks($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Sponsorship whereImpressions($value)
+ * @property-read Collection<int, Activity> $activitiesAsSubject
+ * @property-read int|null $activities_as_subject_count
  * @mixin \Eloquent
  */
 class Sponsorship extends Model implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia;
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['title', 'link', 'is_active'])
+            ->logOnlyDirty();
+    }
 
     protected static function newFactory()
     {
-        return \Database\Factories\Monetization\SponsorshipFactory::new();
+        return SponsorshipFactory::new();
     }
 
     protected $fillable = [
@@ -51,6 +73,8 @@ class Sponsorship extends Model implements HasMedia
         'start_time',
         'end_time',
         'is_active',
+        'clicks',
+        'impressions',
     ];
 
     protected function casts(): array

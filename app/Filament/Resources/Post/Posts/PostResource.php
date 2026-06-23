@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Post\Posts;
 
 use App\Filament\Resources\Post\Posts\Pages\CreatePost;

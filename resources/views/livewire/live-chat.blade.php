@@ -19,7 +19,7 @@
 
     <!-- Messages Area -->
     <div x-ref="chatContainer" class="flex-1 overflow-y-auto p-6 space-y-4 scroll-smooth">
-        @foreach($messages as $msg)
+        @forelse($messages as $msg)
             <div class="flex flex-col {{ ($msg['user_id'] ?? null) == Auth::id() ? 'items-end' : 'items-start' }}">
                 <div class="flex items-center gap-2 mb-1">
                     <span class="text-[10px] font-bold uppercase tracking-tighter {{ ($msg['user_id'] ?? null) == Auth::id() ? 'text-primary' : 'text-secondary' }}">
@@ -31,7 +31,13 @@
                     {{ $msg['message'] }}
                 </div>
             </div>
-        @endforeach
+        @empty
+            <div class="h-full flex flex-col items-center justify-center text-center text-white/30 space-y-4">
+                <i class="fa fa-comments text-4xl mb-2 opacity-50"></i>
+                <p class="font-medium text-sm">No messages yet.</p>
+                <p class="text-xs">Be the first to join the conversation!</p>
+            </div>
+        @endforelse
     </div>
 
     <!-- Input Area -->
@@ -43,8 +49,9 @@
                     type="text" 
                     placeholder="Join the conversation..." 
                     class="flex-1 bg-white/5 border-none rounded-xl text-sm focus:ring-1 focus:ring-primary placeholder-white/20"
+                    aria-label="Chat message input"
                 >
-                <button type="submit" class="bg-primary hover:bg-primary/80 text-white h-10 w-10 rounded-xl flex items-center justify-center transition-transform active:scale-95 shadow-lg shadow-primary/20">
+                <button type="submit" class="bg-primary hover:bg-primary/80 text-white h-10 w-10 rounded-xl flex items-center justify-center transition-transform active:scale-95 shadow-lg shadow-primary/20" aria-label="Send message">
                     <i class="fa fa-paper-plane"></i>
                 </button>
             </form>

@@ -30,9 +30,7 @@ class UserProfileController extends Controller
      */
     public function getProfile(User $user)
     {
-        if ((Auth::id() != $user->id) && (! $user->is_admin && ! $user->is_super_admin)) {
-            abort(404);
-        }
+        $this->authorize('view', $user);
 
         // Optimization: Eager load counts and relationships
         $user->loadCount(['programmes', 'posts', 'metroArticles']);

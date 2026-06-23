@@ -14,6 +14,7 @@ declare(strict_types=1);
 */
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Monetization\SponsorshipTrackingController;
 use App\Http\Controllers\Search\SearchController;
 use App\Http\Controllers\Tag\TagController;
 use Illuminate\Support\Facades\Artisan;
@@ -32,6 +33,11 @@ Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
 Route::get('/tags/{tag}', [TagController::class, 'show'])->name('tag.show');
 Route::get('/search', [SearchController::class, 'show'])->name('search');
+
+Route::prefix('monetization')->name('monetization.')->group(function (): void {
+    Route::get('/track-click/{sponsorship}', [SponsorshipTrackingController::class, 'trackClick'])->name('track-click');
+    Route::post('/track-impression', [SponsorshipTrackingController::class, 'trackImpression'])->name('track-impression');
+});
 
 Route::get('/clear-cache', function () {
     Artisan::call('view:clear');

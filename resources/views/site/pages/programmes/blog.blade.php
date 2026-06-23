@@ -1,115 +1,98 @@
 @extends('layouts.pages.blog')
 @section('title')
-Programmes
+Our Frequency
 @endsection
 @section('content')
 
-
-
-<!-- Breadcrumb Section Begin -->
-<div class="breacrumb-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="breadcrumb-text">
-                    <a href="{{ route('home') }}"><i class="fa fa-home"></i> Home</a>
-                    <span>Programmes</span>
-                </div>
-            </div>
-        </div>
+<!-- Breadcrumb Section -->
+<div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-12">
+    <div class="flex items-center gap-2 text-white/40 text-sm font-medium">
+        <a href="{{ route('home') }}" class="hover:text-secondary transition-colors"><i class="fa fa-home"></i> Home</a>
+        <i class="fa fa-angle-right text-[10px]"></i>
+        <span class="text-white">Programmes</span>
     </div>
 </div>
-<!-- Breadcrumb Section Begin -->
 
-<!-- Blog Section Begin -->
-<section class="blog-section spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-8 order-2 order-lg-1">
-                <div class="blog-sidebar">
-                    <div class="search-form">
-                        <h4>Search</h4>
-                        <form action="#">
-                            <input type="text" placeholder="Search . . .  ">
-                            <button type="submit"><i class="fa fa-search"></i></button>
-                        </form>
-                    </div>
-                    <div class="blog-catagory">
-                        <h4>Categories</h4>
-                        <ul>
-                            @foreach ($categories as $category)
-                            <li><a href="{{ route('post.category', ['category' => $category->slug]) }}">{{ $category->name }}</a></li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    <div class="recent-post">
-                        <h4>Recent Post</h4>
-                        <div class="recent-blog">
-                            @foreach ($recents as $post)
-                            <a href="{{ route('post.show', ['category' => $post->category->name, 'post' => $post->slug]) }}" class="rb-item">
-                                <div class="rb-pic">
-                                    <img src="{{ $post->coverImage }}" alt="">
-                                </div>
-                                <div class="rb-text">
-                                    <h6>{{ $post->title }}</h6>
-                                    <p>{{ $post->category->name }}<span>- {{ $post->created_at->toFormattedDateString() }}</span></p>
-                                </div>
-                            </a>
-                            @endforeach
-                        </div>
-                    </div>
-                    <div class="blog-tags">
-                        <h4>Tags</h4>
-                        <div class="tag-item">
-                            @foreach ($tags as $tag)
-                            <a href="{{ route('tag.show', ['tag' => $tag->slug]) }}">{{ $tag->name }}</a>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-9 order-1 order-lg-2">
-                <!-- Latest Blog Section Begin -->
-                <section class="latest-blog spad">
-                    <div class="container">
-                        <div class="row">
-                            @foreach ($programmes as $programme)
-                            @php
-                            $time=$programme->programmeTimes;
-                            $time->each(function ($item, $key) {
-                            $item->day=$item->day.'s';
-                            });
-                            @endphp
-                            <div class="col-lg-6 col-md-6">
-                                <div class="single-latest-blog">
-                                    <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}">
-                                        <img src="{{ $programme->coverImage }}" alt="">
-                                    </a>
-                                    <div class="latest-text text-center">
-                                        <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}">
-                                            <h4>{{ $programme->title }}</h4>
-                                        </a>
-                                        <p>
-                                            {!! nl2br($programme->about) !!}<br>
-                                            {{ $time->implode('day', ', ') }} <br>
-                                            {{ $time->first()->from }} to {{ $time->first()->to }}
-                                            {{ $programme->presenters != null ? 'Presenters ' . $programme->presenters->implode('name', ', ') : null }}
-                                        </p>
-                                        <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}" class="primary-btn">Read more</a>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-
-                    </div>
-                </section>
-                <!-- Latest Blog Section End -->
-            </div>
+<!-- Programmes Grid Section -->
+<section class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-24">
+    <div class="flex items-end justify-between mb-12 border-l-4 border-primary pl-6">
+        <div>
+            <h2 class="text-5xl font-display text-white italic">Ogene <span class="text-secondary">Lineup</span></h2>
+            <p class="text-white/40 mt-2 tracking-widest uppercase text-xs font-black">Stay connected with our daily frequency</p>
         </div>
     </div>
-</section>
-<!-- Blog Section End -->
 
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        @foreach ($programmes as $programme)
+        @php
+            $time = $programme->programmeTimes;
+            $time->each(function ($item) {
+                $item->day = $item->day.'s';
+            });
+        @endphp
+        
+        <div class="card-fusion flex flex-col group h-full">
+            <!-- Programme Cover -->
+            <div class="aspect-square overflow-hidden relative">
+                <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}">
+                    <img src="{{ $programme->coverImage }}" alt="{{ $programme->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                </a>
+                
+                <!-- Time Badge -->
+                <div class="absolute top-6 left-6">
+                    <div class="liquid-glass px-4 py-2 rounded-2xl border-white/20">
+                        <p class="text-[10px] font-black text-secondary uppercase tracking-widest">
+                            {{ $time->first()?->from }} - {{ $time->first()?->to }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Gradient Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-bg-dark via-transparent to-transparent opacity-60"></div>
+            </div>
+
+            <div class="p-8 flex-1 flex flex-col">
+                <h4 class="text-2xl font-display text-white mb-4 group-hover:text-primary transition-colors">
+                    {{ $programme->title }}
+                </h4>
+                
+                <p class="text-white/50 text-sm leading-relaxed mb-8 line-clamp-3 italic">
+                    {{ $programme->about }}
+                </p>
+
+                <div class="mt-auto flex flex-col gap-6">
+                    <!-- Schedule Info -->
+                    <div class="flex items-center gap-3 text-white/30 text-xs font-bold uppercase tracking-tighter">
+                        <i class="fa fa-calendar-o text-primary"></i>
+                        <span>Every {{ $time->implode('day', ', ') }}</span>
+                    </div>
+
+                    <!-- Presenters -->
+                    @if($programme->presenters->isNotEmpty())
+                    <div class="flex -space-x-3 items-center">
+                        @foreach($programme->presenters->take(3) as $presenter)
+                        <img src="{{ $presenter->avatar }}" alt="{{ $presenter->name }}" 
+                             class="w-10 h-10 rounded-full border-2 border-bg-dark object-cover ring-2 ring-white/5" 
+                             title="{{ $presenter->name }}">
+                        @endforeach
+                        @if($programme->presenters->count() > 3)
+                        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-[10px] font-bold text-white border-2 border-bg-dark ring-2 ring-white/5">
+                            +{{ $programme->presenters->count() - 3 }}
+                        </div>
+                        @endif
+                        <span class="ml-4 text-[10px] text-white/40 font-bold uppercase tracking-widest">Studio Cast</span>
+                    </div>
+                    @endif
+
+                    <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}" 
+                       class="btn-fusion liquid-glass !py-3 !px-8 hover:bg-primary hover:text-white transition-all text-xs font-black uppercase tracking-[0.2em] mt-2">
+                        View Show Log
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</section>
 
 @endsection

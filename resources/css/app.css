@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Righteous&display=swap');
+@import "tailwindcss";
 
 @theme {
     /* Typography */
@@ -15,6 +15,9 @@
 
     /* Glass Blurs */
     --blur-glass: 20px;
+
+    /* Animations */
+    --animate-spin-slow: spin 8s linear infinite;
 }
 
 @layer base {
@@ -29,11 +32,28 @@
         background-image: 
             radial-gradient(at 0% 0%, rgba(191, 0, 255, 0.15) 0px, transparent 50%),
             radial-gradient(at 100% 0%, rgba(57, 255, 20, 0.1) 0px, transparent 50%);
+        min-height: 100vh;
+        position: relative;
     }
 
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-display);
         letter-spacing: 0.05em;
+    }
+
+    /* Modern Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: var(--color-primary);
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-secondary);
     }
 }
 
@@ -62,66 +82,168 @@
         box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
     }
 
-    .btn-fusion {
-        padding: 0.75rem 1.5rem;
+    .btn-fusion,
+    .btn-fusion-primary,
+    .btn-fusion-secondary {
+        padding: 0.875rem 2.25rem;
         border-radius: 9999px;
         font-weight: 700;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: inline-flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        border: none;
+        letter-spacing: 0.025em;
+        position: relative;
+        overflow: hidden;
     }
 
-    .btn-fusion:active {
-        transform: scale(0.95);
+    .btn-fusion:active,
+    .btn-fusion-primary:active,
+    .btn-fusion-secondary:active {
+        transform: scale(0.96);
     }
 
     .btn-fusion-primary {
-        background-color: var(--color-primary);
+        background: linear-gradient(135deg, var(--color-primary) 0%, #d400ff 100%);
         color: white;
+        box-shadow: 0 4px 15px rgba(191, 0, 255, 0.3);
     }
 
     .btn-fusion-primary:hover {
-        background-color: rgba(191, 0, 255, 0.8);
-        box-shadow: 0 0 20px rgba(191, 0, 255, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(191, 0, 255, 0.5);
     }
 
     .btn-fusion-secondary {
-        background-color: var(--color-secondary);
+        background: linear-gradient(135deg, var(--color-secondary) 0%, #2ecc12 100%);
         color: var(--color-bg-dark);
+        box-shadow: 0 4px 15px rgba(57, 255, 20, 0.2);
     }
 
     .btn-fusion-secondary:hover {
-        background-color: rgba(57, 255, 20, 0.8);
-        box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(57, 255, 20, 0.4);
+    }
+
+    .input-fusion {
+        background-color: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 1.25rem;
+        padding: 1rem 1.5rem;
+        color: white;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+    .input-fusion::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .input-fusion:focus {
+        background-color: rgba(255, 255, 255, 0.12);
+        border-color: var(--color-primary);
+        box-shadow: 0 0 15px rgba(191, 0, 255, 0.2);
+    }
+
+    .card-fusion {
+        backdrop-filter: blur(var(--blur-glass));
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 2rem;
+        overflow: hidden;
+        transition: all 0.5s ease;
+    }
+
+    .card-fusion:hover {
+        border-color: rgba(191, 0, 255, 0.5);
+        box-shadow: 0 0 15px rgba(191, 0, 255, 0.3);
+        transform: translateY(-0.5rem);
     }
 }
 
 /* Custom Utilities for Persistent Player */
+.audio-visualizer {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+}
+
+.audio-visualizer span {
+    display: block;
+    width: 3px;
+    background-color: var(--color-secondary);
+    border-radius: 2px;
+    animation: bounce 1.2s ease infinite alternate;
+}
+
+.audio-visualizer span:nth-child(2) { animation-delay: 0.1s; }
+.audio-visualizer span:nth-child(3) { animation-delay: 0.2s; }
+.audio-visualizer span:nth-child(4) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+    10% { height: 2px; }
+    30% { height: 8px; }
+    60% { height: 4px; }
+    80% { height: 12px; }
+    100% { height: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .audio-visualizer span {
+        animation: none;
+        height: 6px;
+    }
+}
+/* Custom Utilities for Persistent Player */
 .btn-circle.btn-lg {
-    width: 60px;
-    height: 60px;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 9999px;
-    font-size: 1.25rem;
-    transition: all 0.3s ease;
+    font-size: 1.125rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .persistent-player-container {
-    backdrop-filter: blur(var(--blur-glass));
-    background-color: rgba(255, 255, 255, 0.05);
-    border-top: 2px solid rgba(191, 0, 255, 0.3);
-    padding: 1rem 1.5rem;
+    backdrop-filter: blur(30px);
+    background-color: rgba(10, 14, 39, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
 }
 
 input[type="range"].custom-range {
     accent-color: var(--color-primary);
-    height: 0.375rem;
+    height: 4px;
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    cursor: pointer;
+    appearance: none;
+}
+
+input[type="range"].custom-range::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(191, 0, 255, 0.5);
     cursor: pointer;
 }
+

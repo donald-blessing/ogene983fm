@@ -130,7 +130,7 @@ $helper = new Helper;
                                 <a href="#" class="prev-blog">
                                     <div class="pb-pic">
                                         <i class="ti-arrow-left"></i>
-                                        <img src="{{ $prevBlog->cover_image }}" alt="">
+                                        <img src="{{ $prevBlog->cover_image }}" alt="{{ $prevBlog->title }} Cover Image">
                                     </div>
                                     <div class="pb-text">
                                         <span>Previous Post:</span>
@@ -143,7 +143,7 @@ $helper = new Helper;
                             <div class="col-lg-5 offset-lg-2 col-md-6">
                                 <a href="#" class="next-blog">
                                     <div class="nb-pic">
-                                        <img src="{{ $nextBlog->cover_image }}" alt="">
+                                        <img src="{{ $nextBlog->cover_image }}" alt="{{ $nextBlog->title }} Cover Image">
                                         <i class="ti-arrow-right"></i>
                                     </div>
                                     <div class="nb-text">

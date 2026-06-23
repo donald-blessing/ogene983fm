@@ -25,7 +25,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::with(['category', 'media', 'description'])->latest()->paginate(10);
-        
+
         $routes = $posts->map(function ($post) {
             return route('post.show', ['category' => $post->category->slug, 'post' => $post->slug]);
         })->toArray();
@@ -41,7 +41,7 @@ class PostController extends Controller
     public function category(Category $category)
     {
         $posts = $category->posts()->with(['category', 'media', 'description'])->latest()->paginate(10);
-        
+
         $routes = $posts->map(function ($post) {
             return route('post.category', ['category' => $post->category->slug]);
         })->toArray();
@@ -56,14 +56,16 @@ class PostController extends Controller
      */
     public function show(Category $category, Post $post)
     {
+        $this->authorize('view', $post);
+
         if (Auth::check()) {
             $this->loyaltyService->awardPostReadPoints(Auth::user(), $post->id);
         }
 
         // Use Laravel's string helper directly in view if needed, or format here
         $categoryName = str($category->name)->title()->value();
-        $title = $categoryName . ' - ' . str($post->title)->title()->value();
-        
+        $title = $categoryName.' - '.str($post->title)->title()->value();
+
         $breadcrumb['category'] = $categoryName;
         $breadcrumb['title'] = str($post->title)->title()->value();
         $breadcrumb['route'] = route('post.category', ['category' => $category->slug]);

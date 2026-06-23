@@ -49,6 +49,6 @@ class UserProfileTest extends TestCase
 
         $response = $this->actingAs($user1)->get(route('user.myProfile', ['user' => $user2->slug]));
 
-        $response->assertStatus(404); // Based on controller logic abort('404')
+        $response->assertStatus(403);
     }
 }

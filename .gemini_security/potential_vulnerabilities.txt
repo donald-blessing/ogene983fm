@@ -1,0 +1,2 @@
+resources/views/site/dashboard/newsletter/edit.blade.php:                    if (allowedExtensions.exec(file.name)) {
+resources/views/site/dashboard/newsletter/create.blade.php:                    if (allowedExtensions.exec(file.name)) {

@@ -1,60 +1,62 @@
 <?php
 
-use App\Exceptions\Handler;
-use App\Http\Kernel;
-use Illuminate\Contracts\Debug\ExceptionHandler;
+declare(strict_types=1);
+
 use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Create The Application
-|--------------------------------------------------------------------------
-|
-| The first thing we will do is create a new Laravel application instance
-| which serves as the "glue" for all the components of Laravel, and is
-| the IoC container for the system binding all of the various parts.
-|
-*/
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
+        channels: __DIR__.'/../routes/channels.php',
+        health: '/up',
+        then: function () {
+            Route::middleware('web')
+                ->group(base_path('routes/blog.php'));
 
-$app = new Application(
-    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
-);
+            Route::middleware('web')
+                ->group(base_path('routes/contacts.php'));
 
-/*
-|--------------------------------------------------------------------------
-| Bind Important Interfaces
-|--------------------------------------------------------------------------
-|
-| Next, we need to bind some important interfaces into the container so
-| we will be able to resolve them when needed. The kernels serve the
-| incoming requests to this application from both the web and CLI.
-|
-*/
+            Route::middleware('web')
+                ->group(base_path('routes/discussion.php'));
 
-$app->singleton(
-    Illuminate\Contracts\Http\Kernel::class,
-    Kernel::class
-);
+            Route::middleware('web')
+                ->group(base_path('routes/gallery.php'));
 
-$app->singleton(
-    Illuminate\Contracts\Console\Kernel::class,
-    App\Console\Kernel::class
-);
+            Route::middleware('web')
+                ->group(base_path('routes/metro.php'));
 
-$app->singleton(
-    ExceptionHandler::class,
-    Handler::class
-);
+            Route::middleware('web')
+                ->group(base_path('routes/newsletterRoutes.php'));
 
-/*
-|--------------------------------------------------------------------------
-| Return The Application
-|--------------------------------------------------------------------------
-|
-| This script returns the application instance. The instance is given to
-| the calling script so we can separate the building of the instances
-| from the actual running of the application and sending responses.
-|
-*/
+            Route::middleware('web')
+                ->group(base_path('routes/on-air-personalities.php'));
 
-return $app;
+            Route::middleware('web')
+                ->group(base_path('routes/programmes.php'));
+
+            Route::middleware('web')
+                ->group(base_path('routes/song-of-the-week.php'));
+
+            Route::middleware('web')
+                ->group(base_path('routes/usersRoutes.php'));
+        },
+    )
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->web(append: [
+            \Spatie\ResponseCache\Middlewares\CacheResponse::class,
+        ]);
+
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
+    })
+    ->withExceptions(function (Exceptions $exceptions) {
+        //
+    })->create();
