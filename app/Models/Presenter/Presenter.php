@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Presenter;
 
 use App\Models\Description\Description;
@@ -52,6 +54,13 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @method static \Database\Factories\Presenter\PresenterFactory factory($count = null, $state = [])
+ * @property string|null $twitter_handle
+ * @property string|null $instagram_handle
+ * @property string|null $facebook_url
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Presenter whereFacebookUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Presenter whereInstagramHandle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Presenter whereTwitterHandle($value)
+ * @property-read string $url
  * @mixin \Eloquent
  */
 class Presenter extends Model implements HasMedia, Searchable
@@ -67,7 +76,12 @@ class Presenter extends Model implements HasMedia, Searchable
         return PresenterFactory::new();
     }
 
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'name',
+        'twitter_handle',
+        'instagram_handle',
+        'facebook_url',
+    ];
 
     /**
      * Get the options for generating the slug.
@@ -117,15 +131,27 @@ class Presenter extends Model implements HasMedia, Searchable
         return $this->about;
     }
 
-    public function url(): string
+    public function getUrlAttribute(): string
     {
-        return route('post.show', $this->slug);
+        return route('presenter.show', ['presenter' => $this->slug]);
     }
 
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('avatars')
             ->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(400)
+            ->height(400)
+            ->format('webp');
+
+        $this->addMediaConversion('webp')
+            ->format('webp')
+            ->quality(80);
     }
 
     public function getAvatarAttribute()

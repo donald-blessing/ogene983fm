@@ -1,78 +1,81 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+# Ogene 98.3 FM - Voice of the people
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+Ogene 98.3 FM is a premium digital broadcast platform and community hub dedicated to celebrating South-Eastern Nigerian culture. This application is built with a modern, "Fusion" aesthetic, bridging the gap between urban contemporary and indigenous broadcasting.
 
-## About Laravel
+## 🚀 Vision
+To provide a high-quality broadcasting experience that celebrates local culture and heritage while keeping the audience informed and entertained with the latest global and local happenings.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Core Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🎧 Professional Audio Experience
+- **Persistent Player**: A seamless, global audio player that continues playing as users navigate the site.
+- **Real-time Icecast Integration**: Dynamic "Now Playing" metadata powered by background polling and WebSocket broadcasting (Laravel Reverb).
+- **Metadata Enrichment**: Automatic album art fetching via the iTunes Search API for a cinematic listening experience.
+- **Smart Buffering**: Visual feedback for stream loading and connection status.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🎙️ On-Air & Programming
+- **OAP Profiles**: Dedicated sections for On-Air Personalities with social media connectivity and show schedules.
+- **Programme Schedule**: Interactive timetable of shows, ensuring listeners never miss their favorite frequency.
+- **Digital Open Mic**: A "Hold to Record" feature allowing listeners to send 15-second voice shout-outs directly to the studio.
 
-## Learning Laravel
+### 💬 Community & Engagement
+- **Live Interactive Hub**: Real-time chat system for listeners to discuss shows and music live.
+- **Loyalty Points System**: Reward listeners for engagement, daily logins, and content interaction.
+- **Sponsorship & Ad Tracking**: Professional advertisement management with real-time impression and click-through analytics.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 📰 Content Management
+- **Fusion Blog**: A high-performance news and articles system with featured posts and category filtering.
+- **SEO Optimized**: Automated sitemap generation and dynamic OpenGraph/Twitter meta tags for maximum social reach.
+- **Liquid Glass UI**: A professional, dark-mode design system using Tailwind CSS and glassmorphism.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🛠️ Tech Stack
+- **Framework**: Laravel 12 (Modernized Directory Structure)
+- **Frontend**: Livewire 4, Alpine.js, Tailwind CSS 4
+- **Real-time**: Laravel Reverb (WebSockets)
+- **Database**: MySQL with performance-optimized indexing
+- **Media**: Spatie MediaLibrary with automatic WebP conversion
+- **Monitoring**: Laravel Horizon, Laravel Telescope, and Log Viewer UI
 
-## Laravel Sponsors
+## 🏗️ Infrastructure & Security
+- **Automated Backups**: Daily database and media snapshots via Spatie Laravel Backup.
+- **Advanced Authorization**: Strict "Zero-Trust" security model using Laravel Policies.
+- **Activity Auditing**: Full administrative audit trails powered by Spatie ActivityLog.
+- **Modern Error Handling**: Beautiful, actionable error reporting via Spatie Ignition.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## 🏁 Getting Started
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
+### Prerequisites
+- PHP 8.4+
+- Composer
+- Node.js & NPM
+- Redis (for Queues and WebSockets)
 
-## Contributing
+### Installation
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   composer install
+   npm install
+   ```
+3. Configure your environment:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+4. Run migrations and seed data:
+   ```bash
+   php artisan migrate --seed
+   ```
+5. Build assets:
+   ```bash
+   npm run build
+   ```
+6. Start the servers:
+   ```bash
+   php artisan serve
+   php artisan reverb:start
+   php artisan queue:work
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📜 License
+The Ogene 98.3 FM platform is proprietary software. All rights reserved.

@@ -8,6 +8,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
@@ -45,6 +46,16 @@ class PostForm
                     ->required()
                     ->columnSpanFull()
                     ->fileAttachmentsCollection('post_attachments'),
+                Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                    ])
+                    ->default('published')
+                    ->required(),
+                Toggle::make('is_featured')
+                    ->label('Featured Post')
+                    ->default(false),
                 SpatieMediaLibraryFileUpload::make('cover_image')
                     ->collection('cover_images')
                     ->image()

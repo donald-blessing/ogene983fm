@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Programme;
 
+use App\Events\NowPlaying;
 use App\Models\Description\Description;
 use App\Models\Discussion\Discussion;
 use App\Models\Presenter\Presenter;
@@ -16,6 +19,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
@@ -63,6 +69,11 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @method static \Database\Factories\Programme\ProgrammeFactory factory($count = null, $state = [])
+ * @property-read Collection<int, Episode> $episodes
+ * @property-read int|null $episodes_count
+ * @property-read Collection<int, Activity> $activitiesAsSubject
+ * @property-read int|null $activities_as_subject_count
+ * @property-read string $url
  * @mixin \Eloquent
  */
 class Programme extends Model implements HasMedia, Searchable
@@ -71,7 +82,15 @@ class Programme extends Model implements HasMedia, Searchable
     use HasFactory;
     use HasSlug;
     use InteractsWithMedia;
+    use LogsActivity;
     use Taggable;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['title'])
+            ->logOnlyDirty();
+    }
 
     protected static function newFactory()
     {
@@ -82,7 +101,7 @@ class Programme extends Model implements HasMedia, Searchable
     {
         static::updated(function (Programme $programme): void {
             if ($programme->wasChanged('title')) {
-                broadcast(new \App\Events\NowPlaying(
+                broadcast(new NowPlaying(
                     $programme->title,
                     $programme->coverImage
                 ))->toOthers();
@@ -229,15 +248,27 @@ class Programme extends Model implements HasMedia, Searchable
         return $this->about;
     }
 
-    public function url(): string
+    public function getUrlAttribute(): string
     {
-        return route('programme.show', $this->slug);
+        return route('programme.show', ['programme' => $this->slug]);
     }
 
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('cover_images')
             ->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(400)
+            ->height(400)
+            ->format('webp');
+
+        $this->addMediaConversion('webp')
+            ->format('webp')
+            ->quality(80);
     }
 
     public function getCoverImageAttribute()

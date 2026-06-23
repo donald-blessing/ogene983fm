@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
@@ -20,6 +22,8 @@ class UserAboutController extends Controller
      */
     public function create(User $user)
     {
+        $this->authorize('update', $user);
+
         $modal = view('site.dashboard.user.about.create', ['user' => $user])->render();
 
         return response()->json(['modal' => $modal], 200);
@@ -32,6 +36,8 @@ class UserAboutController extends Controller
      */
     public function store(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $this->validate($request, [
             'description' => ['required', 'string'],
         ]);
@@ -56,6 +62,8 @@ class UserAboutController extends Controller
      */
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
+
         return view('site.dashboard.user.about.edit', ['user' => $user]);
     }
 
@@ -66,6 +74,8 @@ class UserAboutController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $this->validate($request, [
             'description' => ['required', 'string'],
         ]);
@@ -84,6 +94,8 @@ class UserAboutController extends Controller
 
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
+
         DB::beginTransaction();
         try {
             $user->delete();

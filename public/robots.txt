@@ -1,2 +1,13 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Disallow administrative and private areas
+Disallow: /admin
+Disallow: /horizon
+Disallow: /telescope
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+
+# Host
+Sitemap: /sitemap.xml

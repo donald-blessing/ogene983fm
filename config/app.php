@@ -1,10 +1,7 @@
 <?php
 
 declare(strict_types=1);
-use App\Providers\AppServiceProvider;
-use App\Providers\EventServiceProvider;
-use App\Providers\Filament\AdminPanelProvider;
-use App\Providers\RouteServiceProvider;
+
 use Collective\Html\FormFacade;
 use Collective\Html\HtmlFacade;
 use Collective\Html\HtmlServiceProvider;
@@ -15,7 +12,6 @@ use Illuminate\Bus\BusServiceProvider;
 use Illuminate\Cache\CacheServiceProvider;
 use Illuminate\Cookie\CookieServiceProvider;
 use Illuminate\Database\DatabaseServiceProvider;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Encryption\EncryptionServiceProvider;
 use Illuminate\Filesystem\FilesystemServiceProvider;
 use Illuminate\Foundation\Providers\ConsoleSupportServiceProvider;
@@ -29,6 +25,7 @@ use Illuminate\Queue\QueueServiceProvider;
 use Illuminate\Redis\RedisServiceProvider;
 use Illuminate\Session\SessionServiceProvider;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
@@ -232,20 +229,6 @@ return [
         HtmlServiceProvider::class,
         ChatServiceProvider::class,
 
-        /*
-         * Package Service Providers...
-         */
-
-        /*
-         * Application Service Providers...
-         */
-        AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        AdminPanelProvider::class,
-        App\Providers\BroadcastServiceProvider::class,
-        EventServiceProvider::class,
-        RouteServiceProvider::class,
-
     ],
 
     /*
@@ -261,7 +244,7 @@ return [
 
     'aliases' => [
 
-        'App' => Illuminate\Support\Facades\App::class,
+        'App' => App::class,
         'Arr' => Arr::class,
         'Artisan' => Artisan::class,
         'Auth' => Auth::class,

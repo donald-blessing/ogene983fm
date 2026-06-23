@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Monetization\Sponsorship;
+use App\Models\Post\Post;
+use App\Models\Programme\Programme;
 use App\Models\User;
 use Illuminate\Contracts\Support\Renderable;
 
@@ -24,7 +27,12 @@ class HomeController extends Controller
      */
     public function dashboard()
     {
-        return view('site.dashboard.index', ['usersCount' => User::count()]);
+        return view('site.dashboard.index', [
+            'usersCount' => User::count(),
+            'postsCount' => Post::count(),
+            'programmesCount' => Programme::count(),
+            'sponsorshipsCount' => Sponsorship::count(),
+        ]);
     }
 
     /**

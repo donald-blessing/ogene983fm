@@ -28,7 +28,55 @@
         @stack('css')
     </head>
 
-    <body class="app sidebar-mini rtl">
+    <body class="app sidebar-mini rtl bg-bg-dark text-white font-sans antialiased">
+        <!-- Modern Dashboard Overrides -->
+        <style>
+            .app-header {
+                background-color: rgba(10, 14, 39, 0.8) !important;
+                backdrop-filter: blur(20px);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .app-sidebar {
+                background-color: rgba(10, 14, 39, 0.95) !important;
+                backdrop-filter: blur(20px);
+                border-right: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .app-menu__item {
+                border-left: 3px solid transparent;
+                transition: all 0.3s ease;
+            }
+            .app-menu__item.active, .app-menu__item:hover {
+                background: rgba(191, 0, 255, 0.1) !important;
+                border-left-color: var(--color-primary);
+                color: var(--color-secondary) !important;
+            }
+            .app-content {
+                background-color: var(--color-bg-dark);
+            }
+            .app-title {
+                background-color: rgba(255, 255, 255, 0.03);
+                border-radius: 1.5rem;
+                padding: 1.5rem 2rem;
+                margin-bottom: 2rem;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .tile, .widget-small {
+                background-color: rgba(255, 255, 255, 0.05) !important;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                border-radius: 1.5rem !important;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+                color: white !important;
+            }
+            .widget-small .info h4 {
+                color: rgba(255, 255, 255, 0.6);
+            }
+            .widget-small.primary .icon { background-color: var(--color-primary) !important; }
+            .widget-small.info .icon { background-color: var(--color-secondary) !important; }
+            .widget-small.warning .icon { background-color: var(--color-accent) !important; }
+            .widget-small.danger .icon { background-color: #EF4444 !important; }
+        </style>
+
         <!-- Navbar-->
         @include('layouts.dashboard.includes.navbar')
         <!-- Sidebar menu-->

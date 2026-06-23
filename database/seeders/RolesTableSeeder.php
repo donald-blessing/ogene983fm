@@ -24,6 +24,10 @@ class RolesTableSeeder extends Seeder
             'edit_roles',
             'delete_roles',
 
+            'edit discussion',
+            'delete discussion',
+            'publish discussion',
+            'unpublish discussion',
         ];
     }
 
@@ -34,7 +38,6 @@ class RolesTableSeeder extends Seeder
      */
     public function run()
     {
-
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
@@ -45,24 +48,17 @@ class RolesTableSeeder extends Seeder
             Permission::firstOrCreate(['name' => $perms]);
         }
 
-        // create permissions
-        Permission::create(['name' => 'edit discussion']);
-        Permission::create(['name' => 'delete discussion']);
-        Permission::create(['name' => 'publish discussion']);
-        Permission::create(['name' => 'unpublish discussion']);
+        $superAdmin = Role::firstOrCreate(['name' => 'super admin']);
+        $superAdmin->syncPermissions(Permission::all());
 
-        $role = Role::create(['name' => 'super admin']);
-        $role->givePermissionTo(Permission::all());
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $admin->syncPermissions(Permission::all());
 
-        Role::create(['name' => 'admin']);
-        $role->givePermissionTo(Permission::all());
-
-        $role = Role::create(['name' => 'presenter']);
-        $role->givePermissionTo([
+        $presenter = Role::firstOrCreate(['name' => 'presenter']);
+        $presenter->syncPermissions([
             'edit discussion', 'delete discussion', 'publish discussion', 'unpublish discussion',
         ]);
 
-        Role::create(['name' => 'fan']);
-
+        Role::firstOrCreate(['name' => 'fan']);
     }
 }

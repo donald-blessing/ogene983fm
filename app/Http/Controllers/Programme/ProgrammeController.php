@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Programme;
 
 use App\Helpers\Helper;
@@ -35,7 +37,7 @@ class ProgrammeController extends Controller
      */
     public function index()
     {
-        $programmes = Programme::with(['description', 'media', 'programmeTimes'])->get();
+        $programmes = Programme::with(['description', 'media', 'programmeTimes', 'presenters'])->get();
         $routes = [];
         foreach ($programmes as $programme) {
             $routes[] = route('programme.show', ['programme' => $programme->slug]);
@@ -135,7 +137,7 @@ class ProgrammeController extends Controller
         return view('site.pages.programmes.show', [
             'programme' => $programme,
             'breadcrumb' => $breadcrumb,
-            'title' => $title
+            'title' => $title,
         ]);
     }
 

@@ -71,6 +71,7 @@
                     @touchend.prevent="stopRecording()"
                     class="relative z-10 w-24 h-24 rounded-full flex items-center justify-center transition-all duration-300 transform active:scale-90"
                     :class="recording ? 'bg-red-500 scale-110' : 'bg-primary shadow-[0_0_30px_rgba(191,0,255,0.4)]'"
+                    aria-label="Hold to record shout out"
                 >
                     <i class="fa text-3xl text-white" :class="recording ? 'fa-stop' : 'fa-microphone'"></i>
                 </button>

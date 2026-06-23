@@ -43,7 +43,7 @@
                             @forelse($programme->episodes()->latest()->get() as $episode)
                             <div class="liquid-glass rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6 group hover:neon-border-purple transition-all">
                                 <div class="w-full md:w-48 h-32 shrink-0 rounded-xl overflow-hidden glass-panel border-0">
-                                    <img src="{{ $programme->coverImage }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                    <img src="{{ $programme->coverImage }}" alt="{{ $programme->title }} Cover Image" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
                                 </div>
                                 <div class="flex-1 text-center md:text-left">
                                     <h5 class="text-xl text-white mb-2">{{ $episode->title }}</h5>

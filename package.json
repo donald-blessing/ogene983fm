@@ -17,5 +17,9 @@
         "laravel-echo": "^2.3.4",
         "pusher-js": "^8.5.0",
         "tailwindcss": "^4.3.0"
+    },
+    "allowScripts": {
+        "esbuild@0.25.12": true,
+        "fsevents@2.3.3": true
     }
 }

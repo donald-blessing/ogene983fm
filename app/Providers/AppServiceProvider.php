@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading(! app()->isProduction());
 
         // View Composers for common site data
-        
+
         // Lightweight categories for navigation
         view()->composer('layouts.pages.includes.navbar', function ($view): void {
             $view->with('categories', Category::select('id', 'name', 'slug')->get());
@@ -51,11 +51,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Comprehensive data for the Home Page
         view()->composer('site.pages.index', function ($view): void {
-            $view->with('programmes', Programme::with(['media', 'programmeTimes'])->get());
+            $view->with('programmes', Programme::with(['media', 'programmeTimes', 'presenters'])->get());
             $view->with('categories', Category::with([
-                'subcategories', 
-                'media', 
-                'posts' => fn ($query) => $query->with(['media', 'category'])->withCount('comments')->latest()
+                'subcategories',
+                'media',
+                'posts' => fn ($query) => $query->with(['media', 'category'])->withCount('comments')->latest(),
             ])->get());
             $view->with('songOfTheWeek', SongOfTheWeek::with(['media', 'description'])->currentSong()->first());
             $view->with('albums', Album::with('media')->orderBy('updated_at', 'desc')->take(6)->get());
@@ -64,10 +64,10 @@ class AppServiceProvider extends ServiceProvider
 
         // Data for Blog listing pages
         view()->composer([
-            'site.pages.blog', 
-            'site.pages.programmes.blog', 
-            'site.pages.presenters.blog', 
-            'site.pages.gallery.blog'
+            'site.pages.blog',
+            'site.pages.programmes.blog',
+            'site.pages.presenters.blog',
+            'site.pages.gallery.blog',
         ], function ($view): void {
             $view->with('categories', Category::select('id', 'name', 'slug')->get());
             $view->with('tags', Tag::select('id', 'name', 'slug')->get());

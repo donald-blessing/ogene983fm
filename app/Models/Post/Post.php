@@ -17,11 +17,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Laravelista\Comments\Comment;
 use Laravelista\Comments\Commentable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\HasSlug;
@@ -64,10 +65,15 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
  * @method static \Database\Factories\Post\PostFactory factory($count = null, $state = [])
- * @property-read Collection<int, \Laravelista\Comments\Comment> $approvedComments
+ * @property-read Collection<int, Comment> $approvedComments
  * @property-read int|null $approved_comments_count
- * @property-read Collection<int, \Laravelista\Comments\Comment> $comments
+ * @property-read Collection<int, Comment> $comments
  * @property-read int|null $comments_count
+ * @property string $status
+ * @property int $is_featured
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereIsFeatured($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereStatus($value)
+ * @property-read string $url
  * @mixin \Eloquent
  */
 class Post extends Model implements HasMedia, Searchable
@@ -94,15 +100,34 @@ class Post extends Model implements HasMedia, Searchable
         'title',
         'slug',
         'content',
+        'status',
+        'is_featured',
     ];
 
     /**
+
      * Register media collections.
      */
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('cover_images')
             ->singleFile();
+    }
+
+    /**
+     * Register media conversions.
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(368)
+            ->height(232)
+            ->sharpen(10)
+            ->format('webp');
+
+        $this->addMediaConversion('webp')
+            ->format('webp')
+            ->quality(80);
     }
 
     /**
@@ -163,7 +188,7 @@ class Post extends Model implements HasMedia, Searchable
         });
     }
 
-    public function url(): string
+    public function getUrlAttribute(): string
     {
         return route('post.show', ['category' => $this->category->slug, 'post' => $this->slug]);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
@@ -19,6 +21,8 @@ class UserAvatarController extends Controller
      */
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
+
         return view('site.dashboard.user.profile-image.edit', ['user' => $user]);
     }
 
@@ -29,6 +33,8 @@ class UserAvatarController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $request->flash();
         $this->validate(
             $request,
