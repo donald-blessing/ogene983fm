@@ -11,20 +11,23 @@ use App\Models\Gallery\Album;
 use App\Models\Post\Post;
 use App\Models\Presenter\Presenter;
 use App\Models\Programme\Programme;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\View\View;
 use Spatie\Searchable\Search;
 
 class SearchController extends Controller
 {
     /**
-     * Display the specified resource.
-     *
-     * @return Response
+     * Display the search results for the given term.
      */
-    public function show(Request $request)
+    public function show(Request $request): View|RedirectResponse
     {
-        $searchString = $request->search;
+        $searchString = trim((string) $request->query('search', ''));
+
+        if ($searchString === '') {
+            return redirect()->route('post.index');
+        }
 
         $searchResults = (new Search)
             ->registerModel(Post::class, 'title')

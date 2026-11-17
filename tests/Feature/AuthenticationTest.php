@@ -31,7 +31,8 @@ class AuthenticationTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200);
-        $response->assertSee('Login');
+        $response->assertSee('Welcome back');
+        $response->assertSee('Sign in');
     }
 
     /**

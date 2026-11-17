@@ -1,78 +1,91 @@
-@extends('layouts.pages.index')
-@section('title')
-Meet the On-Air Personalities
-@endsection
+@extends('layouts.site')
+
+@section('title', 'Shows & presenters · Ogene 98.3 FM')
+
 @section('content')
+<div class="border-b border-line bg-surface/20">
+    <div class="container-page py-8 sm:py-10">
+        <x-ui.breadcrumb :items="[['label' => 'Shows & presenters']]" />
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-white/40 text-sm font-medium mb-12">
-        <a href="{{ route('home') }}" class="hover:text-secondary transition-colors"><i class="fa fa-home"></i> Home</a>
-        <i class="fa fa-angle-right text-[10px]"></i>
-        <span class="text-white">Our OAPs</span>
-    </div>
-
-    <div class="mb-24">
-        <h1 class="text-6xl font-display text-white mb-6">
-            The <span class="text-secondary italic">Voices</span> of the East
-        </h1>
-        <p class="text-xl text-white/50 max-w-2xl font-light">
-            Meet the team bringing you the best in entertainment, culture, and highlife. Authentically local, professionally global.
-        </p>
-    </div>
-
-    <!-- OAP Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-24">
-        @foreach($presenters as $presenter)
-        <div class="group">
-            <div class="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden glass-panel border-0 mb-8 group-hover:neon-border-purple transition-all duration-500">
-                <img src="{{ $presenter->coverImage }}" alt="{{ $presenter->name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-bg-dark via-bg-dark/20 to-transparent"></div>
-                
-                <!-- Social Overlay -->
-                <div class="absolute top-6 right-6 flex flex-col gap-3 translate-x-12 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
-                    @if($presenter->twitter_handle)
-                    <a href="https://twitter.com/{{ ltrim($presenter->twitter_handle, '@') }}" target="_blank" class="w-10 h-10 rounded-full liquid-glass flex items-center justify-center text-white hover:bg-primary transition-colors">
-                        <i class="fa fa-twitter"></i>
-                    </a>
-                    @endif
-                    @if($presenter->instagram_handle)
-                    <a href="https://instagram.com/{{ ltrim($presenter->instagram_handle, '@') }}" target="_blank" class="w-10 h-10 rounded-full liquid-glass flex items-center justify-center text-white hover:bg-secondary transition-colors">
-                        <i class="fa fa-instagram"></i>
-                    </a>
-                    @endif
-                </div>
-
-                <div class="absolute bottom-8 left-8 right-8">
-                    <h3 class="text-3xl text-white font-display">{{ $presenter->name }}</h3>
-                    <p class="text-secondary text-[10px] font-black uppercase tracking-[0.2em] mt-2">On-Air Personality</p>
-                </div>
-            </div>
-
-            <!-- Programmes / Schedule -->
-            <div class="px-4">
-                <h5 class="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-4">Shows & Schedule</h5>
-                <div class="space-y-4">
-                    @foreach($presenter->programmes as $programme)
-                    <div class="flex items-center justify-between gap-4">
-                        <span class="text-white font-medium text-sm truncate">{{ $programme->title }}</span>
-                        <div class="flex flex-col items-end shrink-0">
-                            @foreach($programme->programmeTimes->take(1) as $schedule)
-                            <span class="text-primary text-[10px] font-bold uppercase">{{ $schedule->day }}</span>
-                            <span class="text-white/30 text-[9px]">{{ $schedule->from }} - {{ $schedule->to }}</span>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                
-                <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" class="mt-8 inline-flex items-center text-xs font-black text-white hover:text-primary transition-colors tracking-widest uppercase">
-                    View Profile <i class="fa fa-arrow-right ml-2"></i>
-                </a>
-            </div>
+        <div class="mt-7">
+            <p class="flex items-center gap-2.5 label-mono text-brand-text">
+                <span class="h-2 w-2 bg-brand"></span>
+                On air team
+            </p>
+            <h1 class="mt-5 font-display text-[clamp(2rem,4.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.03em] text-paper">
+                The voices of the East
+            </h1>
+            <p class="mt-3 max-w-[56ch] text-[15px] leading-relaxed text-muted">
+                The people behind the microphone — and the shows they bring you every week.
+            </p>
         </div>
-        @endforeach
     </div>
 </div>
 
+<section class="container-page py-12 sm:py-14">
+    @if ($presenters->isEmpty())
+        <x-ui.empty-state
+            icon="microphone"
+            title="Presenter profiles coming soon"
+            description="We're putting faces and names to the voices you hear every day. Check back shortly."
+        />
+    @else
+        <div class="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            @foreach ($presenters as $presenter)
+                <article class="group flex flex-col">
+                    <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="relative block aspect-[4/5] overflow-hidden rounded-xs border border-line bg-surface-2 transition-colors hover:border-[#4a3f39]">
+                        @if ($presenter->avatar)
+                            <img
+                                src="{{ $presenter->avatar }}"
+                                alt="{{ $presenter->name }}"
+                                loading="lazy"
+                                class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                            >
+                        @else
+                            <div class="flex h-full w-full items-center justify-center text-faint">
+                                <x-ui.icon name="microphone" :size="38" />
+                            </div>
+                        @endif
+
+                        <span class="absolute left-3 top-3 h-1.5 w-1.5 bg-brand"></span>
+                    </a>
+
+                    <div class="mt-4 flex flex-1 flex-col border-t border-line pt-4">
+                        <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="block">
+                            <h2 class="font-display text-[21px] font-bold leading-tight tracking-[-0.02em] text-paper transition-colors group-hover:text-brand-text">{{ $presenter->name }}</h2>
+                            <p class="mt-1 label-mono text-faint">On air personality</p>
+                        </a>
+
+                        @if ($presenter->programmes->isNotEmpty())
+                            <ul class="mt-4 space-y-2">
+                                @foreach ($presenter->programmes->take(3) as $programme)
+                                    @php $slot = $programme->programmeTimes->sortBy('from')->first(); @endphp
+
+                                    <li class="flex items-baseline justify-between gap-3">
+                                        <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}" wire:navigate class="min-w-0 truncate text-[14px] font-medium text-paper transition-colors hover:text-brand-text">
+                                            {{ $programme->title }}
+                                        </a>
+
+                                        @if ($slot)
+                                            <span class="shrink-0 font-mono text-[10px] uppercase tracking-[0.06em] text-faint">
+                                                {{ ucfirst(substr(strtolower($slot->day), 0, 3)) }} · {{ date('g:i A', (int) strtotime((string) $slot->from)) }}
+                                            </span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="mt-4 text-[13px] text-faint">No shows assigned yet.</p>
+                        @endif
+
+                        <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="mt-5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted transition-colors hover:text-paper">
+                            View profile
+                            <x-ui.icon name="arrow-right" :size="14" />
+                        </a>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+    @endif
+</section>
 @endsection

@@ -1,33 +1,40 @@
-@extends('layouts.pages.index')
-@section('title')
-404 - Static in the Air
-@endsection
+@extends('layouts.site')
+
+@section('title', 'Page not found · Ogene 98.3 FM')
+
 @section('content')
+<section class="container-page py-16 sm:py-24">
+    <div class="mx-auto flex max-w-xl flex-col items-center text-center">
+        <p class="flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-text">
+            <span class="h-2 w-2 bg-brand"></span>
+            Error 404
+        </p>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex flex-col items-center justify-center text-center">
-    <div class="relative mb-12">
-        <div class="absolute inset-0 bg-primary/20 blur-[100px] rounded-full animate-pulse"></div>
-        <h1 class="relative z-10 text-[12rem] font-display text-white leading-none opacity-10">404</h1>
-        <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-32 h-32 rounded-3xl liquid-glass flex items-center justify-center text-secondary text-5xl border-secondary/20 rotate-12 animate-bounce">
-                <i class="fa fa-unlink"></i>
-            </div>
+        <p class="mt-6 font-display text-[clamp(4rem,16vw,9rem)] font-bold leading-none tracking-[-0.05em] text-surface-2">
+            404
+        </p>
+
+        <h1 class="mt-4 text-[clamp(1.5rem,4vw,2.25rem)] font-bold leading-tight tracking-[-0.02em] text-paper">
+            Static in the air
+        </h1>
+
+        <p class="mt-3 max-w-[46ch] text-[15px] leading-relaxed text-muted">
+            We've lost the signal on this one. The page has moved to another frequency, or never existed.
+        </p>
+
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+            <x-ui.button href="{{ route('home') }}" wire:navigate>
+                <x-ui.icon name="chevron-right" :size="15" class="rotate-180" />
+                Back home
+            </x-ui.button>
+
+            <x-ui.button href="{{ route('programme.index') }}" wire:navigate variant="secondary">Browse the schedule</x-ui.button>
         </div>
+
+        <p class="mt-8 text-[13px] text-faint">
+            Looking for something specific?
+            <a href="{{ route('contact') }}" wire:navigate class="font-semibold text-paper transition-colors hover:text-brand-text">Tell us</a>
+        </p>
     </div>
-
-    <h2 class="text-4xl font-display text-white mb-6">Static in the <span class="text-primary italic">Air</span></h2>
-    <p class="text-xl text-white/40 max-w-lg mb-12 font-light">
-        We've lost the signal on this one. The page you're looking for has moved to another frequency or never existed.
-    </p>
-
-    <div class="flex flex-col sm:flex-row gap-6">
-        <a href="{{ route('home') }}" class="btn-fusion-primary px-12 py-4">
-            <i class="fa fa-home mr-2"></i> Back to Home
-        </a>
-        <a href="{{ route('contact') }}" class="liquid-glass border-white/10 hover:bg-white/5 text-white px-12 py-4 rounded-full font-bold uppercase text-xs tracking-widest transition-all">
-            Report Issue
-        </a>
-    </div>
-</div>
-
+</section>
 @endsection

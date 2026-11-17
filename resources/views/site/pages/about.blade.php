@@ -1,61 +1,135 @@
-@extends('layouts.pages.index')
-@section('title')
-About Ogene 98.3 FM
-@endsection
+@extends('layouts.site')
+
+@section('title', 'About the station · Ogene 98.3 FM')
+
 @section('content')
+@php
+    $settings = app(\App\Settings\GeneralSettings::class);
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-white/40 text-sm font-medium mb-12">
-        <a href="{{ route('home') }}" class="hover:text-secondary transition-colors"><i class="fa fa-home"></i> Home</a>
-        <i class="fa fa-angle-right text-[10px]"></i>
-        <span class="text-white">About Us</span>
+    $values = [
+        [
+            'icon' => 'microphone',
+            'title' => 'Indigenous voice',
+            'body' => 'We take pride in our roots, promoting the rich cultural heritage of the South-East through every broadcast.',
+        ],
+        [
+            'icon' => 'radio',
+            'title' => 'Global reach',
+            'body' => 'Authentically local, globally minded — bringing you world-class entertainment and reporting from home.',
+        ],
+        [
+            'icon' => 'headphones',
+            'title' => 'Community focused',
+            'body' => 'At our heart we are about the people: bridging communities and fostering unity through radio.',
+        ],
+    ];
+@endphp
+
+<div class="border-b border-line bg-surface/20">
+    <div class="container-page py-8 sm:py-10">
+        <x-ui.breadcrumb :items="[['label' => 'About']]" />
     </div>
+</div>
 
-    <div class="flex flex-col lg:flex-row gap-16 items-center mb-24">
-        <div class="w-full lg:w-6/12">
-            <h1 class="text-6xl font-display text-white mb-8 leading-tight">
-                Authentically <br><span class="text-primary italic leading-none">Eastern</span>
-            </h1>
-            <p class="text-xl text-white/70 leading-relaxed font-light mb-8">
-                Best indigenous Radio Station, South-East of the Niger. We bridge the gap between urban contemporary and indigenous broadcasting.
+<section class="container-page py-12 sm:py-16">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-10">
+        <div class="lg:col-span-7">
+            <p class="flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-text">
+                <span class="h-2 w-2 bg-brand"></span>
+                {{ $settings->site_motto }}
             </p>
-            <div class="space-y-6 text-white/60 leading-relaxed">
+
+            <h1 class="mt-5 text-[clamp(2.1rem,5vw,3.6rem)] font-bold leading-[1.02] tracking-[-0.035em] text-paper">
+                Authentically Eastern.
+            </h1>
+
+            <p class="mt-6 max-w-[56ch] text-[17px] leading-relaxed text-muted">
+                The best indigenous radio station in the South-East of the Niger. We bridge the gap between urban contemporary and indigenous broadcasting.
+            </p>
+
+            <div class="mt-8 max-w-[62ch] space-y-4 text-[15px] leading-relaxed text-muted">
                 <p>
-                    Infusing Local content, reaching out to upwardly mobile and locals. If you ever find yourself in Anambra state, make sure you pick up OGENE.
+                    Infusing local content and reaching out to upwardly mobile listeners and locals alike. If you ever find yourself in Anambra State, make sure you pick up Ogene.
                 </p>
                 <p>
                     Our mission is to provide high-quality broadcasting that celebrates our local culture and heritage while keeping our audience informed and entertained with the latest global and local happenings.
                 </p>
             </div>
+
+            <div class="mt-9 flex flex-wrap gap-3">
+                <x-ui.button href="{{ route('listen') }}" wire:navigate>
+                    <x-ui.icon name="play" :size="16" />
+                    Listen live
+                </x-ui.button>
+
+                <x-ui.button href="{{ route('contact') }}" wire:navigate variant="secondary">Contact the studio</x-ui.button>
+            </div>
         </div>
 
-        <div class="w-full lg:w-6/12">
-            <div class="glass-panel rounded-[3rem] p-4 relative group">
-                <div class="absolute inset-0 bg-primary/20 blur-[80px] rounded-full group-hover:bg-secondary/20 transition-colors duration-700"></div>
-                <img src="{{ asset('images/logo.png') }}" alt="Ogene 98.3 FM Logo" class="relative z-10 w-full aspect-video object-contain bg-bg-dark/50 rounded-[2.5rem]">
+        <div class="lg:col-span-5">
+            <div class="surface overflow-hidden p-5">
+                <div class="flex aspect-[4/3] items-center justify-center rounded-md border border-line bg-ink">
+                    <img src="{{ asset('images/logo-wordmark.png') }}" alt="Ogene 98.3 FM logo" width="512" height="172" class="h-auto w-[70%] max-w-[88%] object-contain">
+                </div>
+
+                <dl class="mt-5 grid grid-cols-2 gap-4">
+                    <div>
+                        <dt class="text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">Frequency</dt>
+                        <dd class="mt-1 font-display text-xl text-paper">98.3 FM</dd>
+                    </div>
+                    <div>
+                        <dt class="text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">Broadcasting</dt>
+                        <dd class="mt-1 font-display text-xl text-paper">24 / 7</dd>
+                    </div>
+                    <div>
+                        <dt class="text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">Based in</dt>
+                        <dd class="mt-1 text-[15px] text-paper">Awka, Anambra</dd>
+                    </div>
+                    <div>
+                        <dt class="text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">Reaching</dt>
+                        <dd class="mt-1 text-[15px] text-paper">The South-East</dd>
+                    </div>
+                </dl>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Values Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-        <div class="liquid-glass rounded-[2rem] p-8 border-white/5">
-            <i class="fa fa-microphone text-4xl text-primary mb-6"></i>
-            <h4 class="text-2xl mb-4">Indigenous Voice</h4>
-            <p class="text-white/50 text-sm leading-relaxed">We take pride in our roots, promoting the rich cultural heritage of the South-East through every broadcast.</p>
-        </div>
-        <div class="liquid-glass rounded-[2rem] p-8 border-white/5">
-            <i class="fa fa-globe text-4xl text-secondary mb-6"></i>
-            <h4 class="text-2xl mb-4">Global Reach</h4>
-            <p class="text-white/50 text-sm leading-relaxed">While we are authentically local, our perspective is global, bringing you world-class entertainment and news.</p>
-        </div>
-        <div class="liquid-glass rounded-[2rem] p-8 border-white/5">
-            <i class="fa fa-heart text-4xl text-accent mb-6"></i>
-            <h4 class="text-2xl mb-4">Community Focused</h4>
-            <p class="text-white/50 text-sm leading-relaxed">At our heart, we are about the people. Bridging communities and fostering unity through the power of radio.</p>
+<section class="border-t border-line bg-surface/20">
+    <div class="container-page py-12 sm:py-16">
+        <x-ui.section-header
+            title="What we stand for"
+            description="Three things shape every hour we put on air."
+        />
+
+        <div class="mt-8 grid gap-5 sm:grid-cols-3">
+            @foreach ($values as $value)
+                <div class="surface p-5 sm:p-6">
+                    <span class="flex h-10 w-10 items-center justify-center rounded-sm bg-brand-soft text-brand-text">
+                        <x-ui.icon :name="$value['icon']" :size="19" />
+                    </span>
+
+                    <h3 class="mt-4 text-[17px] font-semibold text-paper">{{ $value['title'] }}</h3>
+                    <p class="mt-2 text-[14px] leading-relaxed text-muted">{{ $value['body'] }}</p>
+                </div>
+            @endforeach
         </div>
     </div>
-</div>
+</section>
 
+<section class="container-page py-12 sm:py-16">
+    <div class="surface flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <div>
+            <h2 class="text-xl font-semibold tracking-[-0.01em] text-paper">Working with us</h2>
+            <p class="mt-1.5 max-w-[52ch] text-[14px] leading-relaxed text-muted">
+                Advertising, sponsorship, studio visits and press enquiries all start with one conversation.
+            </p>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+            <x-ui.button href="{{ route('contact') }}" wire:navigate>Get in touch</x-ui.button>
+            <x-ui.button href="{{ route('programme.index') }}" wire:navigate variant="secondary">See the schedule</x-ui.button>
+        </div>
+    </div>
+</section>
 @endsection

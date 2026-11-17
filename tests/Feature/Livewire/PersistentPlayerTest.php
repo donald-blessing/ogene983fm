@@ -7,11 +7,14 @@ namespace Tests\Feature\Livewire;
 use App\Livewire\PersistentPlayer;
 use App\Models\Programme\Programme;
 use App\Settings\GeneralSettings;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
 class PersistentPlayerTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_it_loads_stream_url_from_settings(): void
     {
         $settings = app(GeneralSettings::class);

@@ -1,93 +1,206 @@
-@extends('layouts.pages.blog-details')
-@section('title')
-{{ $title }}
-@endsection
+@extends('layouts.site')
+
+@section('title', $programme->title . ' · Ogene 98.3 FM')
 
 @section('content')
-<div class="breacrumb-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="breadcrumb-text">
-                    <a href="{{ route('home') }}"><i class="fa fa-home"></i> Home</a>
-                    <a href="{{ route('programme.index') }}"> Programmes</a>
-                    <span>{{ $programme->title }}</span>
-                </div>
-            </div>
-        </div>
+@php
+    $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    $today = now()->englishDayOfWeek;
+    $nowTime = (int) strtotime(now()->toTimeString());
+
+    $formatTime = fn ($time): string => $time ? date('g:i A', (int) strtotime((string) $time)) : '';
+
+    $slots = $programme->programmeTimes
+        ->sortBy(fn ($time) => array_search(ucfirst(strtolower($time->day)), $days, true) * 100000 + (int) strtotime((string) $time->from))
+        ->values();
+
+    $isLive = $slots->contains(fn ($time) => strtolower($time->day) === strtolower($today)
+        && (int) strtotime((string) $time->from) <= $nowTime
+        && (int) strtotime((string) $time->to) > $nowTime);
+
+    $episodes = $programme->episodes()->latest()->get();
+@endphp
+
+<div class="border-b border-line bg-surface/20">
+    <div class="container-page py-8 sm:py-10">
+        <x-ui.breadcrumb :items="[
+            ['label' => 'Schedule', 'href' => route('programme.index')],
+            ['label' => $programme->title],
+        ]" />
     </div>
 </div>
 
-<section class="blog-details spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="blog-details-inner">
-                    <div class="blog-detail-title">
-                        <h2 class="text-4xl font-display text-white mb-4">{{ $programme->title }}</h2>
-                        <div class="flex items-center gap-4 text-white/60 mb-8">
-                            <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-tighter">Programme</span>
+<section class="container-page py-10 sm:py-12">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-12">
+        {{-- Main --}}
+        <div class="lg:col-span-8">
+            <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
+                <div class="relative aspect-square w-full max-w-[220px] shrink-0 overflow-hidden rounded-md border border-line bg-surface-2">
+                    @if ($programme->coverImage)
+                        <img src="{{ $programme->coverImage }}" alt="{{ $programme->title }}" class="h-full w-full object-cover">
+                    @else
+                        <div class="flex h-full w-full items-center justify-center text-faint">
+                            <x-ui.icon name="radio" :size="36" />
                         </div>
-                    </div>
-                    <div class="blog-large-pic mb-8 rounded-[2rem] overflow-hidden glass-panel border-0">
-                        <img src="{{ $programme->coverImage }}" alt="{{ $programme->title }}" class="w-full">
-                    </div>
-                    <div class="blog-detail-desc text-white/80 leading-relaxed text-lg">
-                        {!! $programme->description->about ?? 'No description available.' !!}
+                    @endif
+                </div>
+
+                <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <x-ui.badge variant="neutral">Programme</x-ui.badge>
+                        @if ($isLive)
+                            <x-ui.badge variant="brand" dot>On air now</x-ui.badge>
+                        @endif
                     </div>
 
-                    <!-- Episodes / Podcasts -->
-                    <div class="mt-16">
-                        <h3 class="text-3xl font-display text-white mb-8">Episodes <span class="text-secondary">Archive</span></h3>
-                        <div class="space-y-6">
-                            @forelse($programme->episodes()->latest()->get() as $episode)
-                            <div class="liquid-glass rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6 group hover:neon-border-purple transition-all">
-                                <div class="w-full md:w-48 h-32 shrink-0 rounded-xl overflow-hidden glass-panel border-0">
-                                    <img src="{{ $programme->coverImage }}" alt="{{ $programme->title }} Cover Image" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-                                </div>
-                                <div class="flex-1 text-center md:text-left">
-                                    <h5 class="text-xl text-white mb-2">{{ $episode->title }}</h5>
-                                    <div class="flex flex-wrap justify-center md:justify-start items-center gap-4 text-white/40 text-xs mb-4">
-                                        <span><i class="fa fa-calendar-o mr-1"></i> {{ $episode->published_at?->format('M d, Y') }}</span>
-                                        <span><i class="fa fa-clock-o mr-1"></i> {{ $episode->duration }}</span>
-                                    </div>
-                                    <audio controls class="w-full h-8 opacity-60 hover:opacity-100 transition-opacity">
-                                        <source src="{{ $episode->getFirstMediaUrl('audio') }}" type="audio/mpeg">
-                                    </audio>
-                                </div>
-                            </div>
-                            @empty
-                            <div class="text-center py-12 glass-panel rounded-2xl">
-                                <p class="text-white/30 italic">No archived episodes for this programme yet.</p>
-                            </div>
-                            @endforelse
-                        </div>
+                    <h1 class="mt-3 text-[clamp(1.9rem,4vw,2.9rem)] font-bold leading-[1.03] tracking-[-0.03em] text-paper">
+                        {{ $programme->title }}
+                    </h1>
+
+                    @if ($programme->presenters->isNotEmpty())
+                        <p class="mt-3 text-[15px] text-muted">
+                            Hosted by
+                            @foreach ($programme->presenters as $presenter)
+                                <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="font-medium text-paper transition-colors hover:text-brand-text">{{ $presenter->name }}</a>@if (! $loop->last), @endif
+                            @endforeach
+                        </p>
+                    @endif
+
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        <button
+                            type="button"
+                            x-data
+                            x-on:click="$dispatch('toggle-player')"
+                            class="inline-flex h-11 items-center justify-center gap-2 rounded-sm bg-brand-strong px-5 text-sm font-semibold text-paper transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-text active:translate-y-px"
+                        >
+                            <x-ui.icon name="play" :size="16" />
+                            Listen live
+                        </button>
+
+                        <x-ui.button href="{{ route('programme.index') }}" wire:navigate variant="secondary">
+                            Full schedule
+                        </x-ui.button>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="blog-sidebar">
-                    <!-- Presenters -->
-                    <div class="glass-panel rounded-[2rem] p-8 mb-10">
-                        <h4 class="text-xl font-display text-white mb-6">Hosted By</h4>
-                        <div class="space-y-6">
-                            @foreach($programme->presenters as $presenter)
-                            <a href="{{ route('presenter.show', $presenter->slug) }}" class="flex items-center gap-4 group">
-                                <img src="{{ $presenter->avatar }}" alt="{{ $presenter->name }}" class="h-14 w-14 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-primary transition-all">
-                                <div>
-                                    <h6 class="text-white group-hover:text-primary transition-colors">{{ $presenter->name }}</h6>
-                                    <small class="text-white/40 uppercase tracking-tighter font-bold">On Air Personality</small>
-                                </div>
-                            </a>
-                            @endforeach
-                        </div>
-                    </div>
+            {{-- About --}}
+            <div class="mt-10 border-t border-line pt-8">
+                <h2 class="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">About the show</h2>
 
-                    @livewire('sponsorship-banner')
+                @if (filled($programme->about))
+                    <div class="prose-ogene mt-4 text-[15px] leading-relaxed text-muted">
+                        {!! $programme->about !!}
+                    </div>
+                @else
+                    <p class="mt-4 max-w-[62ch] text-[15px] leading-relaxed text-muted">
+                        {{ $programme->title }} airs on Ogene 98.3 FM. Programme notes will be published here soon.
+                    </p>
+                @endif
+            </div>
+
+            {{-- Episodes --}}
+            <div class="mt-12">
+                <div class="flex items-end justify-between gap-4">
+                    <h2 class="text-[22px] font-bold tracking-[-0.02em] text-paper">Episode archive</h2>
+                    <span class="text-[12px] tabular-nums text-faint">{{ $episodes->count() }}</span>
                 </div>
+
+                @if ($episodes->isEmpty())
+                    <div class="mt-4">
+                        <x-ui.empty-state
+                            icon="headphones"
+                            title="No episodes published yet"
+                            description="Recordings of this programme will be added here after broadcast."
+                        />
+                    </div>
+                @else
+                    <ol class="mt-4 divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface/40">
+                        @foreach ($episodes as $episode)
+                            @php $audio = $episode->getFirstMediaUrl('audio'); @endphp
+
+                            <li class="px-4 py-4 sm:px-5">
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <p class="min-w-0 flex-1 truncate text-[15px] font-semibold text-paper">{{ $episode->title }}</p>
+
+                                    <p class="flex items-center gap-3 text-[12px] text-faint">
+                                        @if ($episode->published_at)
+                                            <span>{{ $episode->published_at->format('M j, Y') }}</span>
+                                        @endif
+                                        @if ($episode->duration)
+                                            <span>{{ $episode->duration }}</span>
+                                        @endif
+                                    </p>
+                                </div>
+
+                                @if ($audio)
+                                    <audio controls preload="none" class="mt-3 h-9 w-full">
+                                        <source src="{{ $audio }}" type="audio/mpeg">
+                                    </audio>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ol>
+                @endif
             </div>
         </div>
+
+        {{-- Sidebar --}}
+        <aside class="lg:col-span-4">
+            <div class="surface overflow-hidden">
+                <div class="border-b border-line px-5 py-3.5">
+                    <h2 class="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">When it airs</h2>
+                </div>
+
+                @if ($slots->isEmpty())
+                    <p class="px-5 py-5 text-[13px] text-muted">Times for this programme have not been published yet.</p>
+                @else
+                    <ul class="divide-y divide-line">
+                        @foreach ($slots as $slot)
+                            @php $slotLive = strtolower($slot->day) === strtolower($today) && (int) strtotime((string) $slot->from) <= $nowTime && (int) strtotime((string) $slot->to) > $nowTime; @endphp
+
+                            <li class="flex items-center justify-between gap-4 px-5 py-3">
+                                <span class="text-[13px] font-medium {{ $slotLive ? 'text-brand-text' : 'text-paper' }}">
+                                    {{ ucfirst(strtolower($slot->day)) }}
+                                </span>
+                                <span class="text-[12px] tabular-nums text-faint">
+                                    {{ $formatTime($slot->from) }} – {{ $formatTime($slot->to) }}
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+
+            @if ($programme->presenters->isNotEmpty())
+                <div class="surface mt-6 overflow-hidden">
+                    <div class="border-b border-line px-5 py-3.5">
+                        <h2 class="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">The voices</h2>
+                    </div>
+
+                    <ul class="divide-y divide-line">
+                        @foreach ($programme->presenters as $presenter)
+                            <li>
+                                <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="group flex items-center gap-3 px-5 py-4 transition-colors hover:bg-surface-2/60">
+                                    <x-ui.avatar :src="$presenter->avatar" :name="$presenter->name" size="md" />
+
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block truncate text-[14px] font-semibold text-paper transition-colors group-hover:text-brand-text">{{ $presenter->name }}</span>
+                                        <span class="block text-[12px] text-faint">On air personality</span>
+                                    </span>
+
+                                    <x-ui.icon name="chevron-right" :size="15" class="shrink-0 text-faint transition-transform group-hover:translate-x-0.5" />
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="mt-6">
+                @livewire('sponsorship-banner')
+            </div>
+        </aside>
     </div>
 </section>
 @endsection

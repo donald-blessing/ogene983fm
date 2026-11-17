@@ -1,104 +1,163 @@
-@extends('layouts.pages.blog-details')
-@section('title')
-{{ $title }}
-@endsection
+@extends('layouts.site')
+
+@section('title', $title . ' · Ogene 98.3 FM')
 
 @section('content')
+@php
+    $routeName = \Illuminate\Support\Facades\Route::currentRouteName();
+    $shareUrl = urlencode($blog->url ?? url()->current());
+    $shareTitle = urlencode($blog->title ?? '');
+@endphp
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-white/40 text-sm font-medium mb-12">
-        <a href="{{ route('home') }}" class="hover:text-secondary transition-colors"><i class="fa fa-home"></i> Home</a>
-        @isset($breadcrumb)
-            @isset($breadcrumb['route'])
-            <i class="fa fa-angle-right text-[10px]"></i>
-            <a href="{{ $breadcrumb['route'] }}" class="hover:text-secondary transition-colors">{{ $breadcrumb['category'] }}</a>
-            @endisset
-            <i class="fa fa-angle-right text-[10px]"></i>
-            <span class="text-white">{{ $breadcrumb['title'] }}</span>
-        @else
-            <i class="fa fa-angle-right text-[10px]"></i>
-            <span class="text-white">{{ $title }}</span>
-        @endisset
+<div class="border-b border-line bg-surface/20">
+    <div class="container-page py-8 sm:py-10">
+        <x-ui.breadcrumb :items="[
+            ['label' => $breadcrumb['category'] ?? 'News', 'href' => $breadcrumb['route'] ?? route('post.index')],
+            ['label' => $breadcrumb['title'] ?? ($blog->title ?? $title)],
+        ]" />
     </div>
+</div>
 
-    <!-- Main Grid -->
-    <div class="flex flex-col lg:flex-row gap-16 items-start mb-24">
-        <!-- Content Column -->
-        <article class="w-full lg:w-8/12">
-            <header class="mb-12">
-                <span class="text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">
-                    {{ $blog->category->name ?? ($blog->author ?? 'News Update') }}
-                </span>
-                <h1 class="text-4xl md:text-6xl font-display text-white mb-6 leading-tight">
+<article class="container-page py-10 sm:py-12">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-10">
+        <div class="lg:col-span-8">
+            <header class="max-w-[68ch]">
+                @if ($blog->category)
+                    <a
+                        href="{{ route('post.category', ['category' => $blog->category->slug]) }}"
+                        wire:navigate
+                        class="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-text transition-colors hover:text-paper"
+                    >
+                        {{ $blog->category->name }}
+                    </a>
+                @endif
+
+                <h1 class="mt-3 text-[clamp(1.9rem,4.4vw,3rem)] font-bold leading-[1.06] tracking-[-0.03em] text-paper">
                     {{ $blog->title }}
                 </h1>
-                <p class="text-white/40 text-sm flex items-center gap-4 font-medium uppercase tracking-widest">
-                    <span><i class="fa fa-calendar-o mr-2 text-secondary"></i> {{ $blog->created_at->toFormattedDateString() }}</span>
+
+                <p class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] uppercase tracking-[0.1em] text-faint">
+                    @if ($blog->created_at)
+                        <span>{{ $blog->created_at->format('F j, Y') }}</span>
+                    @endif
+
+                    @if (isset($blog->comments_count))
+                        <span class="h-3 w-px bg-line" aria-hidden="true"></span>
+                        <span>{{ $blog->comments_count }} {{ \Illuminate\Support\Str::plural('comment', $blog->comments_count) }}</span>
+                    @endif
                 </p>
             </header>
 
-            <div class="rounded-[2.5rem] overflow-hidden glass-panel border-0 mb-12 shadow-2xl">
-                <img src="{{ $blog->cover_image }}" alt="{{ $blog->title }}" class="w-full object-cover max-h-[600px]">
-            </div>
-
-            <div class="prose prose-invert prose-lg max-w-none text-white/80 leading-relaxed space-y-8 font-light">
-                {!! $blog->content !!}
-            </div>
-
-            <!-- Tags & Share -->
-            <footer class="mt-16 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-                @isset($blog->tags)
-                <div class="flex flex-wrap gap-2">
-                    @foreach ($blog->tags as $tag)
-                    <span class="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-white/60">
-                        #{{ $tag->name }}
-                    </span>
-                    @endforeach
+            @if ($blog->coverImage ?? null)
+                <div class="mt-8 overflow-hidden rounded-md border border-line bg-surface-2">
+                    <img src="{{ $blog->coverImage }}" alt="{{ $blog->title }}" class="max-h-[560px] w-full object-cover">
                 </div>
-                @endisset
+            @endif
 
-                <div class="flex items-center gap-6">
-                    <span class="text-[10px] font-black uppercase tracking-widest text-white/30">Share</span>
-                    <div class="flex gap-4">
-                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ $blog->url }}" target="_blank" class="text-white/40 hover:text-primary transition-colors"><i class="fa fa-facebook"></i></a>
-                        <a href="https://twitter.com/intent/tweet?text={{ urlencode($blog->title) }}&url={{ $blog->url }}" target="_blank" class="text-white/40 hover:text-secondary transition-colors"><i class="fa fa-twitter"></i></a>
-                        <a href="https://wa.me/?text={{ $blog->url }}" target="_blank" class="text-white/40 hover:text-green-400 transition-colors"><i class="fa fa-whatsapp"></i></a>
+            <div class="prose-ogene mt-9 max-w-[68ch] text-[16px] leading-[1.75] text-muted">
+                {!! $blog->content ?? '' !!}
+            </div>
+
+            <footer class="mt-12 flex flex-col gap-6 border-t border-line pt-7 sm:flex-row sm:items-center sm:justify-between">
+                @if (($blog->tags ?? collect())->isNotEmpty())
+                    <ul class="flex flex-wrap gap-1.5">
+                        @foreach ($blog->tags as $tag)
+                            <li>
+                                <a
+                                    href="{{ route('tag.show', ['tag' => $tag->slug]) }}"
+                                    class="inline-flex rounded-xs border border-line px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-muted transition-colors hover:border-brand/50 hover:text-paper"
+                                >
+                                    #{{ $tag->name }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+
+                <div class="flex items-center gap-3">
+                    <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Share</span>
+
+                    <div class="flex gap-1.5">
+                        <a
+                            href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Share on Facebook"
+                            class="flex h-9 w-9 items-center justify-center rounded-sm border border-line text-muted transition-colors hover:border-brand/50 hover:text-paper"
+                        >
+                            <i class="fa fa-facebook" aria-hidden="true"></i>
+                        </a>
+
+                        <a
+                            href="https://twitter.com/intent/tweet?text={{ $shareTitle }}&url={{ $shareUrl }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Share on X"
+                            class="flex h-9 w-9 items-center justify-center rounded-sm border border-line text-muted transition-colors hover:border-brand/50 hover:text-paper"
+                        >
+                            <i class="fa fa-twitter" aria-hidden="true"></i>
+                        </a>
+
+                        <a
+                            href="https://wa.me/?text={{ $shareUrl }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Share on WhatsApp"
+                            class="flex h-9 w-9 items-center justify-center rounded-sm border border-line text-muted transition-colors hover:border-brand/50 hover:text-paper"
+                        >
+                            <i class="fa fa-whatsapp" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </div>
             </footer>
 
-            <!-- Interactive Modules -->
-            <div class="mt-24 space-y-16">
-                @if ((\Route::current()->getName() == 'post.show')||(\Route::current()->getName() == 'discussion.show'))
-                    <div class="glass-panel rounded-[3rem] p-10">
-                        <h4 class="text-2xl font-display mb-8">Community <span class="text-primary">Voice</span></h4>
+            @if ($routeName === 'post.show' || $routeName === 'discussion.show')
+                <div class="mt-12 border-t border-line pt-8">
+                    <h2 class="text-[22px] font-bold tracking-[-0.02em] text-paper">Join the conversation</h2>
+                    <p class="mt-1.5 text-sm text-muted">Your take matters — add a comment below.</p>
+
+                    <div class="mt-6">
                         @comments(['model' => $blog])
                     </div>
-                @endif
+                </div>
+            @endif
 
-                @if (\Route::current()->getName() == 'discussion.show')
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        @livewire('live-chat')
-                        @livewire('voice-recorder')
+            @if ($routeName === 'discussion.show')
+                <div class="mt-10 grid gap-6 md:grid-cols-2">
+                    @livewire('live-chat')
+                    @livewire('voice-recorder')
+                </div>
+            @endif
+        </div>
+
+        <aside class="lg:col-span-4">
+            <div class="sticky top-24 flex flex-col gap-6">
+                @livewire('sponsorship-banner')
+
+                <div class="surface p-5">
+                    <h2 class="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Frequency update</h2>
+                    <p class="mt-3 text-[13px] leading-relaxed text-muted">
+                        You're reading the pulse of the East. Tune in to 98.3 FM for authentic storytelling and highlife.
+                    </p>
+
+                    <div class="mt-4">
+                        <x-ui.button href="{{ route('listen') }}" wire:navigate size="sm">
+                            <x-ui.icon name="play" :size="14" />
+                            Listen live
+                        </x-ui.button>
                     </div>
-                @endif
-            </div>
-        </article>
+                </div>
 
-        <!-- Sidebar Column -->
-        <aside class="w-full lg:w-4/12 sticky top-32 flex flex-col gap-10">
-            @livewire('sponsorship-banner')
+                <div class="rounded-lg border border-line bg-surface/40 p-5">
+                    <h2 class="text-[15px] font-semibold text-paper">More from the newsroom</h2>
+                    <p class="mt-1.5 text-[13px] leading-relaxed text-muted">Browse every story, topic and event.</p>
 
-            <!-- Featured Album/Show could go here -->
-            <div class="glass-panel rounded-3xl p-8 bg-gradient-to-br from-primary/10 to-transparent">
-                <h5 class="text-white font-display text-lg mb-4">Frequency Update</h5>
-                <p class="text-white/50 text-sm font-light italic">
-                    You're listening to the pulse of the East. Stay tuned for authentic storytelling and highlife vibrations.
-                </p>
+                    <div class="mt-4">
+                        <x-ui.button href="{{ route('post.index') }}" wire:navigate variant="secondary" size="sm">All news</x-ui.button>
+                    </div>
+                </div>
             </div>
         </aside>
     </div>
-</div>
-
+</article>
 @endsection
