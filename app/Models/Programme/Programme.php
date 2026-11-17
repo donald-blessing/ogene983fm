@@ -50,30 +50,37 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read int|null $programme_times_count
  * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme myProgrammes()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme onAir()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme userProgrammes(\App\Models\User $user)
+ *
  * @property int $id
  * @property string $title
  * @property string $slug
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereUpdatedAt($value)
+ *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
+ *
  * @method static \Database\Factories\Programme\ProgrammeFactory factory($count = null, $state = [])
+ *
  * @property-read Collection<int, Episode> $episodes
  * @property-read int|null $episodes_count
  * @property-read Collection<int, Activity> $activitiesAsSubject
  * @property-read int|null $activities_as_subject_count
  * @property-read string $url
+ *
  * @mixin \Eloquent
  */
 class Programme extends Model implements HasMedia, Searchable
@@ -197,15 +204,33 @@ class Programme extends Model implements HasMedia, Searchable
      * @param  Builder  $query  //query
      * @return Collection
      */
-    public function scopeOnAir($query)
+    public function scopeOnAir(Builder $query): Builder
     {
-        return $query->whereHas('programmeTimes', function ($query): void {
+        $day = Carbon::now()->englishDayOfWeek;
+
+        return $query->whereHas('programmeTimes', function ($query) use ($day): void {
             $currentTime = \intval(strtotime(Carbon::now()->toTimeString()));
             $query
-                ->where('programme_times.day', Carbon::now()->englishDayOfWeek)
+                ->whereIn('programme_times.day', [strtolower($day), ucfirst(strtolower($day))])
                 ->where('programme_times.from', '<=', $currentTime)
                 ->where('programme_times.to', '>', $currentTime);
         });
+    }
+
+    /**
+     * Scope a query to the programmes scheduled on a given day.
+     */
+    public function scopeForDay(Builder $query, string $day): Builder
+    {
+        $days = [strtolower($day), ucfirst(strtolower($day))];
+
+        return $query
+            ->with([
+                'media',
+                'presenters.media',
+                'programmeTimes' => fn ($query) => $query->whereIn('day', $days)->orderBy('from'),
+            ])
+            ->whereHas('programmeTimes', fn ($query) => $query->whereIn('day', $days));
     }
 
     /**

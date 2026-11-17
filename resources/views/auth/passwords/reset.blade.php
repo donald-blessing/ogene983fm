@@ -1,67 +1,53 @@
-@extends('layouts.pages.index')
-@section('title')
-Update Password
-@endsection
+@extends('layouts.site')
+
+@section('title', 'Set a new password · Ogene 98.3 FM')
+
 @section('content')
+<x-ui.auth-shell
+    title="New frequency"
+    subtitle="Choose a new password for your Ogene account."
+    icon="user"
+>
+    <form method="POST" action="{{ route('password.update') }}" class="space-y-5">
+        @csrf
+        <input type="hidden" name="token" value="{{ $token }}">
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center">
-    <!-- Breadcrumb -->
-    <div class="flex items-center justify-center gap-2 text-white/40 text-sm font-medium mb-12">
-        <a href="{{ route('home') }}" class="hover:text-secondary transition-colors"><i class="fa fa-home"></i> Home</a>
-        <i class="fa fa-angle-right text-[10px]"></i>
-        <span class="text-white">Reset Password</span>
-    </div>
+        <x-ui.input
+            name="email"
+            label="Email address"
+            type="email"
+            :value="$email ?? null"
+            required
+            autofocus
+            autocomplete="email"
+        />
 
-    <!-- Reset Card -->
-    <div class="w-full max-w-md">
-        <div class="glass-panel rounded-[3rem] p-10 md:p-12 relative overflow-hidden shadow-2xl">
-            <!-- Decorative Gradient -->
-            <div class="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-secondary/10 blur-[60px] rounded-full"></div>
-            
-            <div class="relative z-10 text-center mb-10">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl liquid-glass mb-6 text-secondary text-2xl border-secondary/20">
-                    <i class="fa fa-refresh"></i>
-                </div>
-                <h2 class="text-3xl font-display text-white mb-2">New <span class="text-primary italic">Frequency</span></h2>
-                <p class="text-white/40 text-sm">Secure your account with a new password</p>
-            </div>
+        <x-ui.input
+            name="password"
+            label="New password"
+            type="password"
+            placeholder="••••••••"
+            required
+            autocomplete="new-password"
+        />
 
-            <form method="POST" action="{{ route('password.update') }}" class="space-y-6 relative z-10">
-                @csrf
-                <input type="hidden" name="token" value="{{ $token }}">
+        <x-ui.input
+            name="password_confirmation"
+            label="Confirm new password"
+            type="password"
+            placeholder="••••••••"
+            required
+            autocomplete="new-password"
+        />
 
-                <div>
-                    <label class="text-[10px] font-black uppercase tracking-widest text-white/30 ml-4 mb-2 block">Email Address</label>
-                    <input type="email" name="email" value="{{ $email ?? old('email') }}" required autofocus
-                           class="input-fusion w-full !rounded-2xl" placeholder="name@example.com">
-                    @error('email')
-                        <span class="text-red-400 text-[10px] mt-2 block ml-4 font-bold">{{ $message }}</span>
-                    @enderror
-                </div>
+        <x-ui.button type="submit" size="lg" full>
+            Update password
+            <x-ui.icon name="check" :size="16" />
+        </x-ui.button>
+    </form>
 
-                <div>
-                    <label class="text-[10px] font-black uppercase tracking-widest text-white/30 ml-4 mb-2 block">New Password</label>
-                    <input type="password" name="password" required
-                           class="input-fusion w-full !rounded-2xl" placeholder="••••••••">
-                    @error('password')
-                        <span class="text-red-400 text-[10px] mt-2 block ml-4 font-bold">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div>
-                    <label class="text-[10px] font-black uppercase tracking-widest text-white/30 ml-4 mb-2 block">Confirm Password</label>
-                    <input type="password" name="password_confirmation" required
-                           class="input-fusion w-full !rounded-2xl" placeholder="••••••••">
-                </div>
-
-                <div class="pt-4">
-                    <button type="submit" class="btn-fusion-secondary w-full py-4 !rounded-2xl group">
-                        Update Password <i class="fa fa-check-circle ml-2 group-hover:scale-110 transition-transform"></i>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
+    <x-slot:footer>
+        <a href="{{ route('login') }}" class="text-[13px] font-semibold text-muted transition-colors hover:text-paper">Back to sign in</a>
+    </x-slot:footer>
+</x-ui.auth-shell>
 @endsection

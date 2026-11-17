@@ -311,7 +311,8 @@ class ProgrammeController extends Controller
     {
         $response = [];
         $currentTime = strtotime(date('h:i a'));
-        $programmeTime = ProgrammeTime::where('day', Carbon::now()->englishDayOfWeek)
+        $day = Carbon::now()->englishDayOfWeek;
+        $programmeTime = ProgrammeTime::whereIn('day', [strtolower($day), ucfirst(strtolower($day))])
             ->where('from', '<', $currentTime)
             ->where('to', '>', $currentTime)
             ->orderBy('id', 'desc')->first();

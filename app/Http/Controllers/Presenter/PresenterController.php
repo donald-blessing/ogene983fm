@@ -17,7 +17,7 @@ class PresenterController extends Controller
      */
     public function index()
     {
-        $presenters = Presenter::with(['media', 'description', 'programmes'])->get();
+        $presenters = Presenter::with(['media', 'description', 'programmes.programmeTimes'])->get();
 
         return view('site.pages.presenters.blog', ['presenters' => $presenters, 'title' => 'On Air Personalities']);
     }
@@ -29,6 +29,8 @@ class PresenterController extends Controller
      */
     public function show(Presenter $presenter)
     {
+        $presenter->load(['media', 'description', 'programmes.programmeTimes']);
+
         return view('site.pages.presenters.profile', ['user' => $presenter]);
     }
 }

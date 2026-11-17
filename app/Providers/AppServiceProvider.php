@@ -51,15 +51,23 @@ class AppServiceProvider extends ServiceProvider
 
         // Comprehensive data for the Home Page
         view()->composer('site.pages.index', function ($view): void {
-            $view->with('programmes', Programme::with(['media', 'programmeTimes', 'presenters'])->get());
+            $today = now()->englishDayOfWeek;
+
+            $view->with('programmes', Programme::with(['media', 'programmeTimes', 'presenters.media'])->get());
+            $view->with('onAirProgramme', Programme::onAir()->with(['media', 'presenters.media'])->first());
+            $view->with('todaySchedule', Programme::forDay($today)
+                ->get()
+                ->sortBy(fn (Programme $programme) => $programme->programmeTimes->first()?->from)
+                ->values());
+            $view->with('presenters', Presenter::with('media')->take(6)->get());
             $view->with('categories', Category::with([
                 'subcategories',
                 'media',
                 'posts' => fn ($query) => $query->with(['media', 'category'])->withCount('comments')->latest(),
             ])->get());
             $view->with('songOfTheWeek', SongOfTheWeek::with(['media', 'description'])->currentSong()->first());
-            $view->with('albums', Album::with('media')->orderBy('updated_at', 'desc')->take(6)->get());
-            $view->with('posts', Post::with(['category', 'media', 'description'])->withCount('comments')->latest()->limit(6)->get());
+            $view->with('albums', Album::with('media')->orderBy('updated_at', 'desc')->take(3)->get());
+            $view->with('posts', Post::with(['category', 'media', 'description'])->withCount('comments')->latest()->limit(4)->get());
         });
 
         // Data for Blog listing pages

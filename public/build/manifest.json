@@ -1,11 +1,19 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-COHcacrF.css",
+    "file": "assets/app-DWCLqxNF.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
+  "resources/fonts/archivo/archivo-latin.woff2": {
+    "file": "assets/archivo-latin-BEIDiHaE.woff2",
+    "src": "resources/fonts/archivo/archivo-latin.woff2"
+  },
+  "resources/fonts/instrument-sans/instrument-sans-latin.woff2": {
+    "file": "assets/instrument-sans-latin-CclBWeUS.woff2",
+    "src": "resources/fonts/instrument-sans/instrument-sans-latin.woff2"
+  },
   "resources/js/app.js": {
-    "file": "assets/app-CSKrY-Ih.js",
+    "file": "assets/app-DHQclwjm.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true

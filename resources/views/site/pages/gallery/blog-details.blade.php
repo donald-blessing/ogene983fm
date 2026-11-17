@@ -1,205 +1,135 @@
-@extends('layouts.pages.blog-details')
-@section('title')
-{{ $title }}
-@endsection
+@extends('layouts.site')
+
+@section('title', $title . ' · Ogene 98.3 FM')
+
 @php
-use App\Helpers\Helper;
-$helper = new Helper;
+    $helper = new \App\Helpers\Helper;
 @endphp
 
 @section('content')
-<!-- Breadcrumb Section Begin -->
-<div class="breacrumb-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="breadcrumb-text">
-                    <a href="{{ route('home') }}"><i class="fa fa-home"></i> Home</a>
-                    @isset($breadcrumb)
-                    <a href="{{ $breadcrumb['route'] }}"> {{ $breadcrumb['category'] }}</a>
-                    <span>{{ $breadcrumb['title'] }}</span>
-                    @else
-                    <span>{{ $title }}</span>
-                    @endisset
-                </div>
-            </div>
+<div class="border-b border-line bg-surface/20">
+    <div class="container-page py-8 sm:py-10">
+        <x-ui.breadcrumb :items="[
+            ['label' => $breadcrumb['category'] ?? 'Gallery', 'href' => $breadcrumb['route'] ?? route('gallery.album.index')],
+            ['label' => $breadcrumb['title'] ?? $blog->title],
+        ]" />
+
+        <div class="mt-7 max-w-[68ch]">
+            <h1 class="text-[clamp(1.9rem,4.2vw,2.9rem)] font-bold leading-[1.05] tracking-[-0.03em] text-paper">
+                {{ $blog->title }}
+            </h1>
+
+            <p class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] uppercase tracking-[0.1em] text-faint">
+                @if ($blog->category)
+                    <span>{{ $blog->category->name }}</span>
+                @endif
+
+                @if ($blog->created_at)
+                    <span class="h-3 w-px bg-line" aria-hidden="true"></span>
+                    <span>{{ $blog->created_at->format('F j, Y') }}</span>
+                @endif
+
+                <span class="h-3 w-px bg-line" aria-hidden="true"></span>
+                <span>{{ $blog->albumUploads->count() }} {{ \Illuminate\Support\Str::plural('item', $blog->albumUploads->count()) }}</span>
+            </p>
         </div>
     </div>
 </div>
-<!-- Breadcrumb Section Begin -->
 
-<!-- Blog Details Section Begin -->
-<section class="blog-details spad">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="blog-details-inner">
-                    <div class="blog-detail-title">
-                        <h2>{{ $blog->title }}</h2>
-                        <p>{{ $blog->category->name ?? null }} <span>- {{ $blog->created_at->toFormattedDateString() }}</span></p>
-                    </div>
-                    <div class="blog-large-pic">
-                        <img src="{{ $blog->cover_image }}" alt="">
-                    </div>
-                    <div class="blog-detail-desc">
-                        {{ $blog->about }}
-                    </div>
-                    <div class="blog-detail-desc">
-                        <div id="relative-caption">
-                            <div class="row">
-                                @foreach ($blog->albumUploads as $item)
-                                @if ($helper->isVideo($item->item))
-                                <div style="display:none;" id="video{{ $loop->index }}">
-                                    <video class="lg-video-object lg-html5" controls preload="none">
-                                        <source src="{{ $item->item }}" type="video/mp4">
-                                        Your browser does not support HTML5 video.
-                                    </video>
-                                </div>
-                                <a data-poster="{{ $item->cover_image }}" data-sub-html=".caption" data-html="#video{{ $loop->index }}">
-                                    <div class="col-md-4">
-                                        <img src="{{ $item->cover_image }}" class="img-fluid" style="width: 100%" alt="{{ $item->title }}">
-                                        <div class="caption text-center mt-30">
-                                            <h4>{{ $item->title }}</h4>
-                                            <p>{{ $item->about }}</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                @elseif ($helper->isAudio($item->item))
-                                <div style="display:none;" id="audio{{ $loop->index }}">
-                                    <audio class="lg-video-object lg-html5" controls preload="none">
-                                        <source src="{{ $item->item }}" type="audio/mp3">
-                                        Your browser does not support HTML5 audio.
-                                    </audio>
-                                </div>
-                                <a data-poster="{{ $item->cover_image }}" data-html="#audio{{ $loop->index }}">
-                                    <div class="col-md-4">
-                                        <img src="{{ $item->cover_image }}" class="img-fluid" style="width: 100%" alt="{{ $item->title }}">
-                                        <div class="caption text-center mt-30">
-                                            <h4>{{ $item->title }}</h4>
-                                            <p>{{ $item->about }}</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                @else
-                                <div class="col-md-4">
-                                    <a href="{{ $item->item }}">
-                                        <img src="{{ $item->item }}" class="img-fluid" style="width: 100%" alt="{{ $item->title }}">
-                                        <div class="caption text-center mt-30">
-                                            <h4>{{ $item->title }}</h4>
-
-                                        </div>
-                                    </a>
-                                </div>
-
-                                @endif
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-
-                    <div class="tag-share">
-                        @isset($blog->tags)
-                        <div class="details-tag">
-                            <ul>
-                                <li><i class="fa fa-tags"></i></li>
-                                @foreach ($blog->tags as $tag)
-                                <li>{{ $tag->name }}</li>
-                                @endforeach
-
-                            </ul>
-                        </div>
-                        @endisset
-                        <div class="blog-share">
-                            <span>Share:</span>
-                            <div class="social-links">
-                                <a href="#"><i class="fa fa-facebook"></i></a>
-                                <a href="#"><i class="fa fa-twitter"></i></a>
-                                <a href="#"><i class="fa fa-google-plus"></i></a>
-                                <a href="#"><i class="fa fa-instagram"></i></a>
-                                <a href="#"><i class="fa fa-youtube-play"></i></a>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="blog-post">
-                        <div class="row">
-                            @isset($prevBlog)
-                            <div class="col-lg-5 col-md-6">
-                                <a href="#" class="prev-blog">
-                                    <div class="pb-pic">
-                                        <i class="ti-arrow-left"></i>
-                                        <img src="{{ $prevBlog->cover_image }}" alt="{{ $prevBlog->title }} Cover Image">
-                                    </div>
-                                    <div class="pb-text">
-                                        <span>Previous Post:</span>
-                                        <h5>{{ $prevBlog->title }}</h5>
-                                    </div>
-                                </a>
-                            </div>
-                            @endisset
-                            @isset($nextBlog)
-                            <div class="col-lg-5 offset-lg-2 col-md-6">
-                                <a href="#" class="next-blog">
-                                    <div class="nb-pic">
-                                        <img src="{{ $nextBlog->cover_image }}" alt="{{ $nextBlog->title }} Cover Image">
-                                        <i class="ti-arrow-right"></i>
-                                    </div>
-                                    <div class="nb-text">
-                                        <span>Next Post:</span>
-                                        <h5>{{ $nextBlog->title }}</h5>
-                                    </div>
-                                </a>
-                            </div>
-                            @endisset
-                        </div>
-                    </div>
-                    @if ((\Route::current()->getName() == 'post.show')||(\Route::current()->getName() == 'discussion.show'))
-                    @comments(['model' => $blog])
-                    @endif
-                </div>
-            </div>
+<section class="container-page py-10 sm:py-12">
+    @if ($blog->coverImage)
+        <div class="overflow-hidden rounded-md border border-line bg-surface-2">
+            <img src="{{ $blog->coverImage }}" alt="{{ $blog->title }}" class="max-h-[520px] w-full object-cover">
         </div>
+    @endif
+
+    @if (filled($blog->about))
+        <div class="prose-ogene mt-8 max-w-[68ch] text-[16px] leading-[1.75] text-muted">
+            {!! $blog->about !!}
+        </div>
+    @endif
+
+    <div class="mt-10">
+        <h2 class="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">In this album</h2>
+
+        @if ($blog->albumUploads->isEmpty())
+            <div class="mt-4">
+                <x-ui.empty-state
+                    icon="radio"
+                    title="No photos in this album yet"
+                    description="Uploads from this event or session will appear here."
+                />
+            </div>
+        @else
+            <div class="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($blog->albumUploads as $item)
+                    @php
+                        $source = $item->item;
+                        $poster = $item->cover_image;
+                        $isVideo = $source && $helper->isVideo($source);
+                        $isAudio = $source && $helper->isAudio($source);
+                    @endphp
+
+                    <figure class="surface overflow-hidden">
+                        @if ($isVideo)
+                            <video controls preload="none" class="aspect-[4/3] w-full bg-ink object-cover" @if ($poster) poster="{{ $poster }}" @endif>
+                                <source src="{{ $source }}" type="video/mp4">
+                                Your browser does not support HTML5 video.
+                            </video>
+                        @elseif ($isAudio)
+                            <div class="flex aspect-[4/3] w-full items-center justify-center bg-surface-2 px-5">
+                                <audio controls preload="none" class="w-full">
+                                    <source src="{{ $source }}" type="audio/mpeg">
+                                    Your browser does not support HTML5 audio.
+                                </audio>
+                            </div>
+                        @elseif ($source)
+                            <a href="{{ $source }}" target="_blank" rel="noopener noreferrer" class="group block">
+                                <img
+                                    src="{{ $source }}"
+                                    alt="{{ $item->title }}"
+                                    loading="lazy"
+                                    class="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                                >
+                            </a>
+                        @endif
+
+                        @if ($item->title || filled($item->about))
+                            <figcaption class="p-4">
+                                @if ($item->title)
+                                    <p class="text-[14px] font-semibold text-paper">{{ $item->title }}</p>
+                                @endif
+
+                                @if (filled($item->about))
+                                    <p class="mt-1 line-clamp-2 text-[13px] leading-relaxed text-muted">{{ strip_tags($item->about) }}</p>
+                                @endif
+                            </figcaption>
+                        @endif
+                    </figure>
+                @endforeach
+            </div>
+        @endif
     </div>
+
+    <footer class="mt-12 flex flex-col gap-6 border-t border-line pt-7 sm:flex-row sm:items-center sm:justify-between">
+        @if (($blog->tags ?? collect())->isNotEmpty())
+            <ul class="flex flex-wrap gap-1.5">
+                @foreach ($blog->tags as $tag)
+                    <li>
+                        <a
+                            href="{{ route('tag.show', ['tag' => $tag->slug]) }}"
+                            class="inline-flex rounded-xs border border-line px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-muted transition-colors hover:border-brand/50 hover:text-paper"
+                        >
+                            #{{ $tag->name }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+
+        <x-ui.button href="{{ route('gallery.album.index') }}" wire:navigate variant="secondary" size="sm">
+            Back to gallery
+        </x-ui.button>
+    </footer>
 </section>
-<!-- Blog Details Section End -->
 @endsection
-
-@push('css')
-<link type="text/css" rel="stylesheet" href="{{ asset('frontend/css/lightgallery.css') }}" />
-<link href="{{asset('frontend/css/video-js.css')}}" rel="stylesheet">
-<link href="http://vjs.zencdn.net/4.12/video-js.css" rel="stylesheet">
-@endpush
-
-@push('js')
-<script src="http://vjs.zencdn.net/4.12/video.js"></script>
-<script src="{{ asset('frontend/js/video.js') }}"></script>
-<!-- A jQuery plugin that adds cross-browser mouse wheel support. (Optional) -->
-<script src="{{ asset('frontend/js/jquery.mousewheel.min.js') }}"></script>
-
-<script src="{{ asset('frontend/js/lightgallery.min.js') }}"></script>
-
-<!-- lightgallery plugins -->
-<script src="{{ asset('frontend/js/lg-thumbnail.min.js') }}"></script>
-<script src="{{ asset('frontend/js/lg-fullscreen.min.js') }}"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#relative-caption').lightGallery({
-            videojs: true,
-            thumbnail: true,
-            subHtmlSelectorRelative: true
-        });
-
-        $('#relative-caption').on('onBeforeOpen.lg', function (event, prevIndex, index) {
-            $('.header-area').hide();
-            $('.mobile-menu-area').hide();
-        });
-        $('#relative-caption').on('onCloseAfter.lg', function (event, prevIndex, index) {
-            $('.header-area').show();
-            $('.mobile-menu-area').show();
-        });
-    });
-
-</script>
-@endpush

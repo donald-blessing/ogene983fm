@@ -18,17 +18,21 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read mixed $to
  * @property-read Collection|Programme[] $programmes
  * @property-read int|null $programmes_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime onAir()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime query()
+ *
  * @property int $id
  * @property string $day
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereDay($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereFrom($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\ProgrammeTime whereTo($value)
  * @method static \Database\Factories\Programme\ProgrammeTimeFactory factory($count = null, $state = [])
+ *
  * @mixin \Eloquent
  */
 class ProgrammeTime extends Model
@@ -78,8 +82,9 @@ class ProgrammeTime extends Model
     public function scopeOnAir($query)
     {
         $currentTime = \intval(strtotime(Carbon::now()->toTimeString()));
+        $day = Carbon::now()->englishDayOfWeek;
 
-        return $query->where('day', Carbon::now()->englishDayOfWeek)
+        return $query->whereIn('day', [strtolower($day), ucfirst(strtolower($day))])
             ->where('from', '<=', $currentTime)
             ->where('to', '>', $currentTime);
     }

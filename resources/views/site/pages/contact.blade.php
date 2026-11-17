@@ -1,97 +1,213 @@
-@extends('layouts.pages.contact')
-@section('title')
-Connect with the Studio
-@endsection
+@extends('layouts.site')
+
+@section('title', 'Contact the studio · Ogene 98.3 FM')
+
 @section('content')
+@php
+    $settings = app(\App\Settings\GeneralSettings::class);
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-white/40 text-sm font-medium mb-12">
-        <a href="{{ route('home') }}" class="hover:text-secondary transition-colors"><i class="fa fa-home"></i> Home</a>
-        <i class="fa fa-angle-right text-[10px]"></i>
-        <span class="text-white">Contact</span>
-    </div>
+    $address = $settings->contact_address ?: 'KM 80 Enugu/Onitsha Expressway, Awka, Anambra State, Nigeria';
+    $emails = array_values(array_filter([
+        $settings->contact_email,
+        'ogenefm983@gmail.com',
+    ]));
+    $phones = ['+234 807 772 6636', '+234 816 749 4172'];
+@endphp
 
-    <!-- Map Section -->
-    <div class="rounded-[3rem] overflow-hidden glass-panel border-0 h-[450px] shadow-2xl relative group mb-24">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15865.894575663993!2d7.0281902!3d6.201075!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x7ed90cdacc384b13!2sOGENE%2098.3FM!5e0!3m2!1sen!2sng!4v1580815480921!5m2!1sen!2sng" 
-                class="w-full h-full grayscale invert opacity-60 group-hover:grayscale-0 group-hover:invert-0 group-hover:opacity-100 transition-all duration-1000" 
-                frameborder="0" style="border:0;" allowfullscreen=""></iframe>
-        <div class="absolute inset-0 pointer-events-none border-[12px] border-bg-dark/20 rounded-[3rem]"></div>
-    </div>
+<div class="border-b border-line bg-surface/20">
+    <div class="container-page py-8 sm:py-10">
+        <x-ui.breadcrumb :items="[['label' => 'Contact']]" />
 
-    <!-- Contact Info & Form -->
-    <div class="flex flex-col lg:flex-row gap-16 items-start">
-        <!-- Left: Info Column -->
-        <div class="w-full lg:w-5/12">
-            <h2 class="text-6xl font-display text-white mb-8 leading-tight">
-                Authentically <br><span class="text-secondary italic">Connected</span>
-            </h2>
-            <p class="text-lg text-white/60 mb-12 leading-relaxed">
-                Best indigenous Radio Station, South-East of the Niger. We bridge the gap between urban contemporary and indigenous broadcasting.
+        <div class="mt-7 max-w-[60ch]">
+            <p class="label-mono mb-3 text-brand-text">Contact</p>
+            <h1 class="text-[clamp(1.9rem,4.4vw,3rem)] font-bold leading-[1.05] tracking-[-0.03em] text-paper">
+                Talk to the studio
+            </h1>
+            <p class="mt-3 text-[15px] leading-relaxed text-muted">
+                Requests, shout-outs, advertising or a story tip — the line is open.
             </p>
+        </div>
+    </div>
+</div>
 
-            <div class="space-y-10">
-                <div class="flex gap-6 group">
-                    <div class="w-14 h-14 shrink-0 rounded-2xl liquid-glass flex items-center justify-center text-primary text-xl group-hover:neon-border-purple transition-all duration-500">
-                        <i class="fa fa-map-marker"></i>
-                    </div>
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/40 block mb-1">Our Studio</span>
-                        <p class="text-white/80">KM 80 Enugu/Onitsha Expressway, Awka, Anambra State, Nigeria</p>
+<section class="container-page py-12 sm:py-14">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-12">
+        {{-- Details --}}
+        <div class="lg:col-span-5">
+            <div class="surface divide-y divide-line overflow-hidden">
+                <div class="flex gap-4 p-5">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-surface-2 text-muted">
+                        <x-ui.icon name="headphones" :size="19" />
+                    </span>
+
+                    <div class="min-w-0">
+                        <h2 class="text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">The studio</h2>
+                        <p class="mt-1.5 text-[14px] leading-relaxed text-paper">{{ $address }}</p>
                     </div>
                 </div>
 
-                <div class="flex gap-6 group">
-                    <div class="w-14 h-14 shrink-0 rounded-2xl liquid-glass flex items-center justify-center text-secondary text-xl group-hover:neon-border-green transition-all duration-500">
-                        <i class="fa fa-phone"></i>
-                    </div>
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/40 block mb-1">Call Us</span>
-                        <p class="text-white/80">+234 807 772 6636</p>
-                        <p class="text-white/80">+234 816 749 4172</p>
+                <div class="flex gap-4 p-5">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-surface-2 text-muted">
+                        <x-ui.icon name="microphone" :size="19" />
+                    </span>
+
+                    <div class="min-w-0">
+                        <h2 class="text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">Call the studio</h2>
+
+                        <ul class="mt-1.5 space-y-1">
+                            @foreach ($phones as $phone)
+                                <li>
+                                    <a href="tel:{{ preg_replace('/\s+/', '', $phone) }}" class="text-[14px] text-paper transition-colors hover:text-brand-text">{{ $phone }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
                 </div>
 
-                <div class="flex gap-6 group">
-                    <div class="w-14 h-14 shrink-0 rounded-2xl liquid-glass flex items-center justify-center text-accent text-xl group-hover:shadow-[0_0_15px_rgba(255,170,0,0.3)] transition-all duration-500">
-                        <i class="fa fa-envelope"></i>
+                <div class="flex gap-4 p-5">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-surface-2 text-muted">
+                        <x-ui.icon name="mail" :size="19" />
+                    </span>
+
+                    <div class="min-w-0">
+                        <h2 class="text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">Email</h2>
+
+                        <ul class="mt-1.5 space-y-1">
+                            @foreach ($emails as $email)
+                                <li>
+                                    <a href="mailto:{{ $email }}" class="break-all text-[14px] text-paper transition-colors hover:text-brand-text">{{ $email }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/40 block mb-1">Email</span>
-                        <p class="text-white/80">info@ogene983fm.com</p>
-                        <p class="text-white/80">ogenefm983@gmail.com</p>
+                </div>
+
+                <div class="flex gap-4 p-5">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-brand-soft text-brand-text">
+                        <x-ui.icon name="radio" :size="19" />
+                    </span>
+
+                    <div class="min-w-0">
+                        <h2 class="text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">Before the show</h2>
+                        <p class="mt-1.5 text-[14px] leading-relaxed text-muted">
+                            For on-air requests, call during the programme you're listening to — the presenter takes the line live.
+                        </p>
                     </div>
                 </div>
             </div>
+
+            <div class="mt-6 overflow-hidden rounded-lg border border-line">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15865.894575663993!2d7.0281902!3d6.201075!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x7ed90cdacc384b13!2sOGENE%2098.3FM!5e0!3m2!1sen!2sng!4v1580815480921!5m2!1sen!2sng"
+                    title="Ogene 98.3 FM on Google Maps"
+                    class="h-[280px] w-full grayscale transition-all duration-700 hover:grayscale-0"
+                    loading="lazy"
+                    style="border:0;"
+                    allowfullscreen
+                ></iframe>
+            </div>
         </div>
 
-        <!-- Right: Form Column -->
-        <div class="w-full lg:w-7/12">
-            <div class="glass-panel rounded-[3rem] p-10 md:p-16 relative overflow-hidden">
-                <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-primary/10 blur-[80px] rounded-full"></div>
-                
-                <h4 class="text-3xl font-display text-white mb-2">Leave a Message</h4>
-                <p class="text-white/40 mb-10">Our team will get back to you as soon as possible.</p>
+        {{-- Form --}}
+        <div class="lg:col-span-7">
+            <div class="surface p-6 sm:p-8">
+                <h2 class="text-xl font-semibold tracking-[-0.01em] text-paper">Send a message</h2>
+                <p class="mt-1.5 text-[14px] leading-relaxed text-muted">We read everything and reply as soon as the studio is quiet.</p>
 
-                <form action="{{ route('contact.store') }}" method="POST" class="space-y-6">
+                <form action="{{ route('contact.store') }}" method="POST" class="mt-7 space-y-5">
                     @csrf
-                    <div class="flex flex-col md:flex-row gap-6">
-                        <input type="text" placeholder="Full Name" name="name" class="input-fusion w-full" required>
-                        <input type="email" placeholder="Email Address" name="email" class="input-fusion w-full" required>
+
+                    <div class="grid gap-5 sm:grid-cols-2">
+                        <div>
+                            <label for="contact-name" class="block text-[12px] font-semibold uppercase tracking-[0.1em] text-faint">Full name</label>
+                            <input
+                                id="contact-name"
+                                type="text"
+                                name="name"
+                                value="{{ old('name') }}"
+                                required
+                                autocomplete="name"
+                                @class([
+                                    'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[14px] text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
+                                    'border-line' => ! $errors->has('name'),
+                                    'border-brand' => $errors->has('name'),
+                                ])
+                            >
+                            @error('name')
+                                <p class="mt-1.5 text-[12px] text-brand-text">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="contact-email" class="block text-[12px] font-semibold uppercase tracking-[0.1em] text-faint">Email address</label>
+                            <input
+                                id="contact-email"
+                                type="email"
+                                name="email"
+                                value="{{ old('email') }}"
+                                required
+                                autocomplete="email"
+                                @class([
+                                    'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[14px] text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
+                                    'border-line' => ! $errors->has('email'),
+                                    'border-brand' => $errors->has('email'),
+                                ])
+                            >
+                            @error('email')
+                                <p class="mt-1.5 text-[12px] text-brand-text">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
-                    <input type="text" placeholder="Subject" name="subject" class="input-fusion w-full" required>
-                    <textarea placeholder="Tell us what's on your mind..." name="message" rows="5" class="input-fusion w-full resize-none" required></textarea>
-                    
-                    <div class="pt-4">
-                        <button type="submit" class="btn-fusion-primary w-full md:w-auto px-12 group">
-                            Send Message <i class="fa fa-paper-plane ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
-                        </button>
+
+                    <div>
+                        <label for="contact-subject" class="block text-[12px] font-semibold uppercase tracking-[0.1em] text-faint">Subject</label>
+                        <input
+                            id="contact-subject"
+                            type="text"
+                            name="subject"
+                            value="{{ old('subject') }}"
+                            required
+                            @class([
+                                'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[14px] text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
+                                'border-line' => ! $errors->has('subject'),
+                                'border-brand' => $errors->has('subject'),
+                            ])
+                        >
+                        @error('subject')
+                            <p class="mt-1.5 text-[12px] text-brand-text">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="contact-message" class="block text-[12px] font-semibold uppercase tracking-[0.1em] text-faint">Message</label>
+                        <textarea
+                            id="contact-message"
+                            name="message"
+                            rows="6"
+                            required
+                            placeholder="Tell us what's on your mind…"
+                            @class([
+                                'mt-2 w-full resize-y rounded-sm border bg-ink px-3 py-3 text-[14px] leading-relaxed text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
+                                'border-line' => ! $errors->has('message'),
+                                'border-brand' => $errors->has('message'),
+                            ])
+                        >{{ old('message') }}</textarea>
+                        @error('message')
+                            <p class="mt-1.5 text-[12px] text-brand-text">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-[12px] leading-relaxed text-faint">We reply by email, usually within two working days.</p>
+
+                        <x-ui.button type="submit" size="lg" class="w-full sm:w-auto">
+                            Send message
+                            <x-ui.icon name="arrow-right" :size="16" />
+                        </x-ui.button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
-
+</section>
 @endsection

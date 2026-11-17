@@ -30,7 +30,7 @@ class PostController extends Controller
             return route('post.show', ['category' => $post->category->slug, 'post' => $post->slug]);
         })->toArray();
 
-        return view('site.pages.blog', ['blogs' => $posts, 'routes' => $routes, 'title' => 'Blog']);
+        return view('site.pages.blog', ['blogs' => $posts, 'routes' => $routes, 'title' => 'News & events']);
     }
 
     /**

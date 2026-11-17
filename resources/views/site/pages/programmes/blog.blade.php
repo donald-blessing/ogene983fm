@@ -1,98 +1,144 @@
-@extends('layouts.pages.blog')
-@section('title')
-Our Frequency
-@endsection
-@section('content')
+@extends('layouts.site')
 
-<!-- Breadcrumb Section -->
-<div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-12">
-    <div class="flex items-center gap-2 text-white/40 text-sm font-medium">
-        <a href="{{ route('home') }}" class="hover:text-secondary transition-colors"><i class="fa fa-home"></i> Home</a>
-        <i class="fa fa-angle-right text-[10px]"></i>
-        <span class="text-white">Programmes</span>
+@section('title', 'Schedule · Ogene 98.3 FM')
+
+@section('content')
+@php
+    $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    $today = now()->englishDayOfWeek;
+    $nowTime = (int) strtotime(now()->toTimeString());
+
+    $toSeconds = fn ($time): int => $time ? (int) strtotime((string) $time) : 0;
+    $formatTime = fn ($time): string => $time ? date('g:i A', $toSeconds($time)) : '';
+
+    $timesFor = fn ($programme, string $day) => $programme->programmeTimes
+        ->filter(fn ($time) => strtolower($time->day) === strtolower($day))
+        ->sortBy('from')
+        ->values();
+
+    $isLive = fn ($programme): bool => $timesFor($programme, $today)
+        ->contains(fn ($time) => $toSeconds($time->from) <= $nowTime && $toSeconds($time->to) > $nowTime);
+
+    $slots = collect($days)->mapWithKeys(fn (string $day) => [
+        $day => $programmes
+            ->filter(fn ($programme) => $timesFor($programme, $day)->isNotEmpty())
+            ->sortBy(fn ($programme) => $timesFor($programme, $day)->first()?->from)
+            ->values(),
+    ]);
+@endphp
+
+<div class="border-b border-line bg-surface/20">
+    <div class="container-page py-8 sm:py-10">
+        <x-ui.breadcrumb :items="[['label' => 'Schedule']]" />
+
+        <div class="mt-7 flex flex-wrap items-end justify-between gap-6">
+            <div>
+                <p class="label-mono mb-3 text-brand-text">Schedule · WAT</p>
+                <h1 class="text-[clamp(2rem,4.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.03em] text-paper">
+                    Programme schedule
+                </h1>
+                <p class="mt-3 max-w-[54ch] text-[15px] leading-relaxed text-muted">
+                    Seven days of highlife, talk and news. All times are West Africa Time (WAT).
+                </p>
+            </div>
+
+            <x-ui.badge variant="outline" dot>Today is {{ $today }}</x-ui.badge>
+        </div>
+
+        {{-- Day jump links --}}
+        <nav aria-label="Jump to day" class="mt-7 -mx-1 flex gap-1 overflow-x-auto pb-1">
+            @foreach ($days as $day)
+                <a
+                    href="#day-{{ strtolower($day) }}"
+                    class="shrink-0 rounded-xs border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors {{ $day === $today ? 'border-brand/50 bg-brand-soft text-brand-text' : 'border-line text-muted hover:border-[#4a3f39] hover:text-paper' }}"
+                >
+                    {{ $day === $today ? 'Today' : substr($day, 0, 3) }}
+                </a>
+            @endforeach
+        </nav>
     </div>
 </div>
 
-<!-- Programmes Grid Section -->
-<section class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-24">
-    <div class="flex items-end justify-between mb-12 border-l-4 border-primary pl-6">
-        <div>
-            <h2 class="text-5xl font-display text-white italic">Ogene <span class="text-secondary">Lineup</span></h2>
-            <p class="text-white/40 mt-2 tracking-widest uppercase text-xs font-black">Stay connected with our daily frequency</p>
-        </div>
-    </div>
+<section class="container-page py-12 sm:py-14">
+    @if ($programmes->isEmpty())
+        <x-ui.empty-state
+            icon="calendar"
+            title="The schedule is being finalised"
+            description="Programme times are published ahead of each broadcast week. In the meantime, the live stream runs around the clock."
+        >
+            <x-slot:action>
+                <x-ui.button href="{{ route('listen') }}" wire:navigate>
+                    <x-ui.icon name="play" :size="15" />
+                    Listen live
+                </x-ui.button>
+            </x-slot:action>
+        </x-ui.empty-state>
+    @else
+        <div class="space-y-12">
+            @foreach ($slots as $day => $dayProgrammes)
+                @continue($dayProgrammes->isEmpty())
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        @foreach ($programmes as $programme)
-        @php
-            $time = $programme->programmeTimes;
-            $time->each(function ($item) {
-                $item->day = $item->day.'s';
-            });
-        @endphp
-        
-        <div class="card-fusion flex flex-col group h-full">
-            <!-- Programme Cover -->
-            <div class="aspect-square overflow-hidden relative">
-                <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}">
-                    <img src="{{ $programme->coverImage }}" alt="{{ $programme->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                </a>
-                
-                <!-- Time Badge -->
-                <div class="absolute top-6 left-6">
-                    <div class="liquid-glass px-4 py-2 rounded-2xl border-white/20">
-                        <p class="text-[10px] font-black text-secondary uppercase tracking-widest">
-                            {{ $time->first()?->from }} - {{ $time->first()?->to }}
-                        </p>
-                    </div>
-                </div>
+                <section id="day-{{ strtolower($day) }}" class="scroll-mt-24">
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-xl font-semibold tracking-[-0.01em] text-paper">{{ $day }}</h2>
 
-                <!-- Gradient Overlay -->
-                <div class="absolute inset-0 bg-gradient-to-t from-bg-dark via-transparent to-transparent opacity-60"></div>
-            </div>
-
-            <div class="p-8 flex-1 flex flex-col">
-                <h4 class="text-2xl font-display text-white mb-4 group-hover:text-primary transition-colors">
-                    {{ $programme->title }}
-                </h4>
-                
-                <p class="text-white/50 text-sm leading-relaxed mb-8 line-clamp-3 italic">
-                    {{ $programme->about }}
-                </p>
-
-                <div class="mt-auto flex flex-col gap-6">
-                    <!-- Schedule Info -->
-                    <div class="flex items-center gap-3 text-white/30 text-xs font-bold uppercase tracking-tighter">
-                        <i class="fa fa-calendar-o text-primary"></i>
-                        <span>Every {{ $time->implode('day', ', ') }}</span>
-                    </div>
-
-                    <!-- Presenters -->
-                    @if($programme->presenters->isNotEmpty())
-                    <div class="flex -space-x-3 items-center">
-                        @foreach($programme->presenters->take(3) as $presenter)
-                        <img src="{{ $presenter->avatar }}" alt="{{ $presenter->name }}" 
-                             class="w-10 h-10 rounded-full border-2 border-bg-dark object-cover ring-2 ring-white/5" 
-                             title="{{ $presenter->name }}">
-                        @endforeach
-                        @if($programme->presenters->count() > 3)
-                        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-[10px] font-bold text-white border-2 border-bg-dark ring-2 ring-white/5">
-                            +{{ $programme->presenters->count() - 3 }}
-                        </div>
+                        @if ($day === $today)
+                            <x-ui.badge variant="brand" dot>Today</x-ui.badge>
                         @endif
-                        <span class="ml-4 text-[10px] text-white/40 font-bold uppercase tracking-widest">Studio Cast</span>
+
+                        <span class="h-px flex-1 bg-line"></span>
+                        <span class="text-[12px] tabular-nums text-faint">
+                            {{ $dayProgrammes->count() }} {{ \Illuminate\Support\Str::plural('show', $dayProgrammes->count()) }}
+                        </span>
                     </div>
-                    @endif
 
-                    <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}" 
-                       class="btn-fusion liquid-glass !py-3 !px-8 hover:bg-primary hover:text-white transition-all text-xs font-black uppercase tracking-[0.2em] mt-2">
-                        View Show Log
-                    </a>
-                </div>
-            </div>
+                    <ol class="mt-4 divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface/40">
+                        @foreach ($dayProgrammes as $programme)
+                            @php
+                                $slot = $timesFor($programme, $day);
+                                $live = $day === $today && $isLive($programme);
+                            @endphp
+
+                            <li>
+                                <a
+                                    href="{{ route('programme.show', ['programme' => $programme->slug]) }}"
+                                    wire:navigate
+                                    class="group flex items-center gap-4 px-4 py-4 transition-colors hover:bg-surface-2/60 sm:px-5 {{ $live ? 'bg-brand-soft/40' : '' }}"
+                                >
+                                    <span class="w-[104px] shrink-0 text-[12px] font-semibold tabular-nums leading-snug {{ $live ? 'text-brand-text' : 'text-faint' }}">
+                                        {{ $formatTime($slot->first()?->from) }}
+                                        <span class="block text-[11px] font-normal text-faint">to {{ $formatTime($slot->first()?->to) }}</span>
+                                    </span>
+
+                                    <span class="hidden h-9 w-px shrink-0 bg-line sm:block"></span>
+
+                                    <span class="min-w-0 flex-1">
+                                        <span class="flex flex-wrap items-center gap-2">
+                                            <span class="truncate text-[15px] font-semibold text-paper transition-colors group-hover:text-brand-text">
+                                                {{ $programme->title }}
+                                            </span>
+
+                                            @if ($live)
+                                                <x-ui.badge variant="brand" dot>On air</x-ui.badge>
+                                            @endif
+                                        </span>
+
+                                        @if ($programme->presenters->isNotEmpty())
+                                            <span class="mt-0.5 block truncate text-[12px] text-faint">
+                                                with {{ $programme->presenters->pluck('name')->join(', ') }}
+                                            </span>
+                                        @endif
+                                    </span>
+
+                                    <x-ui.icon name="chevron-right" :size="16" class="shrink-0 text-faint transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-paper" />
+                                </a>
+                            </li>
+                        @endforeach
+                    </ol>
+                </section>
+            @endforeach
         </div>
-        @endforeach
-    </div>
+    @endif
 </section>
-
 @endsection

@@ -47,6 +47,24 @@ class HomeController extends Controller
     }
 
     /**
+     * Show the live listening hub.
+     *
+     * @return Renderable
+     */
+    public function listen()
+    {
+        $today = now()->englishDayOfWeek;
+
+        return view('site.pages.listen', [
+            'onAirProgramme' => Programme::onAir()->with(['media', 'presenters.media'])->first(),
+            'todaySchedule' => Programme::forDay($today)
+                ->get()
+                ->sortBy(fn (Programme $programme) => $programme->programmeTimes->first()?->from)
+                ->values(),
+        ]);
+    }
+
+    /**
      * Show the application about page.
      *
      * @return Renderable
