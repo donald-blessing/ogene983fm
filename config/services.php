@@ -33,7 +33,7 @@ return [
     ],
 
     'icecast' => [
-        'url' => env('ICECAST_URL', 'http://localhost:8000'),
+        'url' => env('ICECAST_URL', 'http://127.0.0.1:8010'),
     ],
 
 ];

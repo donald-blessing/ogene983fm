@@ -44,8 +44,9 @@ class ManageGeneralSettings extends SettingsPage
                     ->columns(2)
                     ->schema([
                         TextInput::make('stream_url')
-                            ->url()
-                            ->required(),
+                            ->required()
+                            ->rules(['string', 'max:2048'])
+                            ->helperText('Same-origin path such as /stream when Icecast is proxied by this site, or a full https:// URL.'),
                         TextInput::make('stream_type')
                             ->required()
                             ->placeholder('e.g. icecast, shoutcast'),
