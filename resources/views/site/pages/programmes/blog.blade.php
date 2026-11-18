@@ -47,11 +47,12 @@
         </div>
 
         {{-- Day jump links --}}
-        <nav aria-label="Jump to day" class="mt-7 -mx-1 flex gap-1 overflow-x-auto pb-1">
+        <nav aria-label="Jump to day" class="mt-7 grid grid-cols-7 gap-1">
             @foreach ($days as $day)
                 <a
                     href="#day-{{ strtolower($day) }}"
-                    class="shrink-0 rounded-xs border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-colors {{ $day === $today ? 'border-brand/50 bg-brand-soft text-brand-text' : 'border-line text-muted hover:border-[#4a3f39] hover:text-paper' }}"
+                    aria-label="{{ $day }}"
+                    class="rounded-xs border px-1 py-1.5 text-center font-mono text-[10px] uppercase tracking-[0.1em] transition-colors {{ $day === $today ? 'border-brand/50 bg-brand-soft text-brand-text' : 'border-line text-muted hover:border-line-strong hover:text-paper' }}"
                 >
                     {{ $day === $today ? 'Today' : substr($day, 0, 3) }}
                 </a>

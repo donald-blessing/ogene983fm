@@ -37,19 +37,20 @@
                 required
                 autocomplete="current-password"
                 placeholder="••••••••"
+                @if ($errors->has('password')) aria-invalid="true" aria-describedby="field-password-error" @endif
                 @class([
-                    'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[14px] text-paper placeholder:text-faint transition-colors focus:outline-none focus:ring-2 focus:ring-brand/40',
+                    'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[16px] text-paper placeholder:text-faint transition-colors focus:outline-none focus:ring-2 focus:ring-brand/40',
                     'border-line' => ! $errors->has('password'),
                     'border-brand' => $errors->has('password'),
                 ])
             >
 
             @error('password')
-                <p class="mt-1.5 text-[12px] text-brand-text">{{ $message }}</p>
+                <p id="field-password-error" class="mt-1.5 text-[12px] text-brand-text" role="alert">{{ $message }}</p>
             @enderror
         </div>
 
-        <label class="flex cursor-pointer items-center gap-2.5">
+        <label class="flex cursor-pointer items-center gap-2.5 py-1">
             <input
                 type="checkbox"
                 name="remember"

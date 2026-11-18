@@ -117,6 +117,13 @@
                 <form action="{{ route('contact.store') }}" method="POST" class="mt-7 space-y-5">
                     @csrf
 
+                    @if ($errors->any())
+                        <div class="border-l-2 border-brand bg-brand-soft/60 px-4 py-3" role="alert">
+                            <p class="text-[13px] font-semibold text-paper">Your message was not sent</p>
+                            <p class="mt-1 text-[13px] leading-relaxed text-muted">Check the highlighted fields and try again.</p>
+                        </div>
+                    @endif
+
                     <div class="grid gap-5 sm:grid-cols-2">
                         <div>
                             <label for="contact-name" class="block text-[12px] font-semibold uppercase tracking-[0.1em] text-faint">Full name</label>
@@ -127,14 +134,15 @@
                                 value="{{ old('name') }}"
                                 required
                                 autocomplete="name"
+                                @if ($errors->has('name')) aria-invalid="true" aria-describedby="contact-name-error" @endif
                                 @class([
-                                    'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[14px] text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
+                                    'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[16px] text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
                                     'border-line' => ! $errors->has('name'),
                                     'border-brand' => $errors->has('name'),
                                 ])
                             >
                             @error('name')
-                                <p class="mt-1.5 text-[12px] text-brand-text">{{ $message }}</p>
+                                <p id="contact-name-error" class="mt-1.5 text-[12px] text-brand-text" role="alert">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -147,14 +155,15 @@
                                 value="{{ old('email') }}"
                                 required
                                 autocomplete="email"
+                                @if ($errors->has('email')) aria-invalid="true" aria-describedby="contact-email-error" @endif
                                 @class([
-                                    'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[14px] text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
+                                    'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[16px] text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
                                     'border-line' => ! $errors->has('email'),
                                     'border-brand' => $errors->has('email'),
                                 ])
                             >
                             @error('email')
-                                <p class="mt-1.5 text-[12px] text-brand-text">{{ $message }}</p>
+                                <p id="contact-email-error" class="mt-1.5 text-[12px] text-brand-text" role="alert">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
@@ -167,14 +176,15 @@
                             name="subject"
                             value="{{ old('subject') }}"
                             required
+                            @if ($errors->has('subject')) aria-invalid="true" aria-describedby="contact-subject-error" @endif
                             @class([
-                                'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[14px] text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
+                                'mt-2 h-11 w-full rounded-sm border bg-ink px-3 text-[16px] text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
                                 'border-line' => ! $errors->has('subject'),
                                 'border-brand' => $errors->has('subject'),
                             ])
                         >
                         @error('subject')
-                            <p class="mt-1.5 text-[12px] text-brand-text">{{ $message }}</p>
+                            <p id="contact-subject-error" class="mt-1.5 text-[12px] text-brand-text" role="alert">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -186,14 +196,15 @@
                             rows="6"
                             required
                             placeholder="Tell us what's on your mind…"
+                            @if ($errors->has('message')) aria-invalid="true" aria-describedby="contact-message-error" @endif
                             @class([
-                                'mt-2 w-full resize-y rounded-sm border bg-ink px-3 py-3 text-[14px] leading-relaxed text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
+                                'mt-2 w-full resize-y rounded-sm border bg-ink px-3 py-3 text-[16px] leading-relaxed text-paper placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-brand/40',
                                 'border-line' => ! $errors->has('message'),
                                 'border-brand' => $errors->has('message'),
                             ])
                         >{{ old('message') }}</textarea>
                         @error('message')
-                            <p class="mt-1.5 text-[12px] text-brand-text">{{ $message }}</p>
+                            <p id="contact-message-error" class="mt-1.5 text-[12px] text-brand-text" role="alert">{{ $message }}</p>
                         @enderror
                     </div>
 

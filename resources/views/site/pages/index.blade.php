@@ -52,7 +52,7 @@
                         type="button"
                         x-data
                         x-on:click="$dispatch('toggle-player')"
-                        class="inline-flex h-12 items-center justify-center gap-2.5 rounded-xs bg-brand-strong px-6 text-[15px] font-semibold text-paper transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-text active:translate-y-px"
+                        class="inline-flex h-12 items-center justify-center gap-2.5 rounded-xs bg-brand-strong px-6 text-[15px] font-semibold text-white transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-text active:translate-y-px"
                     >
                         <x-ui.icon name="play" :size="16" />
                         Listen live
@@ -105,7 +105,7 @@
                             <div class="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-xs border border-line bg-surface-2 text-brand-text">
                                 <x-ui.icon name="radio" :size="24" />
 
-                                <span class="absolute bottom-1.5 right-2 font-mono text-[8px] tracking-[0.1em] text-faint">98.3</span>
+                                <span class="absolute bottom-1.5 right-2 font-mono text-[10px] tracking-[0.1em] text-muted">98.3</span>
                             </div>
                         @endif
 
@@ -123,7 +123,7 @@
                                     type="button"
                                     x-data
                                     x-on:click="$dispatch('toggle-player')"
-                                    class="inline-flex h-9 items-center gap-2 rounded-xs bg-brand-strong px-3 text-[13px] font-semibold text-paper transition-colors hover:bg-brand"
+                                    class="inline-flex h-9 items-center gap-2 rounded-xs bg-brand-strong px-3 text-[13px] font-semibold text-white transition-colors hover:bg-brand"
                                 >
                                     <x-ui.icon name="play" :size="12" />
                                     Tune in
@@ -144,7 +144,7 @@
                             type="button"
                             x-data
                             x-on:click="$dispatch('toggle-player')"
-                            class="mt-4 inline-flex h-9 items-center gap-2 rounded-xs bg-brand-strong px-3 text-[13px] font-semibold text-paper transition-colors hover:bg-brand"
+                            class="mt-4 inline-flex h-9 items-center gap-2 rounded-xs bg-brand-strong px-3 text-[13px] font-semibold text-white transition-colors hover:bg-brand"
                         >
                             <x-ui.icon name="play" :size="12" />
                             Tune in
@@ -181,7 +181,7 @@
 
                 <p class="mt-6 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-faint">
                     <x-ui.icon name="headphones" :size="14" />
-                    Mobile data · Wi-Fi · Desktop
+                    Streams on mobile data and Wi-Fi
                 </p>
             </div>
         </div>
@@ -351,7 +351,7 @@
     @else
         <div class="mt-8">
             <x-ui.empty-state
-                icon="mail"
+                icon="newspaper"
                 label="Newsroom · Standby"
                 title="No stories published yet"
                 description="The newsroom is warming up. Follow us on socials to catch the first edition."
@@ -378,7 +378,7 @@
         <div class="mt-9 grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-6">
             @foreach ($presenters as $presenter)
                 <a href="{{ route('presenter.show', $presenter) }}" wire:navigate class="group block">
-                    <div class="relative aspect-[4/5] overflow-hidden rounded-xs border border-line bg-surface-2 transition-colors group-hover:border-[#4a3f39]">
+                    <div class="relative aspect-[4/5] overflow-hidden rounded-xs border border-line bg-surface-2 transition-colors group-hover:border-line-strong">
                         @if ($presenter->avatar)
                             <img src="{{ $presenter->avatar }}" alt="{{ $presenter->name }}" loading="lazy" class="h-full w-full object-cover">
                         @else

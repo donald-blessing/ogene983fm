@@ -6,8 +6,8 @@
 @php
     $variants = [
         'neutral' => 'border border-line bg-transparent text-muted',
-        'brand' => 'bg-brand-strong text-paper',
-        'live' => 'bg-brand-strong text-paper',
+        'brand' => 'bg-brand-strong text-white',
+        'live' => 'bg-brand-strong text-white',
         'outline' => 'border border-brand/50 bg-transparent text-brand-text',
     ];
 @endphp

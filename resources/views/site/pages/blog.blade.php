@@ -141,12 +141,12 @@
         <div class="order-1 lg:order-2 lg:col-span-9">
             @if ($blogs->isEmpty())
                 <x-ui.empty-state
-                    icon="{{ $isSearch ? 'search' : ($isGallery ? 'radio' : 'mail') }}"
+                    icon="{{ $isSearch ? 'search' : ($isGallery ? 'radio' : 'newspaper') }}"
                     :title="$isSearch
                         ? 'No matches for that search'
                         : ($isGallery ? 'No albums published yet' : 'Nothing published here yet')"
                     :description="$isSearch
-                        ? 'Try a different word, or browse the topics in the sidebar.'
+                        ? 'Try a different word, or check the spelling of a show or presenter name.'
                         : ($isGallery
                             ? 'Photos and video from studio sessions and station events will appear here.'
                             : 'Stories will appear here as soon as the newsroom publishes them.')"

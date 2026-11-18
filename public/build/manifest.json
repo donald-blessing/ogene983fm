@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-Db88epn8.css",
+    "file": "assets/app-CmcXgnoy.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -13,7 +13,7 @@
     "src": "resources/fonts/instrument-sans/instrument-sans-latin.woff2"
   },
   "resources/js/app.js": {
-    "file": "assets/app-B5WtB2VF.js",
+    "file": "assets/app-HfdMVd2f.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true

@@ -10,7 +10,7 @@
             Error 500
         </p>
 
-        <p class="mt-6 font-display text-[clamp(4rem,16vw,9rem)] font-bold leading-none tracking-[-0.05em] text-surface-2">
+        <p class="mt-6 font-display text-[clamp(4rem,16vw,9rem)] font-bold leading-none tracking-[-0.05em] text-surface-2" aria-hidden="true">
             500
         </p>
 

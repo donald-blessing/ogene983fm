@@ -84,7 +84,7 @@
                             <div class="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-xs border border-line bg-surface-2 text-brand-text sm:h-24 sm:w-24">
                                 <x-ui.icon name="radio" :size="26" />
 
-                                <span class="absolute bottom-2 right-2.5 font-mono text-[8px] tracking-[0.1em] text-faint">98.3</span>
+                                <span class="absolute bottom-2 right-2.5 font-mono text-[10px] tracking-[0.1em] text-muted">98.3</span>
                             </div>
                         @endif
 
@@ -114,7 +114,7 @@
                             type="button"
                             x-data
                             x-on:click="$dispatch('toggle-player')"
-                            class="inline-flex h-12 items-center justify-center gap-2.5 rounded-xs bg-brand-strong px-6 text-[15px] font-semibold text-paper transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-text active:translate-y-px"
+                            class="inline-flex h-12 items-center justify-center gap-2.5 rounded-xs bg-brand-strong px-6 text-[15px] font-semibold text-white transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-text active:translate-y-px"
                         >
                             <x-ui.icon name="play" :size="16" />
                             Start listening

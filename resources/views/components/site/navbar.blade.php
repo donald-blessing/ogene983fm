@@ -112,16 +112,60 @@
 
 {{-- Command-style search overlay --}}
 <div
-    x-data="{ open: false, q: '' }"
-    x-on:open-search.window="open = true; $nextTick(() => $refs.field.focus())"
-    x-on:keydown.escape.window="open = false"
-    x-effect="document.body.classList.toggle('overflow-hidden', open)"
+    x-data="{
+        open: false,
+        trigger: null,
+        q: '',
+        openSearch() {
+            this.trigger = document.activeElement;
+            this.open = true;
+            this.$nextTick(() => this.$refs.field?.focus());
+        },
+        closeSearch() {
+            this.open = false;
+            // Clear inert before returning focus, otherwise focus() is a no-op.
+            this.setBackgroundInert(false);
+            this.$nextTick(() => {
+                if (this.trigger && document.contains(this.trigger)) {
+                    this.trigger.focus();
+                }
+            });
+        },
+        setBackgroundInert(state) {
+            ['header', 'main', 'footer', 'nav[aria-label=\'Primary mobile\']'].forEach((selector) => {
+                document.querySelectorAll(selector).forEach((el) => { el.inert = state; });
+            });
+            document.body.classList.toggle('overflow-hidden', state);
+        },
+        trapFocus(event) {
+            const focusable = Array.from(this.$refs.panel.querySelectorAll('a[href], button:not([disabled]), input:not([type=hidden]):not([disabled]), [tabindex]:not([tabindex=\'-1\'])'))
+                .filter((el) => el.offsetParent !== null);
+
+            if (!focusable.length) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        },
+    }"
+    x-on:open-search.window="openSearch()"
+    x-on:keydown.escape.window="open && closeSearch()"
+    x-effect="setBackgroundInert(open)"
     x-cloak
 >
-    <div x-show="open" x-transition.opacity class="fixed inset-0 z-[110] bg-black/70" x-on:click="open = false" aria-hidden="true"></div>
+    <div x-show="open" x-transition.opacity class="fixed inset-0 z-[110] bg-black/70" x-on:click="closeSearch()" aria-hidden="true"></div>
 
     <div
+        x-ref="panel"
         x-show="open"
+        x-on:keydown.tab="trapFocus($event)"
         x-transition:enter="transition ease-out duration-150"
         x-transition:enter-start="opacity-0 -translate-y-2"
         x-transition:enter-end="opacity-100 translate-y-0"
@@ -130,8 +174,8 @@
         aria-modal="true"
         aria-label="Search"
     >
-        <form action="{{ route('search') }}" method="GET" class="flex items-center gap-3">
-            <x-ui.icon name="search" :size="20" class="text-faint" />
+        <form action="{{ route('search') }}" method="GET" class="flex items-center gap-2">
+            <x-ui.icon name="search" :size="20" class="ml-1 text-faint" />
             <label for="site-search" class="sr-only">Search news, shows and presenters</label>
             <input
                 id="site-search"
@@ -140,38 +184,100 @@
                 type="search"
                 x-model="q"
                 placeholder="Search news, shows and presenters"
-                class="h-11 w-full bg-transparent text-[15px] text-paper placeholder:text-faint focus:outline-none"
+                class="h-11 w-full bg-transparent text-[16px] text-paper placeholder:text-faint focus:outline-none"
                 autocomplete="off"
             >
             <kbd class="hidden rounded-xs border border-line px-1.5 py-1 text-[11px] text-faint sm:block">Esc</kbd>
+            <button
+                type="button"
+                x-on:click="closeSearch()"
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm text-faint transition-colors hover:bg-surface-2 hover:text-paper"
+                aria-label="Close search"
+            >
+                <x-ui.icon name="x" :size="16" />
+            </button>
         </form>
     </div>
 </div>
 
 {{-- Mobile menu sheet --}}
 <div
-    x-data="{ open: false }"
-    x-on:open-menu.window="open = true"
-    x-on:keydown.escape.window="open = false"
-    x-effect="document.body.classList.toggle('overflow-hidden', open)"
+    x-data="{
+        open: false,
+        trigger: null,
+        openMenu() {
+            this.trigger = document.activeElement;
+            this.open = true;
+            this.$nextTick(() => this.$refs.panel?.querySelector('a, button')?.focus());
+        },
+        closeMenu() {
+            this.open = false;
+            // Clear inert before returning focus, otherwise focus() is a no-op.
+            this.setBackgroundInert(false);
+            this.$nextTick(() => {
+                if (this.trigger && document.contains(this.trigger)) {
+                    this.trigger.focus();
+                }
+            });
+        },
+        setBackgroundInert(state) {
+            ['header', 'main', 'footer', 'nav[aria-label=\'Primary mobile\']'].forEach((selector) => {
+                document.querySelectorAll(selector).forEach((el) => { el.inert = state; });
+            });
+            document.body.classList.toggle('overflow-hidden', state);
+        },
+        trapFocus(event) {
+            const focusable = Array.from(this.$refs.panel.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex=\'-1\'])'))
+                .filter((el) => el.offsetParent !== null);
+
+            if (!focusable.length) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        },
+    }"
+    x-on:open-menu.window="openMenu()"
+    x-on:keydown.escape.window="open && closeMenu()"
+    x-effect="setBackgroundInert(open)"
     x-cloak
 >
-    <div x-show="open" x-transition.opacity class="fixed inset-0 z-[110] bg-black/70 lg:hidden" x-on:click="open = false" aria-hidden="true"></div>
+    <div x-show="open" x-transition.opacity class="fixed inset-0 z-[110] bg-black/70 lg:hidden" x-on:click="closeMenu()" aria-hidden="true"></div>
 
     <div
+        x-ref="panel"
         x-show="open"
+        x-on:keydown.tab="trapFocus($event)"
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="translate-y-full"
         x-transition:enter-end="translate-y-0"
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="translate-y-0"
         x-transition:leave-end="translate-y-full"
-        class="fixed inset-x-0 bottom-0 z-[111] max-h-[85dvh] overflow-y-auto rounded-t-md border-t border-line bg-surface px-4 pb-6 pt-4 lg:hidden"
+        class="fixed inset-x-0 bottom-0 z-[111] max-h-[85dvh] overflow-y-auto rounded-t-md border-t border-line bg-surface px-4 pb-6 pt-3 lg:hidden"
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
     >
-        <div class="mx-auto mb-4 h-1 w-10 rounded-full bg-line"></div>
+        <div class="mb-3 flex items-center justify-between">
+            <span class="h-1 w-10 rounded-full bg-line" aria-hidden="true"></span>
+
+            <button
+                type="button"
+                x-on:click="closeMenu()"
+                class="flex h-10 w-10 items-center justify-center rounded-sm text-muted transition-colors hover:bg-surface-2 hover:text-paper"
+                aria-label="Close menu"
+            >
+                <x-ui.icon name="x" :size="18" />
+            </button>
+        </div>
 
         <nav aria-label="Site" class="flex flex-col gap-1">
             @foreach ($menuItems as $item)
@@ -192,40 +298,26 @@
 {{-- Mobile bottom navigation --}}
 <nav class="fixed inset-x-0 bottom-[env(safe-area-inset-bottom)] z-[90] border-t border-line bg-ink lg:hidden" aria-label="Primary mobile">
     <div class="grid h-[var(--tabbar-h)] grid-cols-5">
-        @php
-            $tabs = [
-                ['label' => 'Home', 'href' => route('home'), 'icon' => 'radio', 'active' => request()->routeIs('home')],
-                ['label' => 'Schedule', 'href' => route('programme.index'), 'icon' => 'calendar', 'active' => request()->routeIs('programme.*')],
-                ['label' => 'News', 'href' => route('post.index'), 'icon' => 'mail', 'active' => request()->routeIs('post.*')],
-            ];
-        @endphp
-
-        @foreach (array_slice($tabs, 0, 1) as $tab)
-            <a
-                href="{{ $tab['href'] }}"
-                wire:navigate
-                @if ($tab['active']) aria-current="page" @endif
-                class="flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors {{ $tab['active'] ? 'text-paper' : 'text-faint hover:text-paper' }}"
-            >
-                <x-ui.icon :name="$tab['icon']" :size="20" />
-                {{ $tab['label'] }}
-            </a>
-        @endforeach
-
-        {{-- Listen --}}
+        {{-- Listen (player toggle, not a route) --}}
         <button
             type="button"
             class="flex flex-col items-center justify-center gap-1 text-[10px] font-medium text-faint transition-colors hover:text-paper"
             x-data
             x-on:click="$dispatch('toggle-player')"
         >
-            <span class="flex h-8 w-8 items-center justify-center rounded-xs bg-brand-strong text-paper">
-                <x-ui.icon name="play" :size="15" class="translate-x-px" />
-            </span>
+            <x-ui.icon name="play" :size="20" />
             Listen
         </button>
 
-        @foreach (array_slice($tabs, 1) as $tab)
+        @php
+            $tabs = [
+                ['label' => 'Schedule', 'href' => route('programme.index'), 'icon' => 'calendar', 'active' => request()->routeIs('programme.*')],
+                ['label' => 'Shows', 'href' => route('presenter.index'), 'icon' => 'microphone', 'active' => request()->routeIs('presenter.*')],
+                ['label' => 'News', 'href' => route('post.index'), 'icon' => 'newspaper', 'active' => request()->routeIs('post.*', 'metro.*')],
+            ];
+        @endphp
+
+        @foreach ($tabs as $tab)
             <a
                 href="{{ $tab['href'] }}"
                 wire:navigate
@@ -237,14 +329,16 @@
             </a>
         @endforeach
 
-        {{-- Account --}}
-        <a
-            href="{{ auth()->check() ? route('dashboard') : route('login') }}"
-            wire:navigate
+        {{-- More --}}
+        <button
+            type="button"
             class="flex flex-col items-center justify-center gap-1 text-[10px] font-medium text-faint transition-colors hover:text-paper"
+            x-data
+            x-on:click="$dispatch('open-menu')"
+            aria-haspopup="dialog"
         >
-            <x-ui.icon name="user" :size="20" />
-            {{ auth()->check() ? 'Account' : 'Sign in' }}
-        </a>
+            <x-ui.icon name="menu" :size="20" />
+            More
+        </button>
     </div>
 </nav>

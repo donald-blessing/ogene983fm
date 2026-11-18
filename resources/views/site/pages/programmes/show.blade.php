@@ -71,7 +71,7 @@
                             type="button"
                             x-data
                             x-on:click="$dispatch('toggle-player')"
-                            class="inline-flex h-11 items-center justify-center gap-2 rounded-sm bg-brand-strong px-5 text-sm font-semibold text-paper transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-text active:translate-y-px"
+                            class="inline-flex h-11 items-center justify-center gap-2 rounded-sm bg-brand-strong px-5 text-sm font-semibold text-white transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-text active:translate-y-px"
                         >
                             <x-ui.icon name="play" :size="16" />
                             Listen live

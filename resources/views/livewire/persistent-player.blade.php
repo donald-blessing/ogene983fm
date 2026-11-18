@@ -70,9 +70,8 @@
             <button
                 type="button"
                 x-on:click="toggle()"
-                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xs bg-brand-strong text-paper transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-text active:scale-95"
-                x-bind:aria-label="playing ? 'Pause the live stream' : 'Play the live stream'"
-                aria-live="polite"
+                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xs bg-brand-strong text-white transition-colors hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-text active:scale-95"
+                x-bind:aria-label="error ? 'Retry the live stream' : (playing ? 'Pause the live stream' : 'Play the live stream')"
             >
                 <template x-if="error">
                     <x-ui.icon name="radio" :size="19" />
@@ -91,12 +90,24 @@
             {{-- Now playing --}}
             <div class="min-w-0 flex-1">
                 <p class="flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[0.14em]">
-                    <span class="equalizer text-brand" x-show="playing && !buffering" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
-                    <span class="text-brand-text" x-show="buffering">Connecting…</span>
-                    <span class="text-brand-text" x-show="!playing && !buffering && !error">Live · 98.3 FM</span>
-                    <span class="text-brand-text" x-show="playing && !buffering">Live now</span>
-                    <span class="text-faint" x-show="error">Stream offline</span>
+                    <span class="equalizer text-brand" x-show="playing && !buffering" x-cloak aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+                    <span class="text-brand-text" x-show="buffering" x-cloak>Connecting…</span>
+                    <span class="text-brand-text" x-show="!playing && !buffering && !error" x-cloak>Live · 98.3 FM</span>
+                    <span class="text-brand-text" x-show="playing && !buffering" x-cloak>Live now</span>
+                    <span class="text-faint" x-show="error" x-cloak>Stream offline</span>
+
+                    <button
+                        type="button"
+                        x-show="error"
+                        x-cloak
+                        x-on:click="toggle()"
+                        class="normal-case tracking-normal text-[11px] font-semibold text-brand-text underline decoration-brand-text/40 underline-offset-2 transition-colors hover:decoration-brand-text"
+                    >
+                        Retry
+                    </button>
                 </p>
+
+                <p class="sr-only" role="status" aria-live="polite" x-text="error ? 'The live stream is offline.' : (buffering ? 'Connecting to the live stream.' : (playing ? 'Playing the live stream.' : 'The live stream is paused.'))"></p>
 
                 <p class="mt-0.5 truncate text-[15px] font-semibold leading-tight text-paper">
                     {{ $currentSong ?: ($currentProgramme['title'] ?? 'Ogene 98.3 FM') }}

@@ -21,7 +21,7 @@
 @endphp
 
 <{{ $tag }} @if ($href) href="{{ $href }}" @endif {{ $attributes->merge(['class' => 'group flex flex-col gap-3.5']) }}>
-    <div class="relative overflow-hidden rounded-xs border border-line bg-surface-2 transition-colors duration-200 group-hover:border-[#4a3f39] {{ $aspects[$aspect] ?? $aspects['video'] }}">
+    <div class="relative overflow-hidden rounded-xs border border-line bg-surface-2 transition-colors duration-200 group-hover:border-line-strong {{ $aspects[$aspect] ?? $aspects['video'] }}">
         @if ($image)
             <img
                 src="{{ $image }}"
@@ -32,7 +32,7 @@
         @else
             <div class="flex h-full w-full flex-col items-center justify-center gap-2.5 text-faint">
                 <x-ui.icon name="radio" :size="26" />
-                <span class="font-mono text-[8px] uppercase tracking-[0.2em]">Ogene 98.3</span>
+                <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Ogene 98.3</span>
             </div>
         @endif
 

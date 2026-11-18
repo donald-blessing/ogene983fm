@@ -48,6 +48,7 @@
                 placeholder="••••••••"
                 required
                 autocomplete="new-password"
+                hint="At least 8 characters."
             />
 
             <x-ui.input

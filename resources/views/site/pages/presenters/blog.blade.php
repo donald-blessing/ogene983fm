@@ -33,7 +33,7 @@
         <div class="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($presenters as $presenter)
                 <article class="group flex flex-col">
-                    <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="relative block aspect-[4/5] overflow-hidden rounded-xs border border-line bg-surface-2 transition-colors hover:border-[#4a3f39]">
+                    <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="relative block aspect-[4/5] overflow-hidden rounded-xs border border-line bg-surface-2 transition-colors hover:border-line-strong">
                         @if ($presenter->avatar)
                             <img
                                 src="{{ $presenter->avatar }}"

@@ -10,8 +10,8 @@
     $base = 'inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-text active:translate-y-px disabled:pointer-events-none disabled:opacity-50';
 
     $variants = [
-        'primary' => 'bg-brand-strong text-paper hover:bg-brand',
-        'secondary' => 'border border-line bg-transparent text-paper hover:border-[#4a3f39] hover:bg-surface-2',
+        'primary' => 'bg-brand-strong text-white hover:bg-brand',
+        'secondary' => 'border border-line bg-transparent text-paper hover:border-line-strong hover:bg-surface-2',
         'ghost' => 'text-muted hover:text-paper hover:bg-surface-2',
         'danger' => 'bg-brand-soft text-brand-text hover:bg-brand hover:text-paper',
     ];
