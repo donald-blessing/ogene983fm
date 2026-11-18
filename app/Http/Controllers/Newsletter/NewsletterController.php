@@ -214,7 +214,7 @@ class NewsletterController extends Controller
     public function subscribe(Request $request)
     {
         $request->flash();
-        $this->validate($request, [
+        $request->validateWithBag('newsletter', [
             'email' => ['required', 'email', 'max:190'],
         ]);
 

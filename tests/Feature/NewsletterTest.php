@@ -8,6 +8,7 @@ use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\Newsletter\NewsletterSubscriber;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -22,7 +23,7 @@ class NewsletterTest extends TestCase
         Role::firstOrCreate(['name' => 'admin']);
     }
 
-    /** @test */
+    #[Test]
     public function public_can_subscribe_to_newsletter(): void
     {
         $response = $this->post(route('newsletter.subscribe'), [
@@ -30,10 +31,25 @@ class NewsletterTest extends TestCase
         ]);
 
         $response->assertRedirect();
+        $response->assertSessionHas('success');
         $this->assertDatabaseHas('newsletter_subscribers', ['email' => 'subscriber@example.com']);
     }
 
-    /** @test */
+    #[Test]
+    public function invalid_subscription_is_reported_in_its_own_error_bag(): void
+    {
+        $response = $this->from(route('contact'))->post(route('newsletter.subscribe'), [
+            'email' => 'not-an-email',
+        ]);
+
+        $response->assertSessionHasErrors('email', null, 'newsletter');
+
+        $this->get(route('contact'))
+            ->assertOk()
+            ->assertSee('id="footer-newsletter-error"', false);
+    }
+
+    #[Test]
     public function only_admins_can_access_newsletter_dashboard(): void
     {
         /** @var User $admin */
@@ -47,7 +63,7 @@ class NewsletterTest extends TestCase
         $this->actingAs($user)->get(route('newsletter.dashboard'))->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_delete_subscriber(): void
     {
         /** @var User $admin */

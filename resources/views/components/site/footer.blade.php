@@ -1,6 +1,10 @@
 @php
     $settings = app(\App\Settings\GeneralSettings::class);
 
+    // Error pages render outside the web middleware stack, so the shared
+    // error bag may not exist. Fall back to an empty bag.
+    $newsletterErrors = isset($errors) ? $errors->newsletter : new \Illuminate\Support\MessageBag();
+
     $explore = [
         ['label' => 'Schedule', 'href' => route('programme.index')],
         ['label' => 'Shows & presenters', 'href' => route('presenter.index')],
@@ -114,15 +118,16 @@
                             required
                             autocomplete="email"
                             placeholder="you@example.com"
-                            class="h-9 min-w-0 flex-1 bg-transparent px-2.5 text-sm text-paper placeholder:text-faint focus:outline-none"
+                            @if ($newsletterErrors->has('email')) aria-invalid="true" aria-describedby="footer-newsletter-error" @endif
+                            class="h-9 min-w-0 flex-1 bg-transparent px-2.5 text-[16px] text-paper placeholder:text-faint focus:outline-none"
                         >
-                        <button type="submit" class="h-9 shrink-0 rounded-xs bg-brand-strong px-3.5 text-[13px] font-semibold text-paper transition-colors hover:bg-brand">
+                        <button type="submit" class="h-9 shrink-0 rounded-xs bg-brand-strong px-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand">
                             Join
                         </button>
                     </div>
 
-                    @if (isset($errors) && $errors->has('email'))
-                        <p class="mt-2 text-[12px] text-brand-text">{{ $errors->first('email') }}</p>
+                    @if ($newsletterErrors->has('email'))
+                        <p id="footer-newsletter-error" class="mt-2 text-[12px] text-brand-text" role="alert">{{ $newsletterErrors->first('email') }}</p>
                     @endif
                 </form>
 
@@ -138,9 +143,9 @@
 
             <p class="text-[12px] text-faint">
                 @if ($studioPhone)
-                    Broadcasting from Awka · <a href="tel:{{ preg_replace('/\s+/', '', $studioPhone) }}" class="text-muted transition-colors hover:text-paper">{{ $studioPhone }}</a>
+                    Broadcasting from Awka · <a href="tel:{{ preg_replace('/\s+/', '', $studioPhone) }}" class="text-paper underline decoration-line underline-offset-2 transition-colors hover:decoration-brand-text">{{ $studioPhone }}</a>
                 @elseif ($studioEmail)
-                    Broadcasting from Awka · <a href="mailto:{{ $studioEmail }}" class="text-muted transition-colors hover:text-paper">{{ $studioEmail }}</a>
+                    Broadcasting from Awka · <a href="mailto:{{ $studioEmail }}" class="text-paper underline decoration-line underline-offset-2 transition-colors hover:decoration-brand-text">{{ $studioEmail }}</a>
                 @else
                     Broadcasting from Awka
                 @endif

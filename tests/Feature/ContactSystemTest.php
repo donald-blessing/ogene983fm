@@ -9,6 +9,7 @@ use App\Models\Contact\Contact;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -23,7 +24,7 @@ class ContactSystemTest extends TestCase
         $this->withoutMiddleware(VerifyCsrfToken::class);
     }
 
-    /** @test */
+    #[Test]
     public function public_can_submit_contact_form(): void
     {
         $data = [
@@ -36,17 +37,18 @@ class ContactSystemTest extends TestCase
         $response = $this->post(route('contact.store'), $data);
 
         $response->assertRedirect(route('contact'));
+        $response->assertSessionHas('success');
         $this->assertDatabaseHas('contacts', ['email' => 'john@example.com']);
     }
 
-    /** @test */
+    #[Test]
     public function contact_submission_requires_valid_data(): void
     {
         $response = $this->post(route('contact.store'), []);
         $response->assertSessionHasErrors(['name', 'email', 'subject', 'message']);
     }
 
-    /** @test */
+    #[Test]
     public function only_admins_can_view_contacts_dashboard(): void
     {
         /** @var User $admin */
@@ -60,7 +62,7 @@ class ContactSystemTest extends TestCase
         $this->actingAs($user)->get(route('contact.dashboard'))->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_view_specific_contact(): void
     {
         /** @var User $admin */
@@ -76,7 +78,7 @@ class ContactSystemTest extends TestCase
             ->assertSee('sender@example.com');
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_reply_to_contact(): void
     {
         Mail::fake();
@@ -98,7 +100,7 @@ class ContactSystemTest extends TestCase
         $response->assertSessionHas('success');
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_delete_contact(): void
     {
         /** @var User $admin */

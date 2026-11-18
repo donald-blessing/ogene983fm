@@ -66,7 +66,7 @@ class ContactController extends Controller
             throw $th;
         }
         DB::commit();
-        alert()->success("Your message has been received. <br> You'll get a response from one of our Admins soonest");
+        session()->flash('success', 'Your message has been received. We will get back to you as soon as the studio is quiet.');
 
         return redirect()->route('contact');
     }
