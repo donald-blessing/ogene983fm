@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Models\Post\Post;
 use App\Models\Category\Category;
+use App\Models\Post\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PostTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function blog_index_page_is_accessible(): void
     {
         Category::factory()->create();

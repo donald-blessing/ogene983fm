@@ -9,16 +9,17 @@ use App\Models\Monetization\Sponsorship;
 use App\Models\Post\Post;
 use App\Models\User;
 use App\Services\LoyaltyService;
+use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Auth\Events\Authenticated;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class MonetizationAndLoyaltyTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function user_earns_points_on_daily_login(): void
     {
         $user = User::factory()->create(['loyalty_points' => 0]);
@@ -34,7 +35,7 @@ class MonetizationAndLoyaltyTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function user_does_not_earn_daily_points_twice_a_day(): void
     {
         $user = User::factory()->create(['loyalty_points' => 0]);
@@ -46,23 +47,24 @@ class MonetizationAndLoyaltyTest extends TestCase
         // Second login same day
         event(new Authenticated('web', $user));
         $this->assertEquals(LoyaltyService::DAILY_LOGIN, $user->refresh()->loyalty_points);
-        
+
         $this->assertCount(1, $user->loyaltyLogs()->where('action_type', 'daily_login')->get());
     }
 
-    /** @test */
+    #[Test]
     public function user_earns_points_for_reading_a_post(): void
     {
         $user = User::factory()->create(['loyalty_points' => 100]);
         $category = Category::factory()->create();
-        $post = Post::factory()->create(['category_id' => $category->id]);
+        $post = Post::factory()->create(['category_id' => $category->id, 'status' => 'published']);
 
         // Note: actingAs triggers Authenticated event (+10 points)
-        $this->actingAs($user)->get(route('post.show', ['category' => $category->slug, 'post' => $post->slug]));
+        $response = $this->actingAs($user)->get(route('post.show', ['category' => $category->slug, 'post' => $post->slug]));
+        $response->assertOk();
 
         $expectedPoints = 100 + LoyaltyService::DAILY_LOGIN + LoyaltyService::POST_READ;
         $this->assertEquals($expectedPoints, $user->refresh()->loyalty_points);
-        
+
         $this->assertDatabaseHas('loyalty_logs', [
             'user_id' => $user->id,
             'action_type' => 'post_read',
@@ -70,7 +72,7 @@ class MonetizationAndLoyaltyTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function sponsorship_banner_displays_active_sponsorships(): void
     {
         $activeSponsorship = Sponsorship::factory()->create([

@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Models\Gallery\Album;
-use App\Models\Gallery\AlbumUpload;
 use App\Models\Category\Category;
+use App\Models\Gallery\Album;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class GalleryTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function public_can_view_albums_index(): void
     {
         $category = Category::factory()->create();

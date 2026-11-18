@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -22,7 +23,7 @@ class UserManagementTest extends TestCase
         Role::firstOrCreate(['name' => 'admin']);
     }
 
-    /** @test */
+    #[Test]
     public function only_super_admins_can_access_user_index(): void
     {
         /** @var User $superAdmin */
@@ -36,7 +37,7 @@ class UserManagementTest extends TestCase
         $this->actingAs($regularUser)->get(route('users.index'))->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function super_admin_can_verify_a_user(): void
     {
         /** @var User $superAdmin */
@@ -51,7 +52,7 @@ class UserManagementTest extends TestCase
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
 
-    /** @test */
+    #[Test]
     public function super_admin_can_upgrade_user_membership(): void
     {
         /** @var User $superAdmin */

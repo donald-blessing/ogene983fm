@@ -8,13 +8,14 @@ use App\Models\Category\Category;
 use App\Models\Metro\Metro;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class MetroTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function public_can_view_metro_index(): void
     {
         $category = Category::factory()->create();
