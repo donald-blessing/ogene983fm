@@ -65,7 +65,7 @@
                             <li>
                                 <a
                                     href="{{ route('tag.show', ['tag' => $tag->slug]) }}"
-                                    class="inline-flex rounded-xs border border-line px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-muted transition-colors hover:border-brand/50 hover:text-paper"
+                                    class="inline-flex rounded-xs border border-line px-2 py-1 font-mono text-[11px] uppercase tracking-[0.08em] text-muted transition-colors hover:border-brand/50 hover:text-paper"
                                 >
                                     #{{ $tag->name }}
                                 </a>

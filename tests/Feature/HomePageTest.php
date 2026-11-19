@@ -28,7 +28,7 @@ class HomePageTest extends TestCase
             'stream_type' => 'audio',
             'contact_email' => 'info@ogene983fm.com',
             'contact_phone' => '+234 807 772 6636',
-            'contact_address' => 'Enugu',
+            'contact_address' => 'No 2 NTA Road, Old Onitsha Enugu Road, Enugwu Ukwu, Anambra State, Nigeria',
             'facebook_url' => null,
             'twitter_url' => null,
             'instagram_url' => null,

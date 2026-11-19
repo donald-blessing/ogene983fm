@@ -16,7 +16,7 @@
 >
     <button
         type="button"
-        class="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-paper"
+        class="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-paper"
         x-on:click="open = !open"
         x-bind:aria-expanded="open"
         aria-haspopup="true"

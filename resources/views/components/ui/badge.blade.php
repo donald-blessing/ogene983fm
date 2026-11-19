@@ -12,7 +12,7 @@
     ];
 @endphp
 
-<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 rounded-xs px-2 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.12em] ' . ($variants[$variant] ?? $variants['neutral'])]) }}>
+<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 rounded-xs px-2 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.12em] ' . ($variants[$variant] ?? $variants['neutral'])]) }}>
     @if ($dot)
         <span class="h-1 w-1 bg-current"></span>
     @endif

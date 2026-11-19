@@ -22,7 +22,7 @@
     </div>
 
     @if ($href && $linkLabel)
-        <a href="{{ $href }}" class="group inline-flex items-center gap-2 pb-1 font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-muted transition-colors hover:text-paper">
+        <a href="{{ $href }}" class="group inline-flex items-center gap-2 pb-1 font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-muted transition-colors hover:text-paper">
             {{ $linkLabel }}
             <x-ui.icon name="arrow-right" :size="14" class="transition-transform duration-200 group-hover:translate-x-0.5" />
         </a>

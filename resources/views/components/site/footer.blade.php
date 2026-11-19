@@ -34,7 +34,7 @@
 <footer class="mt-24 border-t border-line">
     <div class="border-b border-line">
         <div class="container-page flex flex-wrap items-center justify-between gap-3 py-2.5">
-            <p class="label-mono text-faint">Ogene 98.3 FM — Awka, Anambra</p>
+            <p class="label-mono text-faint">Ogene 98.3 FM — Enugwu Ukwu, Anambra</p>
             <p class="label-mono text-faint">Broadcasting 24 / 7</p>
         </div>
     </div>
@@ -48,7 +48,7 @@
                 </a>
 
                 <p class="mt-5 max-w-[38ch] text-[15px] leading-relaxed text-muted">
-                    The voice of the East. Highlife, news and community stories from Awka — live on 98.3 FM and streaming everywhere.
+                    The voice of the East. Highlife, news and community stories from Enugwu Ukwu — live on 98.3 FM and streaming everywhere.
                 </p>
 
                 <p class="mt-5 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-brand-text">
@@ -143,11 +143,11 @@
 
             <p class="text-[12px] text-faint">
                 @if ($studioPhone)
-                    Broadcasting from Awka · <a href="tel:{{ preg_replace('/\s+/', '', $studioPhone) }}" class="inline-flex min-h-6 items-center text-paper underline decoration-line underline-offset-2 transition-colors hover:decoration-brand-text">{{ $studioPhone }}</a>
+                    Broadcasting from Enugwu Ukwu · <a href="tel:{{ preg_replace('/\s+/', '', $studioPhone) }}" class="inline-flex min-h-6 items-center text-paper underline decoration-line underline-offset-2 transition-colors hover:decoration-brand-text">{{ $studioPhone }}</a>
                 @elseif ($studioEmail)
-                    Broadcasting from Awka · <a href="mailto:{{ $studioEmail }}" class="inline-flex min-h-6 items-center text-paper underline decoration-line underline-offset-2 transition-colors hover:decoration-brand-text">{{ $studioEmail }}</a>
+                    Broadcasting from Enugwu Ukwu · <a href="mailto:{{ $studioEmail }}" class="inline-flex min-h-6 items-center text-paper underline decoration-line underline-offset-2 transition-colors hover:decoration-brand-text">{{ $studioEmail }}</a>
                 @else
-                    Broadcasting from Awka
+                    Broadcasting from Enugwu Ukwu
                 @endif
             </p>
         </div>

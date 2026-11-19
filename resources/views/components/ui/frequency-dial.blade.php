@@ -10,7 +10,7 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'w-full']) }} role="img" aria-label="Tuned to {{ number_format($frequency, 1) }} FM">
-    <div class="flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-faint" aria-hidden="true">
+    <div class="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.12em] text-faint" aria-hidden="true">
         @foreach ([88, 92, 96, 100, 104, 108] as $mark)
             <span>{{ $mark }}</span>
         @endforeach
@@ -23,7 +23,7 @@
         <span class="absolute -top-1 h-1.5 w-1.5 -translate-x-1/2 bg-brand" style="left: {{ $position }}%"></span>
     </div>
 
-    <div class="mt-1.5 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.16em] text-faint" aria-hidden="true">
+    <div class="mt-1.5 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.16em] text-faint" aria-hidden="true">
         <span>FM</span>
         <span class="text-paper">{{ number_format($frequency, 1) }}</span>
         <span>MHz</span>

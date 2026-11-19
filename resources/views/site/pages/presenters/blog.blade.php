@@ -67,7 +67,7 @@
                                         </a>
 
                                         @if ($slot)
-                                            <span class="shrink-0 font-mono text-[10px] uppercase tracking-[0.06em] text-faint">
+                                            <span class="shrink-0 font-mono text-[11px] uppercase tracking-[0.06em] text-faint">
                                                 {{ ucfirst(substr(strtolower($slot->day), 0, 3)) }} · {{ date('g:i A', (int) strtotime((string) $slot->from)) }}
                                             </span>
                                         @endif
@@ -78,7 +78,7 @@
                             <p class="mt-4 text-[13px] text-faint">No shows assigned yet.</p>
                         @endif
 
-                        <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="mt-5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted transition-colors hover:text-paper">
+                        <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="mt-5 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted transition-colors hover:text-paper">
                             View profile
                             <x-ui.icon name="arrow-right" :size="14" />
                         </a>

@@ -6,7 +6,8 @@
 @php
     $settings = app(\App\Settings\GeneralSettings::class);
 
-    $address = $settings->contact_address ?: 'KM 80 Enugu/Onitsha Expressway, Awka, Anambra State, Nigeria';
+    $address = $settings->contact_address ?: 'No 2 NTA Road, Old Onitsha Enugu Road, Enugwu Ukwu, Anambra State, Nigeria';
+    $mapQuery = rawurlencode($address);
     $emails = array_values(array_filter([
         $settings->contact_email,
         'ogenefm983@gmail.com',
@@ -98,7 +99,7 @@
 
             <div class="mt-6 overflow-hidden rounded-lg border border-line">
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15865.894575663993!2d7.0281902!3d6.201075!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x7ed90cdacc384b13!2sOGENE%2098.3FM!5e0!3m2!1sen!2sng!4v1580815480921!5m2!1sen!2sng"
+                    src="https://www.google.com/maps?q={{ $mapQuery }}&amp;output=embed"
                     title="Ogene 98.3 FM on Google Maps"
                     class="h-[280px] w-full grayscale transition-all duration-700 hover:grayscale-0"
                     loading="lazy"

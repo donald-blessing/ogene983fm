@@ -32,7 +32,7 @@ class GallerySeeder extends Seeder
                 ],
             ],
             [
-                'title' => 'Culture Night in Awka',
+                'title' => 'Culture Night in Enugwu Ukwu',
                 'category' => 'igbo-culture',
                 'about' => 'An evening of folktales, proverbs, and traditional music with Mama Africa and guests from across Anambra.',
                 'cover' => 'https://images.unsplash.com/photo-1528605105345-5344ea20e269?w=800&q=80',
@@ -62,7 +62,7 @@ class GallerySeeder extends Seeder
                 continue;
             }
 
-            $album = Album::firstOrNew(['slug' => Str::slug($albumData['title'])]);
+            $album = Album::firstOrNew(['title' => $albumData['title']]);
             $album->title = $albumData['title'];
             $album->category_id = $category->id;
             $album->save();

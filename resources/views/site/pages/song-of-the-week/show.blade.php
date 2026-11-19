@@ -21,7 +21,7 @@
                 @else
                     <div class="flex h-full w-full flex-col items-center justify-center gap-3 text-faint">
                         <x-ui.icon name="radio" :size="36" />
-                        <span class="font-mono text-[10px] uppercase tracking-[0.2em]">Ogene 98.3</span>
+                        <span class="font-mono text-[11px] uppercase tracking-[0.2em]">Ogene 98.3</span>
                     </div>
                 @endif
             </div>
@@ -31,7 +31,7 @@
             <div class="flex flex-wrap items-center gap-2">
                 <x-ui.badge variant="brand" dot>Record of the week</x-ui.badge>
                 @if ($song->created_at)
-                    <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
+                    <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-faint">
                         {{ $song->created_at->format('M Y') }}
                     </span>
                 @endif

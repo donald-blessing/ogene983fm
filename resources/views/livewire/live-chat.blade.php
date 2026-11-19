@@ -22,10 +22,10 @@
         @forelse($messages as $msg)
             <div class="flex flex-col {{ ($msg['user_id'] ?? null) == Auth::id() ? 'items-end' : 'items-start' }}">
                 <div class="flex items-center gap-2 mb-1">
-                    <span class="text-[10px] font-bold uppercase tracking-tighter {{ ($msg['user_id'] ?? null) == Auth::id() ? 'text-primary' : 'text-secondary' }}">
+                    <span class="text-[11px] font-bold uppercase tracking-tighter {{ ($msg['user_id'] ?? null) == Auth::id() ? 'text-primary' : 'text-secondary' }}">
                         {{ $msg['user']['name'] ?? 'Guest' }}
                     </span>
-                    <span class="text-[8px] text-white/20">{{ \Carbon\Carbon::parse($msg['created_at'])->format('H:i') }}</span>
+                    <span class="text-[11px] text-white/20">{{ \Carbon\Carbon::parse($msg['created_at'])->format('H:i') }}</span>
                 </div>
                 <div class="px-4 py-2 rounded-2xl max-w-[85%] text-sm {{ ($msg['user_id'] ?? null) == Auth::id() ? 'bg-primary/20 text-white rounded-tr-none border border-primary/20' : 'bg-white/5 text-white/80 rounded-tl-none border border-white/5' }}">
                     {{ $msg['message'] }}

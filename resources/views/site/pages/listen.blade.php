@@ -25,7 +25,7 @@
         <div class="lg:col-span-7">
             <p class="flex items-center gap-2.5 label-mono text-brand-text">
                 <span class="equalizer" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
-                Live radio · Awka
+                Live radio · Enugwu Ukwu
             </p>
 
             <h1 class="mt-6 font-display text-[clamp(2.4rem,5.5vw,4.25rem)] font-bold leading-[0.96] tracking-[-0.04em] text-paper">
@@ -33,14 +33,14 @@
             </h1>
 
             <p class="mt-6 max-w-[48ch] text-[17px] leading-relaxed text-muted">
-                One stream, wherever you are. Tune in from Awka or from the other side of the world — the player stays with you as you browse.
+                One stream, wherever you are. Tune in from Enugwu Ukwu or from the other side of the world — the player stays with you as you browse.
             </p>
         </div>
 
         <div class="lg:col-span-5 lg:border-l lg:border-line lg:pl-12">
             <div class="flex items-end justify-between gap-4">
                 <p class="font-display text-[64px] font-bold leading-none tracking-[-0.05em] text-paper">98.3</p>
-                <p class="pb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-faint">MHz · WAT</p>
+                <p class="pb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-faint">MHz · WAT</p>
             </div>
 
             <x-ui.frequency-dial class="mt-6" />
@@ -84,7 +84,7 @@
                             <div class="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-xs border border-line bg-surface-2 text-brand-text sm:h-24 sm:w-24">
                                 <x-ui.icon name="radio" :size="26" />
 
-                                <span class="absolute bottom-2 right-2.5 font-mono text-[10px] tracking-[0.1em] text-muted">98.3</span>
+                                <span class="absolute bottom-2 right-2.5 font-mono text-[11px] tracking-[0.1em] text-muted">98.3</span>
                             </div>
                         @endif
 
@@ -102,7 +102,7 @@
                             @endif
 
                             @if ($nextUp)
-                                <p class="mt-3 font-mono text-[10px] uppercase tracking-[0.1em] text-faint">
+                                <p class="mt-3 font-mono text-[11px] uppercase tracking-[0.1em] text-faint">
                                     Next · <span class="text-muted">{{ $nextUp->title }}</span> · {{ $formatTime($nextUp->programmeTimes->first()?->from) }}
                                 </p>
                             @endif
@@ -131,7 +131,7 @@
                         </a>
                     </div>
 
-                    <p class="mt-6 border-t border-line pt-4 font-mono text-[10px] uppercase leading-relaxed tracking-[0.1em] text-faint">
+                    <p class="mt-6 border-t border-line pt-4 font-mono text-[11px] uppercase leading-relaxed tracking-[0.1em] text-faint">
                         ≈ 128 kbps while playing · Headphones recommended for highlife
                     </p>
                 </div>
@@ -141,7 +141,7 @@
             <div class="mt-10">
                 <div class="flex items-end justify-between gap-4 border-t border-line pt-5">
                     <h2 class="font-display text-[22px] font-bold tracking-[-0.02em] text-paper">Later today</h2>
-                    <a href="{{ route('programme.index') }}" wire:navigate class="inline-flex min-h-6 items-center font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-paper">Full schedule</a>
+                    <a href="{{ route('programme.index') }}" wire:navigate class="inline-flex min-h-6 items-center font-mono text-[11px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-paper">Full schedule</a>
                 </div>
 
                 @if ($todaySchedule->isNotEmpty())

@@ -32,7 +32,7 @@
         @else
             <div class="flex h-full w-full flex-col items-center justify-center gap-2.5 text-faint">
                 <x-ui.icon name="radio" :size="26" />
-                <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Ogene 98.3</span>
+                <span class="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">Ogene 98.3</span>
             </div>
         @endif
 
@@ -43,7 +43,7 @@
 
     <div class="min-w-0 border-t border-line pt-3.5">
         @if ($eyebrow)
-            <p class="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-brand-text">
+            <p class="mb-2 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-brand-text">
                 <span class="h-1.5 w-1.5 bg-brand"></span>
                 {{ $eyebrow }}
             </p>
@@ -58,7 +58,7 @@
         {{ $slot }}
 
         @if ($meta)
-            <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.1em] text-faint">{{ $meta }}</p>
+            <p class="mt-2 font-mono text-[11px] uppercase tracking-[0.1em] text-faint">{{ $meta }}</p>
         @endif
     </div>
 </{{ $tag }}>

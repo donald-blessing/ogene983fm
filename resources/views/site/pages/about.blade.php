@@ -83,7 +83,7 @@
                     </div>
                     <div>
                         <dt class="text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">Based in</dt>
-                        <dd class="mt-1 text-[15px] text-paper">Awka, Anambra</dd>
+                        <dd class="mt-1 text-[15px] text-paper">Enugwu Ukwu, Anambra</dd>
                     </div>
                     <div>
                         <dt class="text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">Reaching</dt>

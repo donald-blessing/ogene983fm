@@ -249,7 +249,7 @@
                                                         <div style="color: #333333; font-size: 14px; font-family: 'Work Sans', Calibri, sans-serif; font-weight: 600; mso-line-height-rule: exactly; line-height: 23px;">
 
                                                             <p>Email us: <br> <a href="mailto:" style="color: #888888; font-size: 14px; font-family: 'Hind Siliguri', Calibri, Sans-serif; font-weight: 400;">info@ogene983fm.com</a></p>
-                                                            <p>Visit Us: <br> KM 80 Enugu/Onitsha Expressway, Awka, Anambra State, Nigeria</p>
+                                                            <p>Visit Us: <br> No 2 NTA Road, Old Onitsha Enugu Road, Enugwu Ukwu, Anambra State, Nigeria</p>
                                                             <p>Call us: <br> +234 (0) 816 749 4172</p>
                                                         </div>
                                                     </td>

@@ -52,7 +52,7 @@
                 <a
                     href="#day-{{ strtolower($day) }}"
                     aria-label="{{ $day }}"
-                    class="rounded-xs border px-1 py-1.5 text-center font-mono text-[10px] uppercase tracking-[0.1em] transition-colors {{ $day === $today ? 'border-brand/50 bg-brand-soft text-brand-text' : 'border-line text-muted hover:border-line-strong hover:text-paper' }}"
+                    class="rounded-xs border px-1 py-1.5 text-center font-mono text-[11px] uppercase tracking-[0.1em] transition-colors {{ $day === $today ? 'border-brand/50 bg-brand-soft text-brand-text' : 'border-line text-muted hover:border-line-strong hover:text-paper' }}"
                 >
                     {{ $day === $today ? 'Today' : substr($day, 0, 3) }}
                 </a>

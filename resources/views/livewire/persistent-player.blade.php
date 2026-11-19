@@ -89,7 +89,7 @@
 
             {{-- Now playing --}}
             <div class="min-w-0 flex-1">
-                <p class="flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[0.14em]">
+                <p class="flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.14em]">
                     <span class="equalizer text-brand" x-show="playing && !buffering" x-cloak aria-hidden="true"><span></span><span></span><span></span><span></span></span>
                     <span class="text-brand-text" x-show="buffering" x-cloak>Connecting…</span>
                     <span class="text-brand-text" x-show="!playing && !buffering && !error" x-cloak>Live · 98.3 FM</span>

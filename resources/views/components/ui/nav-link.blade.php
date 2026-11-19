@@ -19,7 +19,7 @@
         href="{{ $href }}"
         wire:navigate
         @if ($active) aria-current="page" @endif
-        {{ $attributes->merge(['class' => 'relative py-2 font-mono text-[10px] font-medium uppercase tracking-[0.14em] transition-colors ' . ($active ? 'text-paper' : 'text-muted hover:text-paper')]) }}
+        {{ $attributes->merge(['class' => 'relative py-2 font-mono text-[11px] font-medium uppercase tracking-[0.14em] transition-colors ' . ($active ? 'text-paper' : 'text-muted hover:text-paper')]) }}
     >
         {{ $slot }}
         <span class="absolute -bottom-1 left-0 h-px w-full bg-brand transition-opacity duration-150 {{ $active ? 'opacity-100' : 'opacity-0' }}"></span>

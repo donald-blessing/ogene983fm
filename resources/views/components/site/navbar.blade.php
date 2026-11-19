@@ -301,7 +301,7 @@
         {{-- Listen (player toggle, not a route) --}}
         <button
             type="button"
-            class="flex flex-col items-center justify-center gap-1 text-[10px] font-medium text-faint transition-colors hover:text-paper"
+            class="flex flex-col items-center justify-center gap-1 text-[11px] font-medium text-faint transition-colors hover:text-paper"
             x-data
             x-on:click="$dispatch('toggle-player')"
         >
@@ -322,7 +322,7 @@
                 href="{{ $tab['href'] }}"
                 wire:navigate
                 @if ($tab['active']) aria-current="page" @endif
-                class="flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors {{ $tab['active'] ? 'text-paper' : 'text-faint hover:text-paper' }}"
+                class="flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors {{ $tab['active'] ? 'text-paper' : 'text-faint hover:text-paper' }}"
             >
                 <x-ui.icon :name="$tab['icon']" :size="20" />
                 {{ $tab['label'] }}
@@ -332,7 +332,7 @@
         {{-- More --}}
         <button
             type="button"
-            class="flex flex-col items-center justify-center gap-1 text-[10px] font-medium text-faint transition-colors hover:text-paper"
+            class="flex flex-col items-center justify-center gap-1 text-[11px] font-medium text-faint transition-colors hover:text-paper"
             x-data
             x-on:click="$dispatch('open-menu')"
             aria-haspopup="dialog"

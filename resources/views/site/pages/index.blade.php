@@ -21,7 +21,7 @@
     {{-- Masthead --}}
     <div class="border-b border-line">
         <div class="container-page flex items-center justify-between gap-4 py-2.5">
-            <p class="label-mono text-faint">Ogene 98.3 FM<span class="hidden sm:inline"> — Awka, Anambra</span></p>
+            <p class="label-mono text-faint">Ogene 98.3 FM<span class="hidden sm:inline"> — Enugwu Ukwu, Anambra</span></p>
             <p class="label-mono hidden text-faint sm:block">Highlife · News · Culture</p>
             <p class="label-mono tabular-nums text-muted">
                 <span class="sm:hidden">{{ now()->format('H:i') }}</span>
@@ -36,7 +36,7 @@
             <div class="py-12 lg:col-span-7 lg:border-r lg:border-line lg:py-16 lg:pr-12">
                 <p class="flex items-center gap-2.5 label-mono text-brand-text">
                     <span class="h-2 w-2 bg-brand"></span>
-                    Live from Awka
+                    Live from Enugwu Ukwu
                 </p>
 
                 <h1 class="mt-6 font-display text-[clamp(2.75rem,6.2vw,5rem)] font-bold leading-[0.94] tracking-[-0.04em] text-paper">
@@ -44,7 +44,7 @@
                 </h1>
 
                 <p class="mt-6 max-w-[44ch] text-[17px] leading-relaxed text-muted">
-                    Highlife, conversation and the stories that matter — live from Awka on 98.3 FM.
+                    Highlife, conversation and the stories that matter — live from Enugwu Ukwu on 98.3 FM.
                 </p>
 
                 <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -75,7 +75,7 @@
                     </div>
                     <div>
                         <dt class="label-mono text-faint">From</dt>
-                        <dd class="mt-2 font-display text-xl tracking-[-0.02em] text-paper">Awka</dd>
+                        <dd class="mt-2 font-display text-xl tracking-[-0.02em] text-paper">Enugwu Ukwu</dd>
                     </div>
                 </dl>
             </div>
@@ -105,7 +105,7 @@
                             <div class="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-xs border border-line bg-surface-2 text-brand-text">
                                 <x-ui.icon name="radio" :size="24" />
 
-                                <span class="absolute bottom-1.5 right-2 font-mono text-[10px] tracking-[0.1em] text-muted">98.3</span>
+                                <span class="absolute bottom-1.5 right-2 font-mono text-[11px] tracking-[0.1em] text-muted">98.3</span>
                             </div>
                         @endif
 
@@ -179,7 +179,7 @@
                     </div>
                 </div>
 
-                <p class="mt-6 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-faint">
+                <p class="mt-6 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-faint">
                     <x-ui.icon name="headphones" :size="14" />
                     Streams on mobile data and Wi-Fi
                 </p>
@@ -197,7 +197,7 @@
         </span>
         <span class="hidden h-3 w-px bg-line sm:block"></span>
         <p class="text-[12px] uppercase tracking-[0.16em] text-muted">{{ $settings->site_motto }}</p>
-        <span class="ml-auto hidden font-mono text-[10px] uppercase tracking-[0.16em] text-faint md:block">98.3 MHz · Awka</span>
+        <span class="ml-auto hidden font-mono text-[11px] uppercase tracking-[0.16em] text-faint md:block">98.3 MHz · Enugwu Ukwu</span>
     </div>
 </div>
 
@@ -271,7 +271,7 @@
                 <article class="border border-line">
                     <div class="flex items-center justify-between gap-3 border-b border-line px-5 py-3">
                         <span class="label-mono text-brand-text">Record of the week</span>
-                        <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-faint">33⅓ RPM</span>
+                        <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-faint">33⅓ RPM</span>
                     </div>
 
                     <div class="p-5">
@@ -281,7 +281,7 @@
                             @else
                                 <div class="flex h-full w-full flex-col items-center justify-center gap-3 text-faint">
                                     <x-ui.icon name="radio" :size="36" />
-                                    <span class="font-mono text-[9px] uppercase tracking-[0.2em]">Ogene 98.3</span>
+                                    <span class="font-mono text-[11px] uppercase tracking-[0.2em]">Ogene 98.3</span>
                                 </div>
                             @endif
                         </div>
@@ -289,7 +289,7 @@
                         <h3 class="mt-5 font-display text-[22px] font-bold leading-tight tracking-[-0.02em] text-paper">{{ $songOfTheWeek->title }}</h3>
                         <p class="mt-1 text-[15px] text-brand-text">{{ $songOfTheWeek->artist }}</p>
                         @if ($songOfTheWeek->album)
-                            <p class="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-faint">{{ $songOfTheWeek->album }}</p>
+                            <p class="mt-0.5 font-mono text-[11px] uppercase tracking-[0.12em] text-faint">{{ $songOfTheWeek->album }}</p>
                         @endif
 
                         <a href="{{ route('songoftheweek.show', $songOfTheWeek) }}" wire:navigate class="group mt-5 inline-flex items-center gap-2 text-sm font-semibold text-paper transition-colors hover:text-brand-text">
@@ -326,10 +326,10 @@
                 <a
                     href="{{ route('post.category', ['category' => $category->slug]) }}"
                     wire:navigate
-                    class="group inline-flex items-baseline gap-1.5 border-b border-line pb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted transition-colors hover:border-brand-text hover:text-paper"
+                    class="group inline-flex items-baseline gap-1.5 border-b border-line pb-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted transition-colors hover:border-brand-text hover:text-paper"
                 >
                     {{ $category->name }}
-                    <span class="text-[9px] tabular-nums text-faint">{{ $category->posts->count() }}</span>
+                    <span class="text-[11px] tabular-nums text-faint">{{ $category->posts->count() }}</span>
                 </a>
             @endforeach
         </div>
@@ -391,7 +391,7 @@
                     </div>
 
                     <p class="mt-3 text-sm font-semibold leading-snug text-paper transition-colors group-hover:text-brand-text">{{ $presenter->name }}</p>
-                    <p class="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-faint">On air</p>
+                    <p class="mt-1 font-mono text-[11px] uppercase tracking-[0.14em] text-faint">On air</p>
                 </a>
             @endforeach
         </div>
