@@ -124,7 +124,7 @@ class Category extends Model implements HasMedia, Searchable
         // $url = route('category.show', $this->slug);
         return new SearchResult(
             $this,
-            $this->id
+            $this->name
         );
     }
 

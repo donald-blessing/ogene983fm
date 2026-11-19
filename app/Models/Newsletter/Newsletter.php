@@ -83,7 +83,7 @@ class Newsletter extends Model implements Searchable
 
         return new SearchResult(
             $this,
-            $this->id,
+            $this->subject,
             $url
         );
     }

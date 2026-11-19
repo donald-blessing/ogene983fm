@@ -61,7 +61,7 @@
                         <p class="mt-3 text-[15px] text-muted">
                             Hosted by
                             @foreach ($programme->presenters as $presenter)
-                                <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="font-medium text-paper transition-colors hover:text-brand-text">{{ $presenter->name }}</a>@if (! $loop->last), @endif
+                                <a href="{{ route('presenter.show', ['presenter' => $presenter->slug]) }}" wire:navigate class="inline-flex min-h-6 items-center font-medium text-paper transition-colors hover:text-brand-text">{{ $presenter->name }}</a>@if (! $loop->last), @endif
                             @endforeach
                         </p>
                     @endif

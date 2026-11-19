@@ -135,7 +135,7 @@ class Post extends Model implements HasMedia, Searchable
      */
     public function getCoverImageAttribute(): string
     {
-        return $this->getFirstMediaUrl('cover_images') ?: asset('images/default-post.png');
+        return $this->getFirstMediaUrl('cover_images') ?: asset('images/default-post.svg');
     }
 
     /**

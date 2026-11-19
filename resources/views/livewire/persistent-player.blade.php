@@ -146,7 +146,7 @@
             </div>
 
             {{-- Station --}}
-            <a href="{{ route('listen') }}" wire:navigate class="hidden shrink-0 items-center gap-3 border-l border-line pl-5 lg:flex">
+            <a href="{{ route('listen') }}" wire:navigate class="hidden min-h-6 shrink-0 items-center gap-3 border-l border-line pl-5 lg:flex">
                 <span class="h-2 w-2 bg-brand" aria-hidden="true"></span>
                 <span class="font-display text-xl leading-none tracking-[-0.03em] text-paper">98.3<span class="ml-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-faint">FM</span></span>
             </a>

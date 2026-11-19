@@ -82,7 +82,7 @@
                     <ul class="mt-5 space-y-3.5">
                         @foreach ($explore as $link)
                             <li>
-                                <a href="{{ $link['href'] }}" wire:navigate class="text-sm text-muted transition-colors hover:text-paper">{{ $link['label'] }}</a>
+                                <a href="{{ $link['href'] }}" wire:navigate class="inline-flex min-h-6 items-center text-sm text-muted transition-colors hover:text-paper">{{ $link['label'] }}</a>
                             </li>
                         @endforeach
                     </ul>
@@ -93,7 +93,7 @@
                     <ul class="mt-5 space-y-3.5">
                         @foreach ($station as $link)
                             <li>
-                                <a href="{{ $link['href'] }}" wire:navigate class="text-sm text-muted transition-colors hover:text-paper">{{ $link['label'] }}</a>
+                                <a href="{{ $link['href'] }}" wire:navigate class="inline-flex min-h-6 items-center text-sm text-muted transition-colors hover:text-paper">{{ $link['label'] }}</a>
                             </li>
                         @endforeach
                     </ul>
@@ -143,9 +143,9 @@
 
             <p class="text-[12px] text-faint">
                 @if ($studioPhone)
-                    Broadcasting from Awka · <a href="tel:{{ preg_replace('/\s+/', '', $studioPhone) }}" class="text-paper underline decoration-line underline-offset-2 transition-colors hover:decoration-brand-text">{{ $studioPhone }}</a>
+                    Broadcasting from Awka · <a href="tel:{{ preg_replace('/\s+/', '', $studioPhone) }}" class="inline-flex min-h-6 items-center text-paper underline decoration-line underline-offset-2 transition-colors hover:decoration-brand-text">{{ $studioPhone }}</a>
                 @elseif ($studioEmail)
-                    Broadcasting from Awka · <a href="mailto:{{ $studioEmail }}" class="text-paper underline decoration-line underline-offset-2 transition-colors hover:decoration-brand-text">{{ $studioEmail }}</a>
+                    Broadcasting from Awka · <a href="mailto:{{ $studioEmail }}" class="inline-flex min-h-6 items-center text-paper underline decoration-line underline-offset-2 transition-colors hover:decoration-brand-text">{{ $studioEmail }}</a>
                 @else
                     Broadcasting from Awka
                 @endif

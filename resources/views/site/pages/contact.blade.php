@@ -57,7 +57,7 @@
                         <ul class="mt-1.5 space-y-1">
                             @foreach ($phones as $phone)
                                 <li>
-                                    <a href="tel:{{ preg_replace('/\s+/', '', $phone) }}" class="text-[14px] text-paper transition-colors hover:text-brand-text">{{ $phone }}</a>
+                                    <a href="tel:{{ preg_replace('/\s+/', '', $phone) }}" class="inline-flex min-h-6 items-center text-[14px] text-paper transition-colors hover:text-brand-text">{{ $phone }}</a>
                                 </li>
                             @endforeach
                         </ul>
@@ -75,7 +75,7 @@
                         <ul class="mt-1.5 space-y-1">
                             @foreach ($emails as $email)
                                 <li>
-                                    <a href="mailto:{{ $email }}" class="break-all text-[14px] text-paper transition-colors hover:text-brand-text">{{ $email }}</a>
+                                    <a href="mailto:{{ $email }}" class="inline-flex min-h-6 items-center break-all text-[14px] text-paper transition-colors hover:text-brand-text">{{ $email }}</a>
                                 </li>
                             @endforeach
                         </ul>

@@ -120,7 +120,7 @@ class AlbumUpload extends Model implements HasMedia, Searchable
     {
         return new SearchResult(
             $this,
-            $this->id
+            $this->title
         );
     }
 

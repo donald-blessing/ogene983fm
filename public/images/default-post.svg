@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Ogene 98.3 FM">
+  <rect width="1200" height="675" fill="#100E0D"/>
+  <rect x="0" y="0" width="1200" height="8" fill="#DB261D"/>
+  <g fill="none" stroke="#332B27" stroke-width="2">
+    <path d="M0 168h1200M0 337h1200M0 506h1200"/>
+    <path d="M300 0v675M600 0v675M900 0v675"/>
+  </g>
+  <g fill="#DB261D">
+    <rect x="546" y="250" width="8" height="175"/>
+    <rect x="568" y="290" width="8" height="95"/>
+    <rect x="590" y="215" width="8" height="245"/>
+    <rect x="612" y="270" width="8" height="135"/>
+    <rect x="634" y="235" width="8" height="205"/>
+  </g>
+  <text x="600" y="500" fill="#F7F3F0" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="54" font-weight="700" letter-spacing="-2" text-anchor="middle">OGENE 98.3 FM</text>
+  <text x="600" y="540" fill="#A8A09B" font-family="Instrument Sans, Helvetica, Arial, sans-serif" font-size="20" letter-spacing="6" text-anchor="middle">AUTHENTICALLY EASTERN</text>
+</svg>

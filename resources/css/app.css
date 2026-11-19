@@ -116,6 +116,12 @@
         height: auto;
     }
 
+    /* WCAG 2.2 SC 2.5.8 — inline-flex controls need a 24px minimum target. */
+    a.inline-flex,
+    button.inline-flex {
+        min-height: 24px;
+    }
+
     ::-webkit-scrollbar {
         width: 10px;
         height: 10px;

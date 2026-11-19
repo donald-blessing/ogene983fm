@@ -81,7 +81,7 @@ class Tag extends Model implements Searchable
 
         return new SearchResult(
             $this,
-            $this->id,
+            $this->name,
             $url
         );
     }

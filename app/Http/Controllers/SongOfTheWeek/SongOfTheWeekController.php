@@ -92,7 +92,10 @@ class SongOfTheWeekController extends Controller
      */
     public function show(SongOfTheWeek $songOfTheWeek)
     {
-        //
+        return view('site.pages.song-of-the-week.show', [
+            'song' => $songOfTheWeek,
+            'title' => $songOfTheWeek->title,
+        ]);
     }
 
     /**

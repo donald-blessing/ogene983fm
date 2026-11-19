@@ -62,7 +62,7 @@
                                     @php $slot = $programme->programmeTimes->sortBy('from')->first(); @endphp
 
                                     <li class="flex items-baseline justify-between gap-3">
-                                        <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}" wire:navigate class="min-w-0 truncate text-[14px] font-medium text-paper transition-colors hover:text-brand-text">
+                                        <a href="{{ route('programme.show', ['programme' => $programme->slug]) }}" wire:navigate class="inline-flex min-h-6 min-w-0 items-center truncate text-[14px] font-medium text-paper transition-colors hover:text-brand-text">
                                             {{ $programme->title }}
                                         </a>
 

@@ -26,7 +26,7 @@
                 <label for="field-password" class="block text-[12px] font-semibold uppercase tracking-[0.1em] text-faint">Password</label>
 
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="text-[12px] font-semibold text-brand-text transition-colors hover:text-paper">Forgot?</a>
+                    <a href="{{ route('password.request') }}" class="inline-flex min-h-6 items-center text-[12px] font-semibold text-brand-text transition-colors hover:text-paper">Forgot?</a>
                 @endif
             </div>
 
@@ -70,7 +70,7 @@
         @if (Route::has('register'))
             <p class="text-[13px] text-muted">
                 New here?
-                <a href="{{ route('register') }}" class="font-semibold text-paper transition-colors hover:text-brand-text">Create an account</a>
+                <a href="{{ route('register') }}" class="inline-flex min-h-6 items-center font-semibold text-paper transition-colors hover:text-brand-text">Create an account</a>
             </p>
         @endif
     </x-slot:footer>

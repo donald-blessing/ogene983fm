@@ -40,7 +40,7 @@
                 </p>
 
                 <h1 class="mt-6 font-display text-[clamp(2.75rem,6.2vw,5rem)] font-bold leading-[0.94] tracking-[-0.04em] text-paper">
-                    The voice<br>of the East.
+                    The voice <br>of the East.
                 </h1>
 
                 <p class="mt-6 max-w-[44ch] text-[17px] leading-relaxed text-muted">
@@ -129,7 +129,7 @@
                                     Tune in
                                 </button>
 
-                                <a href="{{ route('programme.show', $onAirProgramme) }}" wire:navigate class="text-[13px] font-medium text-muted underline decoration-line underline-offset-4 transition-colors hover:text-paper">
+                                <a href="{{ route('programme.show', $onAirProgramme) }}" wire:navigate class="inline-flex min-h-6 items-center text-[13px] font-medium text-muted underline decoration-line underline-offset-4 transition-colors hover:text-paper">
                                     About the show
                                 </a>
                             </div>
@@ -173,7 +173,7 @@
                             {{ $studioContact }}
                         </a>
 
-                        <a href="{{ route('contact') }}" wire:navigate class="text-[13px] font-medium text-muted underline decoration-line underline-offset-4 transition-colors hover:text-paper">
+                        <a href="{{ route('contact') }}" wire:navigate class="inline-flex min-h-6 items-center text-[13px] font-medium text-muted underline decoration-line underline-offset-4 transition-colors hover:text-paper">
                             Message us
                         </a>
                     </div>

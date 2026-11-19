@@ -6,6 +6,7 @@ namespace Database\Factories\SongOfTheWeek;
 
 use App\Models\SongOfTheWeek\SongOfTheWeek;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class SongOfTheWeekFactory extends Factory
 {
@@ -13,9 +14,13 @@ class SongOfTheWeekFactory extends Factory
 
     public function definition()
     {
+        $title = $this->faker->unique()->sentence(3);
+
         return [
-            'name' => $this->faker->sentence,
-            'slug' => $this->faker->unique()->slug,
+            'title' => $title,
+            'slug' => Str::slug($title),
+            'artist' => $this->faker->name,
+            'album' => $this->faker->word,
         ];
     }
 }

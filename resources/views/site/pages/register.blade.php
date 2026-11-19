@@ -74,7 +74,7 @@
     <x-slot:footer>
         <p class="text-[13px] text-muted">
             Already have an account?
-            <a href="{{ route('login') }}" class="font-semibold text-paper transition-colors hover:text-brand-text">Sign in</a>
+            <a href="{{ route('login') }}" class="inline-flex min-h-6 items-center font-semibold text-paper transition-colors hover:text-brand-text">Sign in</a>
         </p>
     </x-slot:footer>
 </x-ui.auth-shell>

@@ -29,7 +29,7 @@
             </p>
 
             <h1 class="mt-6 font-display text-[clamp(2.4rem,5.5vw,4.25rem)] font-bold leading-[0.96] tracking-[-0.04em] text-paper">
-                Listen to<br>Ogene 98.3 FM.
+                Listen to <br>Ogene 98.3 FM.
             </h1>
 
             <p class="mt-6 max-w-[48ch] text-[17px] leading-relaxed text-muted">
@@ -141,7 +141,7 @@
             <div class="mt-10">
                 <div class="flex items-end justify-between gap-4 border-t border-line pt-5">
                     <h2 class="font-display text-[22px] font-bold tracking-[-0.02em] text-paper">Later today</h2>
-                    <a href="{{ route('programme.index') }}" wire:navigate class="font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-paper">Full schedule</a>
+                    <a href="{{ route('programme.index') }}" wire:navigate class="inline-flex min-h-6 items-center font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-paper">Full schedule</a>
                 </div>
 
                 @if ($todaySchedule->isNotEmpty())
