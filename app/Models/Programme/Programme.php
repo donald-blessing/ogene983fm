@@ -50,37 +50,31 @@ use Spatie\Sluggable\SlugOptions;
  * @property-read int|null $programme_times_count
  * @property-read Collection|Tag[] $tags
  * @property-read int|null $tags_count
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme myProgrammes()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme onAir()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme userProgrammes(\App\Models\User $user)
- *
  * @property int $id
  * @property string $title
  * @property string $slug
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Programme\Programme whereUpdatedAt($value)
- *
  * @property-read MediaCollection<int, Media> $media
  * @property-read int|null $media_count
- *
  * @method static \Database\Factories\Programme\ProgrammeFactory factory($count = null, $state = [])
- *
  * @property-read Collection<int, Episode> $episodes
  * @property-read int|null $episodes_count
  * @property-read Collection<int, Activity> $activitiesAsSubject
  * @property-read int|null $activities_as_subject_count
  * @property-read string $url
- *
+ * @method static Builder<static>|Programme forDay(string $day)
  * @mixin \Eloquent
  */
 class Programme extends Model implements HasMedia, Searchable
