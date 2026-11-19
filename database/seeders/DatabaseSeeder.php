@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ProgrammeDaysTableSeeder::class,
             UsersTableSeeder::class,
             RealisticContentSeeder::class,
+            GallerySeeder::class,
         ]);
     }
 }
